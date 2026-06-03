@@ -40,20 +40,20 @@ interface FechamentoMensalDao {
 
     @Transaction
     @Query("""
-    SELECT *
-    FROM fechamentos_mensais
-    WHERE id = :fechamentoId
-""")
+        SELECT *
+        FROM fechamentos_mensais
+        WHERE id = :fechamentoId
+    """)
     suspend fun findComDespesas(
         fechamentoId: Long
     ): FechamentoComDespesas?
 
     @Transaction
     @Query("""
-    SELECT *
-    FROM fechamentos_mensais
-    WHERE id = :fechamentoId
-""")
+        SELECT *
+        FROM fechamentos_mensais
+        WHERE id = :fechamentoId
+    """)
     suspend fun findComDemonstrativos(
         fechamentoId: Long
     ): FechamentoComDemonstrativos?

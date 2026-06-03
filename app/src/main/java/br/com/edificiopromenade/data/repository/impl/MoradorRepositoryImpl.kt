@@ -3,7 +3,6 @@ package br.com.edificiopromenade.data.repository.impl
 import br.com.edificiopromenade.data.local.dao.MoradorDao
 import br.com.edificiopromenade.data.local.entity.MoradorEntity
 import br.com.edificiopromenade.domain.repository.MoradorRepository
-import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class MoradorRepositoryImpl @Inject constructor(

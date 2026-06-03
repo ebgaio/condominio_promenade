@@ -41,10 +41,10 @@ interface ApartamentoDao {
 
     @Transaction
     @Query("""
-    SELECT *
-    FROM apartamentos
-    ORDER BY numero
-""")
+        SELECT *
+        FROM apartamentos
+        ORDER BY numero
+    """)
     fun findAllComMoradores():
             Flow<List<ApartamentoComMorador>>
 }

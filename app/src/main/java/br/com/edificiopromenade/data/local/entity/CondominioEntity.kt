@@ -3,7 +3,9 @@ package br.com.edificiopromenade.data.local.entity
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "condominios")
+@Entity(
+    tableName = "condominios"
+)
 data class CondominioEntity(
 
     @PrimaryKey(autoGenerate = true)
