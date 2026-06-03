@@ -2,6 +2,10 @@ package br.com.edificiopromenade.di
 
 import android.content.Context
 import androidx.room.Room
+import br.com.edificiopromenade.data.local.dao.ApartamentoDao
+import br.com.edificiopromenade.data.local.dao.FechamentoMensalDao
+import br.com.edificiopromenade.data.local.dao.MoradorDao
+import br.com.edificiopromenade.data.local.dao.TipoDespesaDao
 import br.com.edificiopromenade.data.local.database.AppDatabase
 import dagger.Module
 import dagger.Provides
@@ -24,6 +28,32 @@ object DatabaseModule {
             context,
             AppDatabase::class.java,
             "edificio_promenade.db"
-        ).build()
+        )
+            .fallbackToDestructiveMigration(true)
+            .build()
     }
+
+    @Provides
+    fun provideApartamentoDao(
+        database: AppDatabase
+    ): ApartamentoDao =
+        database.apartamentoDao()
+
+    @Provides
+    fun provideMoradorDao(
+        database: AppDatabase
+    ): MoradorDao =
+        database.moradorDao()
+
+    @Provides
+    fun provideTipoDespesaDao(
+        database: AppDatabase
+    ): TipoDespesaDao =
+        database.tipoDespesaDao()
+
+    @Provides
+    fun provideFechamentoMensalDao(
+        database: AppDatabase
+    ): FechamentoMensalDao =
+        database.fechamentoMensalDao()
 }
