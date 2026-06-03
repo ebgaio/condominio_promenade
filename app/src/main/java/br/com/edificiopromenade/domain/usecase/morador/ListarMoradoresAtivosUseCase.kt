@@ -1,4 +1,4 @@
-package br.com.edificiopromenade.domain.usercase.morador
+package br.com.edificiopromenade.domain.usecase.morador
 
 import br.com.edificiopromenade.domain.repository.MoradorRepository
 import javax.inject.Inject

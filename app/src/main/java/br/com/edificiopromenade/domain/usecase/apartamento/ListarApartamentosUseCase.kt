@@ -1,4 +1,4 @@
-package br.com.edificiopromenade.domain.usercase.apartamento
+package br.com.edificiopromenade.domain.usecase.apartamento
 
 import br.com.edificiopromenade.domain.repository.ApartamentoRepository
 import javax.inject.Inject

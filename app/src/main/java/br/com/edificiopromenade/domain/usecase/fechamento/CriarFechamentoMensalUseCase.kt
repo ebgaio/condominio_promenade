@@ -1,4 +1,4 @@
-package br.com.edificiopromenade.domain.usercase.fechamento
+package br.com.edificiopromenade.domain.usecase.fechamento
 
 import br.com.edificiopromenade.data.local.entity.FechamentoMensalEntity
 import br.com.edificiopromenade.domain.repository.FechamentoRepository

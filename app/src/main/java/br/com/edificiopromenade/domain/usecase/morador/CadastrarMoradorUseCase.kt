@@ -1,4 +1,4 @@
-package br.com.edificiopromenade.domain.usercase.morador
+package br.com.edificiopromenade.domain.usecase.morador
 
 import br.com.edificiopromenade.data.local.entity.MoradorEntity
 import br.com.edificiopromenade.domain.repository.MoradorRepository
