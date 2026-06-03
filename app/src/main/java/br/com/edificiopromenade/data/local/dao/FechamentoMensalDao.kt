@@ -2,6 +2,7 @@ package br.com.edificiopromenade.data.local.dao
 
 import androidx.room.*
 import br.com.edificiopromenade.data.local.entity.FechamentoMensalEntity
+import br.com.edificiopromenade.data.local.relation.FechamentoComDemonstrativos
 import br.com.edificiopromenade.data.local.relation.FechamentoComDespesas
 import kotlinx.coroutines.flow.Flow
 
@@ -46,4 +47,14 @@ interface FechamentoMensalDao {
     suspend fun findComDespesas(
         fechamentoId: Long
     ): FechamentoComDespesas?
+
+    @Transaction
+    @Query("""
+    SELECT *
+    FROM fechamentos_mensais
+    WHERE id = :fechamentoId
+""")
+    suspend fun findComDemonstrativos(
+        fechamentoId: Long
+    ): FechamentoComDemonstrativos?
 }
