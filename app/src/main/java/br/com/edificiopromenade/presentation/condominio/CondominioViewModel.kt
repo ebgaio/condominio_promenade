@@ -4,18 +4,20 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.edificiopromenade.data.local.entity.CondominioEntity
 import br.com.edificiopromenade.domain.usecase.condominio.CadastrarCondominioUseCase
+import br.com.edificiopromenade.domain.usecase.condominio.ConsultarCondominioAtivoUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import javax.inject.Inject
 
 @HiltViewModel
 class CondominioViewModel @Inject constructor(
-    private val cadastrarCondominioUseCase:
-        CadastrarCondominioUseCase
+    private val cadastrarCondominioUseCase: CadastrarCondominioUseCase,
+    private val consultarCondominioAtivoUseCase: ConsultarCondominioAtivoUseCase
 ) : ViewModel() {
 
     private val _uiState =
@@ -26,6 +28,10 @@ class CondominioViewModel @Inject constructor(
     val uiState:
             StateFlow<CondominioUiState> =
         _uiState.asStateFlow()
+
+    init {
+        carregar()
+    }
 
     fun onNomeChanged(
         valor: String
@@ -80,25 +86,19 @@ class CondominioViewModel @Inject constructor(
 
                 CondominioEntity(
 
-                    nome =
-                        _uiState.value.nome,
+                    nome = _uiState.value.nome,
 
-                    cnpj =
-                        _uiState.value.cnpj,
+                    cnpj = _uiState.value.cnpj,
 
-                    endereco =
-                        _uiState.value.endereco,
+                    endereco = _uiState.value.endereco,
 
-                    nomeAdministradora =
-                        _uiState.value.nomeAdministradora,
+                    nomeAdministradora = _uiState.value.nomeAdministradora,
 
-                    emailAdministradora =
-                        _uiState.value.emailAdministradora,
+                    emailAdministradora = _uiState.value.emailAdministradora,
 
                     ativo = true,
 
-                    dataCriacao =
-                        LocalDateTime.now()
+                    dataCriacao = LocalDateTime.now()
                 )
             )
 
@@ -106,6 +106,33 @@ class CondominioViewModel @Inject constructor(
                 _uiState.value.copy(
                     salvoComSucesso = true
                 )
+        }
+    }
+
+    private fun carregar() {
+
+        viewModelScope.launch {
+
+            val condominio = consultarCondominioAtivoUseCase()
+                .collectLatest { condominio ->
+
+                    condominio?.let {
+
+                        _uiState.value =
+                            _uiState.value.copy(
+
+                                nome = it.nome,
+
+                                cnpj = it.cnpj ?: "",
+
+                                endereco = it.endereco ?: "",
+
+                                nomeAdministradora = it.nomeAdministradora ?: "",
+
+                                emailAdministradora = it.emailAdministradora ?: ""
+                            )
+                    }
+            }
         }
     }
 }

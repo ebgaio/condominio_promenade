@@ -7,6 +7,5 @@ class ConsultarCondominioAtivoUseCase @Inject constructor(
     private val repository: CondominioRepository
 ) {
 
-    operator fun invoke() =
-        repository.findCondominioAtivo()
+    operator fun invoke() = repository.findCondominioAtivo()
 }

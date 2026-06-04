@@ -32,6 +32,15 @@ interface CondominioDao {
     @Query("""
         SELECT *
         FROM condominios
+        WHERE ativo = 1
+        LIMIT 1
+    """)
+    suspend fun findAtivo():
+            CondominioEntity?
+
+    @Query("""
+        SELECT *
+        FROM condominios
         WHERE id = :id
     """)
     suspend fun findById(

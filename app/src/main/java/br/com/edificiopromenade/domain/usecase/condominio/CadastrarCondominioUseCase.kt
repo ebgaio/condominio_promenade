@@ -2,6 +2,7 @@ package br.com.edificiopromenade.domain.usecase.condominio
 
 import br.com.edificiopromenade.data.local.entity.CondominioEntity
 import br.com.edificiopromenade.domain.repository.CondominioRepository
+import java.time.LocalDateTime
 import javax.inject.Inject
 
 class CadastrarCondominioUseCase @Inject constructor(
@@ -12,8 +13,23 @@ class CadastrarCondominioUseCase @Inject constructor(
         condominio: CondominioEntity
     ): Long {
 
+        val atual = repository.findAtivo()
+
+        atual?.let {
+
+            repository.update(
+
+                it.copy(
+                    ativo = false,
+                    dataInativacao = LocalDateTime.now()
+                )
+            )
+        }
+
         return repository.insert(
-            condominio
+            condominio.copy(
+                ativo = true
+            )
         )
     }
 }

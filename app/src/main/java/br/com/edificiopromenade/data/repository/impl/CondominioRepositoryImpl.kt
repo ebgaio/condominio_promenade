@@ -14,6 +14,9 @@ class CondominioRepositoryImpl @Inject constructor(
             Flow<CondominioEntity?> =
         dao.findCondominioAtivo()
 
+    override suspend fun findAtivo() =
+        dao.findAtivo()
+
     override fun findHistorico():
             Flow<List<CondominioEntity>> =
         dao.findHistorico()

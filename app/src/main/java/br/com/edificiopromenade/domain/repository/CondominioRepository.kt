@@ -11,6 +11,9 @@ interface CondominioRepository {
     fun findHistorico():
             Flow<List<CondominioEntity>>
 
+    suspend fun findAtivo():
+            CondominioEntity?
+
     suspend fun findById(
         id: Long
     ): CondominioEntity?
