@@ -11,4 +11,6 @@ object AppDestinations {
     const val NOVO_FECHAMENTO = "novo_fechamento"
 
     const val CONFIGURACOES = "configuracoes"
+
+    const val CONDOMINIO = "condominio"
 }

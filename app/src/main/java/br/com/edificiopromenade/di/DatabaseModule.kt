@@ -3,6 +3,7 @@ package br.com.edificiopromenade.di
 import android.content.Context
 import androidx.room.Room
 import br.com.edificiopromenade.data.local.dao.ApartamentoDao
+import br.com.edificiopromenade.data.local.dao.CondominioDao
 import br.com.edificiopromenade.data.local.dao.FechamentoMensalDao
 import br.com.edificiopromenade.data.local.dao.MoradorDao
 import br.com.edificiopromenade.data.local.dao.TipoDespesaDao
@@ -56,4 +57,10 @@ object DatabaseModule {
         database: AppDatabase
     ): FechamentoMensalDao =
         database.fechamentoMensalDao()
+
+    @Provides
+    fun provideCondominioDao(
+        database: AppDatabase
+    ): CondominioDao =
+        database.condominioDao()
 }

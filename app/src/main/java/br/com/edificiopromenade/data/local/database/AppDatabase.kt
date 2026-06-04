@@ -5,6 +5,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import br.com.edificiopromenade.data.local.converter.DateConverters
 import br.com.edificiopromenade.data.local.dao.ApartamentoDao
+import br.com.edificiopromenade.data.local.dao.CondominioDao
 import br.com.edificiopromenade.data.local.dao.FechamentoMensalDao
 import br.com.edificiopromenade.data.local.dao.MoradorDao
 import br.com.edificiopromenade.data.local.dao.TipoDespesaDao
@@ -30,7 +31,7 @@ import br.com.edificiopromenade.data.local.entity.TipoDespesaEntity
         ConfiguracaoEmailEntity::class,
         HistoricoEnvioEmailEntity::class
                ],
-    version = 1,
+    version = 2,
     exportSchema = true
 )
 @TypeConverters(
@@ -45,4 +46,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun tipoDespesaDao(): TipoDespesaDao
 
     abstract fun fechamentoMensalDao(): FechamentoMensalDao
+
+    abstract fun condominioDao(): CondominioDao
 }
