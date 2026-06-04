@@ -14,7 +14,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(
+    onMoradoresClick: () -> Unit
+) {
 
     Scaffold { padding ->
 
@@ -42,7 +44,9 @@ fun HomeScreen() {
                 Text("Histórico")
             }
 
-            Button(onClick = {}) {
+            Button(
+                onClick = onMoradoresClick
+            ) {
                 Text("Moradores")
             }
 
