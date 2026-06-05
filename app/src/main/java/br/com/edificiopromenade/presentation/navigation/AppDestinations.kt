@@ -13,4 +13,6 @@ object AppDestinations {
     const val CONFIGURACOES = "configuracoes"
 
     const val CONDOMINIO = "condominio"
+
+    const val APARTAMENTOS = "apartamentos"
 }

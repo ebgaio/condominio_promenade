@@ -16,7 +16,8 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun HomeScreen(
     onMoradoresClick: () -> Unit,
-    onCondominioClick: () -> Unit
+    onCondominioClick: () -> Unit,
+    onApartamentosClick: () -> Unit
 ) {
 
     Scaffold { padding ->
@@ -55,6 +56,12 @@ fun HomeScreen(
                 onClick = onCondominioClick
             ) {
                 Text("Condomínio")
+            }
+
+            Button(
+                onClick = onApartamentosClick
+            ) {
+                Text("Apartamentos")
             }
 
             Button(onClick = {}) {

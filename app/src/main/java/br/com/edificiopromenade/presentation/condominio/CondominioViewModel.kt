@@ -25,8 +25,7 @@ class CondominioViewModel @Inject constructor(
             CondominioUiState()
         )
 
-    val uiState:
-            StateFlow<CondominioUiState> =
+    val uiState: StateFlow<CondominioUiState> =
         _uiState.asStateFlow()
 
     init {

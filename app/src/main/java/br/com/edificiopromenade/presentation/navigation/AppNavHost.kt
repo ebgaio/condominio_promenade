@@ -5,6 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import br.com.edificiopromenade.presentation.apartment.ApartamentoScreen
 import br.com.edificiopromenade.presentation.condominio.CondominioScreen
 import br.com.edificiopromenade.presentation.home.HomeScreen
 import br.com.edificiopromenade.presentation.moradores.MoradoresScreen
@@ -14,8 +15,7 @@ fun AppNavHost(
     modifier: Modifier = Modifier
 ) {
 
-    val navController =
-        rememberNavController()
+    val navController = rememberNavController()
 
     NavHost(
         navController = navController,
@@ -39,6 +39,12 @@ fun AppNavHost(
                     navController.navigate(
                         AppDestinations.CONDOMINIO
                     )
+                },
+                onApartamentosClick = {
+
+                    navController.navigate(
+                        AppDestinations.APARTAMENTOS
+                    )
                 }
             )
         }
@@ -46,7 +52,6 @@ fun AppNavHost(
         composable(
             AppDestinations.MORADORES
         ) {
-
             MoradoresScreen()
         }
 
@@ -54,6 +59,12 @@ fun AppNavHost(
             AppDestinations.CONDOMINIO
         ) {
             CondominioScreen()
+        }
+
+        composable(
+            AppDestinations.APARTAMENTOS
+        ) {
+            ApartamentoScreen()
         }
     }
 }
