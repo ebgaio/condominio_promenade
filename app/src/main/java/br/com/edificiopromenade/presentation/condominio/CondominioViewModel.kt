@@ -81,7 +81,7 @@ class CondominioViewModel @Inject constructor(
 
         viewModelScope.launch {
 
-            cadastrarCondominioUseCase(
+            val novoId = cadastrarCondominioUseCase(
 
                 CondominioEntity(
 

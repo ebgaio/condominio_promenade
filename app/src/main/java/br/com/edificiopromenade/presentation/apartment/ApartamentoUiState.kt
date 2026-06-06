@@ -1,5 +1,7 @@
 package br.com.edificiopromenade.presentation.apartment
 
+import br.com.edificiopromenade.data.local.entity.ApartamentoEntity
+
 data class ApartamentoUiState(
 
     val id: Long = 0,
@@ -10,5 +12,7 @@ data class ApartamentoUiState(
 
     val ativo: Boolean = true,
 
-    val salvoComSucesso: Boolean = false
+    val salvoComSucesso: Boolean = false,
+
+    val apartamentos: List<ApartamentoEntity> = emptyList()
 )
