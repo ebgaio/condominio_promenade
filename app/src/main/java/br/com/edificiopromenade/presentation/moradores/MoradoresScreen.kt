@@ -33,6 +33,7 @@ fun MoradoresScreen(
                 .padding(padding)
         ) {
 
+//            items(state.apartamentos) { item ->
             items(
                 items = state.apartamentos,
                 key = { it.apartamento.id }
