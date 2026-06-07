@@ -17,6 +17,16 @@ fun MoradoresScreen(
 
     val state by viewModel.uiState.collectAsState()
 
+    var expanded by remember {
+        mutableStateOf(false)
+    }
+
+    val apartamentoSelecionado =
+        state.apartamentos
+            .firstOrNull {
+                it.apartamento.id == state.apartamentoIdSelecionado
+            }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -27,42 +37,160 @@ fun MoradoresScreen(
         }
     ) { padding ->
 
-        LazyColumn(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
+                .padding(16.dp)
         ) {
 
-//            items(state.apartamentos) { item ->
-            items(
-                items = state.apartamentos,
-                key = { it.apartamento.id }
-            ) { item ->
+            Text(
+                text = "Cadastro de Morador"
+            )
 
-                Card(
+            Spacer(
+                modifier = Modifier.height(8.dp)
+            )
+
+            OutlinedTextField(
+
+                value = state.nome,
+
+                onValueChange = viewModel::onNomeChanged,
+
+                label = {
+                    Text("Nome")
+                },
+
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(
+                modifier = Modifier.height(8.dp)
+            )
+
+            ExposedDropdownMenuBox(
+
+                expanded = expanded,
+
+                onExpandedChange = {
+                    expanded = !expanded
+                }
+
+            ) {
+
+                OutlinedTextField(
+
+                    value =
+                        apartamentoSelecionado
+                            ?.apartamento
+                            ?.numero
+                            ?: "",
+
+                    onValueChange = {},
+
+                    readOnly = true,
+
+                    label = {
+                        Text("Apartamento")
+                    },
+
+                    trailingIcon = {
+                        ExposedDropdownMenuDefaults
+                            .TrailingIcon(
+                                expanded = expanded
+                            )
+                    },
+
                     modifier = Modifier
+                        .menuAnchor()
                         .fillMaxWidth()
-                        .padding(8.dp)
+                )
+
+                ExposedDropdownMenu(
+
+                    expanded = expanded,
+
+                    onDismissRequest = {
+                        expanded = false
+                    }
+
                 ) {
 
-                    Column(
-                        modifier = Modifier.padding(16.dp)
+                    state.apartamentos
+                        .forEach { item ->
+
+                            DropdownMenuItem(
+
+                                text = {
+
+                                    Text(
+                                        item.apartamento.numero
+                                    )
+                                },
+
+                                onClick = {
+
+                                    viewModel
+                                        .onApartamentoSelecionado(
+                                            item.apartamento.id
+                                        )
+
+                                    expanded = false
+                                }
+                            )
+                        }
+                }
+            }
+
+            Spacer(
+                modifier = Modifier.height(8.dp)
+            )
+
+            Button(
+                onClick = {
+                    viewModel.salvar()
+                }
+            ) {
+                Text("Salvar")
+            }
+
+            HorizontalDivider()
+
+            LazyColumn(
+                modifier = Modifier.weight(1f)
+            ) {
+
+                items(
+                    items = state.apartamentos,
+                    key = { it.apartamento.id }
+                ) { item ->
+
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp)
                     ) {
 
-                        Text(
-                            text = "Apartamento ${item.apartamento.numero}"
-                        )
+                        Column(
+                            modifier = Modifier.padding(16.dp)
+                        ) {
 
-                        Spacer(
-                            modifier = Modifier.height(8.dp)
-                        )
+                            Text(
+                                text = "Apartamento ${item.apartamento.numero}"
+                            )
 
-                        item.moradores
-                            .filter { it.ativo }
-                            .forEach {
+                            Spacer(
+                                modifier = Modifier.height(8.dp)
+                            )
 
-                                Text(it.nome)
-                            }
+                            item.moradores
+                                .filter { it.ativo }
+                                .forEach {
+
+                                    Text(it.nome)
+                                }
+                        }
                     }
                 }
             }
