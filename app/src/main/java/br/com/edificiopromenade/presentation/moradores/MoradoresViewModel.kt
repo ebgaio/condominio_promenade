@@ -7,11 +7,13 @@ import br.com.edificiopromenade.domain.usecase.apartamento.ListarApartamentosCom
 import br.com.edificiopromenade.domain.usecase.morador.AlterarMoradorUseCase
 import br.com.edificiopromenade.domain.usecase.morador.CadastrarMoradorUseCase
 import br.com.edificiopromenade.domain.usecase.morador.ConsultarMoradorPorIdUseCase
+import br.com.edificiopromenade.domain.usecase.morador.EncerrarMoradorUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.time.LocalDateTime
 import javax.inject.Inject
 
 @HiltViewModel
@@ -19,7 +21,8 @@ class MoradoresViewModel @Inject constructor(
     private val cadastrarMoradorUseCase: CadastrarMoradorUseCase,
     private val consultarMoradorPorIdUseCase: ConsultarMoradorPorIdUseCase,
     private val alterarMoradorUseCase: AlterarMoradorUseCase,
-    private val listarApartamentosComMoradoresUseCase: ListarApartamentosComMoradoresUseCase
+    private val listarApartamentosComMoradoresUseCase: ListarApartamentosComMoradoresUseCase,
+    private val encerrarMoradorUseCase : EncerrarMoradorUseCase
 ) : ViewModel() {
 
     private val _uiState =
@@ -88,12 +91,30 @@ class MoradoresViewModel @Inject constructor(
         }
     }
 
-    fun cancelarEdicao()
-    {
+    fun encerrarMorador() {
 
+        if (_uiState.value.moradorSelecionadoId == 0L)
+            return
+
+        viewModelScope.launch {
+
+                encerrarMoradorUseCase (
+                    _uiState.value.moradorSelecionadoId,
+                    LocalDate.now()
+                )
+
+                _uiState.value =
+                    _uiState.value.copy(
+                        nome = "",
+                        apartamentoIdSelecionado = 0,
+                        moradorSelecionadoId = 0,
+                        modoEdicao = false,
+                        mensagem = "Morador encerrado"
+                    )
+        }
     }
 
-    fun encerrarMorador()
+    fun cancelarEdicao()
     {
 
     }

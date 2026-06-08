@@ -3,6 +3,7 @@ package br.com.edificiopromenade.data.local.dao
 import androidx.room.*
 import br.com.edificiopromenade.data.local.entity.MoradorEntity
 import kotlinx.coroutines.flow.Flow
+import java.time.LocalDate
 
 @Dao
 interface MoradorDao {
@@ -44,4 +45,15 @@ interface MoradorDao {
     suspend fun findById(
         id: Long
     ): MoradorEntity?
+
+    @Query("""
+        UPDATE moradores
+        SET ativo = 0,
+            dataFim = :dataFim
+        WHERE id = :id
+    """)
+    suspend fun encerrarMorador(
+        id: Long,
+        dataFim: LocalDate
+    )
 }

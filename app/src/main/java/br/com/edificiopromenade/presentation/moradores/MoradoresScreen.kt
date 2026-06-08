@@ -158,6 +158,24 @@ fun MoradoresScreen(
                 )
             }
 
+            if (state.modoEdicao) {
+
+                Spacer(
+                    modifier = Modifier.height(8.dp)
+                )
+
+                Button(
+                    onClick = {
+                        viewModel.encerrarMorador()
+                    }
+                ) {
+
+                    Text(
+                        "Encerrar Morador"
+                    )
+                }
+            }
+
             HorizontalDivider()
 
             LazyColumn(

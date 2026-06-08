@@ -2,6 +2,7 @@ package br.com.edificiopromenade.domain.repository
 
 import br.com.edificiopromenade.data.local.entity.MoradorEntity
 import kotlinx.coroutines.flow.Flow
+import java.time.LocalDate
 
 interface MoradorRepository {
 
@@ -17,5 +18,10 @@ interface MoradorRepository {
 
     suspend fun update(
         morador: MoradorEntity
+    )
+
+    suspend fun encerrarMorador(
+        id: Long,
+        dataFim: LocalDate
     )
 }

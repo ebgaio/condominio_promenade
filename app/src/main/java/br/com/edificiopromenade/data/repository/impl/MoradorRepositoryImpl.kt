@@ -3,6 +3,7 @@ package br.com.edificiopromenade.data.repository.impl
 import br.com.edificiopromenade.data.local.dao.MoradorDao
 import br.com.edificiopromenade.data.local.entity.MoradorEntity
 import br.com.edificiopromenade.domain.repository.MoradorRepository
+import java.time.LocalDate
 import javax.inject.Inject
 
 class MoradorRepositoryImpl @Inject constructor(
@@ -23,4 +24,12 @@ class MoradorRepositoryImpl @Inject constructor(
     override suspend fun update(
         morador: MoradorEntity
     ) = dao.update(morador)
+
+    override suspend fun encerrarMorador(
+        id: Long,
+        dataFim: LocalDate
+    ) = dao.encerrarMorador(
+            id,
+            dataFim
+        )
 }
