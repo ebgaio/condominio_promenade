@@ -10,13 +10,16 @@ data class MoradoresUiState(
 
     val error: String? = null,
 
-    val moradorId: Long = 0,
-
     val apartamentoIdSelecionado: Long = 0,
 
     val nome: String = "",
 
     val salvoComSucesso: Boolean = false,
 
-    val mensagem: String? = null
+    val mensagem: String? = null,
+
+    val modoEdicao: Boolean = false,
+
+    val moradorSelecionadoId: Long = 0
+
 )

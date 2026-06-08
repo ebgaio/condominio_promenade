@@ -35,4 +35,13 @@ interface MoradorDao {
     suspend fun findMoradorAtual(
         apartamentoId: Long
     ): MoradorEntity?
+
+    @Query("""
+        SELECT *
+        FROM moradores
+        WHERE id = :id
+    """)
+    suspend fun findById(
+        id: Long
+    ): MoradorEntity?
 }

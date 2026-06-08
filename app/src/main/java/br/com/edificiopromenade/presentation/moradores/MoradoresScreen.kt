@@ -55,9 +55,7 @@ fun MoradoresScreen(
             OutlinedTextField(
 
                 value = state.nome,
-
                 onValueChange = viewModel::onNomeChanged,
-
                 label = {
                     Text("Nome")
                 },
@@ -152,7 +150,12 @@ fun MoradoresScreen(
                     viewModel.salvar()
                 }
             ) {
-                Text("Salvar")
+                Text(
+                    if (state.modoEdicao)
+                        "Atualizar"
+                    else
+                        "Salvar"
+                )
             }
 
             HorizontalDivider()
@@ -188,7 +191,15 @@ fun MoradoresScreen(
                                 .filter { it.ativo }
                                 .forEach {
 
-                                    Text(it.nome)
+                                    TextButton(
+                                        onClick = {
+                                            viewModel.selecionarMorador(
+                                                it.id
+                                            )
+                                        }
+                                    ) {
+                                        Text(it.nome)
+                                    }
                                 }
                         }
                     }

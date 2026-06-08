@@ -5,8 +5,11 @@ import kotlinx.coroutines.flow.Flow
 
 interface MoradorRepository {
 
-    fun findAllAtivos():
-            Flow<List<MoradorEntity>>
+    fun findAllAtivos(): Flow<List<MoradorEntity>>
+
+    suspend fun findById(
+        id: Long
+    ): MoradorEntity?
 
     suspend fun insert(
         morador: MoradorEntity

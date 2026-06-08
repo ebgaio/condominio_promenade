@@ -12,6 +12,10 @@ class MoradorRepositoryImpl @Inject constructor(
     override fun findAllAtivos() =
         dao.findAllAtivos()
 
+    override suspend fun findById(
+        id: Long
+    ) = dao.findById(id)
+
     override suspend fun insert(
         morador: MoradorEntity
     ) = dao.insert(morador)
