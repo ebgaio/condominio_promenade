@@ -164,13 +164,21 @@ class MoradoresViewModel @Inject constructor(
                     )
                 )
             }
+
+            val mensagemSucesso =
+                if (_uiState.value.modoEdicao)
+                    "Morador atualizado com sucesso"
+                else
+                    "Morador cadastrado com sucesso"
+
             _uiState.value =
                 _uiState.value.copy(
                     nome = "",
                     apartamentoIdSelecionado = 0,
                     moradorSelecionadoId = 0,
                     modoEdicao = false,
-                    salvoComSucesso = true
+                    salvoComSucesso = true,
+                    mensagem = mensagemSucesso
                 )
         }
     }

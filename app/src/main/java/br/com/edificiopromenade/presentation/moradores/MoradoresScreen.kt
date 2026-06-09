@@ -17,6 +17,18 @@ fun MoradoresScreen(
 
     val state by viewModel.uiState.collectAsState()
 
+    state.mensagem?.let {
+
+        Text(
+            text = it,
+            color = MaterialTheme.colorScheme.primary
+        )
+
+        Spacer(
+            modifier = Modifier.height(8.dp)
+        )
+    }
+
     var expanded by remember {
         mutableStateOf(false)
     }
@@ -215,6 +227,18 @@ fun MoradoresScreen(
                             Spacer(
                                 modifier = Modifier.height(8.dp)
                             )
+
+                            val moradoresAtivos = item.moradores.filter { it.ativo }
+
+                            val moradoresHistorico = item.moradores.filter { !it.ativo }
+
+                            moradoresHistorico.forEach {
+
+                                Text(
+                                    text = "${it.nome} (Encerrado)",
+                                    style = MaterialTheme.typography.bodySmall
+                                )
+                            }
 
                             item.moradores
                                 .filter { it.ativo }
