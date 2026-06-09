@@ -3,7 +3,9 @@ package br.com.edificiopromenade.presentation.apartment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.edificiopromenade.data.local.entity.ApartamentoEntity
+import br.com.edificiopromenade.domain.usecase.apartamento.AlterarApartamentoUseCase
 import br.com.edificiopromenade.domain.usecase.apartamento.CadastrarApartamentoUseCase
+import br.com.edificiopromenade.domain.usecase.apartamento.ConsultarApartamentoPorIdUseCase
 import br.com.edificiopromenade.domain.usecase.apartamento.ConsultarApartamentosUseCase
 import br.com.edificiopromenade.domain.usecase.condominio.ConsultarCondominioAtivoUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,7 +20,9 @@ import kotlinx.coroutines.Dispatchers
 class ApartamentoViewModel @Inject constructor(
     private val cadastrarApartamentoUseCase: CadastrarApartamentoUseCase,
     private val consultarCondominioAtivoUseCase: ConsultarCondominioAtivoUseCase,
-    private val consultarApartamentosUseCase: ConsultarApartamentosUseCase
+    private val consultarApartamentosUseCase: ConsultarApartamentosUseCase,
+    private val consultarApartamentoPorIdUseCase: ConsultarApartamentoPorIdUseCase,
+    private val alterarApartamentoUseCase: AlterarApartamentoUseCase
 ) : ViewModel() {
 
     private val _uiState =
@@ -68,28 +72,52 @@ class ApartamentoViewModel @Inject constructor(
                     .replace(",", ".")
                     .toDoubleOrNull()?: 0.0
 
-            cadastrarApartamentoUseCase(
+            if (_uiState.value.modoEdicao) {
 
-                ApartamentoEntity(
+                alterarApartamentoUseCase(
 
-                    condominioId = condominio.id,
-
-                    numero =_uiState.value.numero,
-
-                    fracaoIdealAtual = fracao,
-
-                    ativo = true
+                    ApartamentoEntity(
+                        id = _uiState.value.apartamentoSelecionadoId,
+                        condominioId = condominio.id,
+                        numero = _uiState.value.numero,
+                        fracaoIdealAtual = fracao,
+                        ativo = true
+                    )
                 )
-            )
+
+            } else {
+
+                cadastrarApartamentoUseCase(
+
+                    ApartamentoEntity(
+                        condominioId = condominio.id,
+                        numero = _uiState.value.numero,
+                        fracaoIdealAtual = fracao,
+                        ativo = true
+                    )
+                )
+            }
 
             _uiState.value =
                 _uiState.value.copy(
+
                     numero = "",
                     fracaoIdealAtual = "",
-                    salvoComSucesso = true
+                    apartamentoSelecionadoId = 0,
+                    condominioIdSelecionado = 0,
+                    modoEdicao = false,
+                    salvoComSucesso = true,
+
+                    mensagem =
+                        if (_uiState.value.modoEdicao)
+                            "Apartamento atualizado com sucesso"
+                        else
+                            "Apartamento salvo com sucesso"
                 )
         }
     }
+
+
 
     private fun carregarApartamentos() {
 
@@ -103,6 +131,40 @@ class ApartamentoViewModel @Inject constructor(
                             apartamentos = lista
                         )
                 }
+        }
+    }
+
+    fun cancelarEdicao() {
+
+        _uiState.value =
+            _uiState.value.copy(
+
+                numero = "",
+                fracaoIdealAtual = "",
+                apartamentoSelecionadoId = 0,
+                condominioIdSelecionado = 0,
+                modoEdicao = false
+            )
+    }
+
+    fun selecionarApartamento(
+        id: Long
+    ) {
+        viewModelScope.launch {
+
+            val apartamento = consultarApartamentoPorIdUseCase(id)
+
+            if (apartamento != null) {
+
+                _uiState.value =
+                    _uiState.value.copy(
+                        apartamentoSelecionadoId = apartamento.id,
+                        condominioIdSelecionado = apartamento.condominioId,
+                        numero = apartamento.numero,
+                        fracaoIdealAtual = apartamento.fracaoIdealAtual.toString(),
+                        modoEdicao = true
+                    )
+            }
         }
     }
 }

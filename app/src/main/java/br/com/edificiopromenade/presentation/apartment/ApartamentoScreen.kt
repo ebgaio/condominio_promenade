@@ -63,25 +63,41 @@ fun ApartamentoScreen(
                 modifier =Modifier.fillMaxWidth()
             )
 
-            Button(
-                onClick = {
-                    viewModel.salvar()
-                }
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
 
-                Text("Salvar")
+                Button(
+                    onClick = {
+                        viewModel.salvar()
+                    }
+                ) {
+
+                    Text(
+                        if (uiState.modoEdicao)
+                            "Atualizar"
+                        else
+                            "Salvar"
+                    )
+                }
+
+                if (uiState.modoEdicao) {
+
+                    Button(
+                        onClick = {
+                            viewModel.cancelarEdicao()
+                        }
+                    ) {
+                        Text("Voltar")
+                    }
+                }
             }
 
             HorizontalDivider()
 
             Text(
-                text = "Apartamentos Cadastrados",
+                text = "Apartamentos Cadastrados - " + "Qtd: ${uiState.apartamentos.size}",
                 style = MaterialTheme.typography.titleMedium
-            )
-
-            Text(
-                text =
-                    "Qtd: ${uiState.apartamentos.size}"
             )
 
             LazyColumn (
@@ -94,7 +110,6 @@ fun ApartamentoScreen(
                 ) { apartamento ->
 
                     Card(
-                        //modifier = Modifier.fillMaxWidth()
                         modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(vertical = 4.dp)
@@ -104,9 +119,18 @@ fun ApartamentoScreen(
                             modifier = Modifier.padding(12.dp)
                         ) {
 
-                            Text(
-                                text = "Apartamento ${apartamento.numero}"
-                            )
+                            TextButton(
+                                onClick = {
+                                    viewModel.selecionarApartamento(
+                                        apartamento.id
+                                    )
+                                }
+                            ) {
+
+                                Text(
+                                    text = "Apartamento ${apartamento.numero}"
+                                )
+                            }
 
                             Text(
                                 text =

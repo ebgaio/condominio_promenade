@@ -14,5 +14,13 @@ data class ApartamentoUiState(
 
     val salvoComSucesso: Boolean = false,
 
-    val apartamentos: List<ApartamentoEntity> = emptyList()
+    val apartamentos: List<ApartamentoEntity> = emptyList(),
+
+    val modoEdicao: Boolean = false,
+
+    val apartamentoSelecionadoId: Long = 0,
+
+    val condominioIdSelecionado: Long = 0,
+
+    val mensagem: String? = null
 )
