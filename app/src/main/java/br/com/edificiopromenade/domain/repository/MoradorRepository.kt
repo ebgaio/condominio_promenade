@@ -24,4 +24,8 @@ interface MoradorRepository {
         id: Long,
         dataFim: LocalDate
     )
+
+    suspend fun findHistoricoPorApartamento(
+        apartamentoId: Long
+    ): List<MoradorEntity>
 }

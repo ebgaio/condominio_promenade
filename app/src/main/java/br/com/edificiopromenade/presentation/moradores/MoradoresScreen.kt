@@ -12,7 +12,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MoradoresScreen(
-    viewModel: MoradoresViewModel = hiltViewModel(),
+    viewModel: MoradoresViewModel = hiltViewModel()
 ) {
 
     val state by viewModel.uiState.collectAsState()

@@ -56,4 +56,14 @@ interface MoradorDao {
         id: Long,
         dataFim: LocalDate
     )
+
+    @Query("""
+        SELECT *
+        FROM moradores
+        WHERE apartamentoId = :apartamentoId
+        ORDER BY dataInicio DESC
+    """)
+    suspend fun findHistoricoPorApartamento(
+        apartamentoId: Long
+    ): List<MoradorEntity>
 }

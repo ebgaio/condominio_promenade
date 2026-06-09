@@ -15,74 +15,75 @@ fun CondominioScreen(
 
     val state by viewModel.uiState.collectAsState()
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
+    Scaffold {
 
-        verticalArrangement =
-            Arrangement.spacedBy(12.dp)
-    ) {
-
-        Text(
-            text = "Cadastro do Condomínio",
-            style =
-                MaterialTheme.typography.headlineSmall
-        )
-
-        OutlinedTextField(
-            value = state.nome,
-            onValueChange =
-                viewModel::onNomeChanged,
-            label = {
-                Text("Nome")
-            }
-        )
-
-        OutlinedTextField(
-            value = state.cnpj,
-            onValueChange =
-                viewModel::onCnpjChanged,
-            label = {
-                Text("CNPJ")
-            }
-        )
-
-        OutlinedTextField(
-            value = state.endereco,
-            onValueChange =
-                viewModel::onEnderecoChanged,
-            label = {
-                Text("Endereço")
-            }
-        )
-
-        OutlinedTextField(
-            value =
-                state.nomeAdministradora,
-            onValueChange =
-                viewModel::onNomeAdministradoraChanged,
-            label = {
-                Text("Administradora")
-            }
-        )
-
-        OutlinedTextField(
-            value =
-                state.emailAdministradora,
-            onValueChange =
-                viewModel::onEmailAdministradoraChanged,
-            label = {
-                Text("E-mail")
-            }
-        )
-
-        Button(
-            onClick = {
-                viewModel.salvar()
-            }
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(it)
+                .padding(16.dp),
         ) {
-            Text("Salvar")
+
+            Text(
+                text = "Cadastro do Condomínio",
+                style =
+                    MaterialTheme.typography.headlineSmall
+            )
+
+            OutlinedTextField(
+                value = state.nome,
+                onValueChange =
+                    viewModel::onNomeChanged,
+                label = {
+                    Text("Nome")
+                }
+            )
+
+            OutlinedTextField(
+                value = state.cnpj,
+                onValueChange =
+                    viewModel::onCnpjChanged,
+                label = {
+                    Text("CNPJ")
+                }
+            )
+
+            OutlinedTextField(
+                value = state.endereco,
+                onValueChange =
+                    viewModel::onEnderecoChanged,
+                label = {
+                    Text("Endereço")
+                }
+            )
+
+            OutlinedTextField(
+                value =
+                    state.nomeAdministradora,
+                onValueChange =
+                    viewModel::onNomeAdministradoraChanged,
+                label = {
+                    Text("Administradora")
+                }
+            )
+
+            OutlinedTextField(
+                value =
+                    state.emailAdministradora,
+                onValueChange =
+                    viewModel::onEmailAdministradoraChanged,
+                label = {
+                    Text("E-mail")
+                }
+            )
+
+            Button(
+                onClick = {
+                    viewModel.salvar()
+                }
+            ) {
+                Text("Salvar")
+            }
         }
     }
 }
