@@ -105,6 +105,12 @@ class CondominioViewModel @Inject constructor(
                 _uiState.value.copy(
                     salvoComSucesso = true
                 )
+
+            _uiState.value =
+                _uiState.value.copy(
+                    mensagem = "Condomínio salvo com sucesso.",
+                    salvoComSucesso = true
+                )
         }
     }
 

@@ -15,7 +15,7 @@ fun CondominioScreen(
 
     val state by viewModel.uiState.collectAsState()
 
-    Scaffold {
+    Scaffold { it ->
 
         Column(
             modifier = Modifier
@@ -83,6 +83,17 @@ fun CondominioScreen(
                 }
             ) {
                 Text("Salvar")
+            }
+
+            state.mensagem?.let {
+
+                Spacer(
+                    modifier = Modifier.height(8.dp)
+                )
+
+                Text(
+                    text = it
+                )
             }
         }
     }

@@ -169,10 +169,21 @@ fun MoradoresScreen(
                         viewModel.encerrarMorador()
                     }
                 ) {
-
                     Text(
                         "Encerrar Morador"
                     )
+                }
+
+                Spacer(
+                    modifier = Modifier.height(8.dp)
+                )
+
+                Button(
+                    onClick = {
+                        viewModel.cancelarEdicao()
+                    }
+                ) {
+                    Text("Voltar")
                 }
             }
 

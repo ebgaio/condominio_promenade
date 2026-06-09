@@ -116,7 +116,13 @@ class MoradoresViewModel @Inject constructor(
 
     fun cancelarEdicao()
     {
-
+        _uiState.value =
+            _uiState.value.copy(
+                nome = "",
+                apartamentoIdSelecionado = 0,
+                moradorSelecionadoId = 0,
+                modoEdicao = false
+            )
     }
 
     fun salvar() {
