@@ -98,6 +98,12 @@ class ApartamentoViewModel @Inject constructor(
                 )
             }
 
+            val mensagemSucesso =
+                if (_uiState.value.modoEdicao)
+                    "Apartamento atualizado com sucesso"
+                else
+                    "Apartamento cadastrado com sucesso"
+
             _uiState.value =
                 _uiState.value.copy(
 
@@ -107,17 +113,10 @@ class ApartamentoViewModel @Inject constructor(
                     condominioIdSelecionado = 0,
                     modoEdicao = false,
                     salvoComSucesso = true,
-
-                    mensagem =
-                        if (_uiState.value.modoEdicao)
-                            "Apartamento atualizado com sucesso"
-                        else
-                            "Apartamento salvo com sucesso"
+                    mensagem = mensagemSucesso
                 )
         }
     }
-
-
 
     private fun carregarApartamentos() {
 
@@ -143,7 +142,16 @@ class ApartamentoViewModel @Inject constructor(
                 fracaoIdealAtual = "",
                 apartamentoSelecionadoId = 0,
                 condominioIdSelecionado = 0,
-                modoEdicao = false
+                modoEdicao = false,
+                mensagem = "Edição cancelada"
+            )
+    }
+
+    fun limparMensagem() {
+
+        _uiState.value =
+            _uiState.value.copy(
+                mensagem = null
             )
     }
 

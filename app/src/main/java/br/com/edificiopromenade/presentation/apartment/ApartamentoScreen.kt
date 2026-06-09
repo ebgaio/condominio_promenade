@@ -19,8 +19,25 @@ fun ApartamentoScreen(
 
     val uiState by viewModel.uiState.collectAsState()
 
-    Scaffold {
+    val snackbarHostState =
+        remember {
+            SnackbarHostState()
+        }
 
+    LaunchedEffect(uiState.mensagem) {
+        uiState.mensagem?.let {
+            snackbarHostState.showSnackbar(it)
+            viewModel.limparMensagem()
+        }
+    }
+
+    Scaffold (
+        snackbarHost = {
+            SnackbarHost(
+                hostState = snackbarHostState
+            )
+        }
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
