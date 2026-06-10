@@ -8,6 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import br.com.edificiopromenade.presentation.util.formatarData
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -283,12 +284,20 @@ fun MoradoresScreen(
 
                                     Text(
                                         text =
-                                            "Entrada: ${morador.dataInicio}"
+                                            "Entrada: ${
+                                                formatarData(
+                                                    morador.dataInicio
+                                                )
+                                            }"
                                     )
 
                                     Text(
                                         text =
-                                            "Saída: ${morador.dataFim}"
+                                            "Saída: ${
+                                                formatarData(
+                                                    morador.dataFim
+                                                )
+                                            }"
                                     )
                                 }
                             }
