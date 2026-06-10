@@ -228,32 +228,70 @@ fun MoradoresScreen(
                                 modifier = Modifier.height(8.dp)
                             )
 
+                            Text(
+                                text = "Moradores Ativos",
+                                style = MaterialTheme.typography.titleSmall
+                            )
+
+                            Spacer(
+                                modifier = Modifier.height(8.dp)
+                            )
+
                             val moradoresAtivos = item.moradores.filter { it.ativo }
 
                             val moradoresHistorico = item.moradores.filter { !it.ativo }
 
-                            moradoresHistorico.forEach {
+                            moradoresAtivos.forEach { morador ->
 
-                                Text(
-                                    text = "${it.nome} (Encerrado)",
-                                    style = MaterialTheme.typography.bodySmall
-                                )
+                                TextButton(
+                                    onClick = {
+                                        viewModel.selecionarMorador(
+                                            morador.id
+                                        )
+                                    }
+                                ) {
+                                    Text(morador.nome)
+                                }
                             }
 
-                            item.moradores
-                                .filter { it.ativo }
-                                .forEach {
+                            if (moradoresHistorico.isNotEmpty()) {
 
-                                    TextButton(
-                                        onClick = {
-                                            viewModel.selecionarMorador(
-                                                it.id
-                                            )
-                                        }
-                                    ) {
-                                        Text(it.nome)
-                                    }
+                                Spacer(
+                                    modifier = Modifier.height(8.dp)
+                                )
+
+                                HorizontalDivider()
+
+                                Spacer(
+                                    modifier = Modifier.height(8.dp)
+                                )
+
+                                Text(
+                                    text = "Histórico",
+                                    style = MaterialTheme.typography.titleSmall
+                                )
+
+                                moradoresHistorico.forEach { morador ->
+
+                                    Spacer(
+                                        modifier = Modifier.height(4.dp)
+                                    )
+
+                                    Text(
+                                        text = morador.nome
+                                    )
+
+                                    Text(
+                                        text =
+                                            "Entrada: ${morador.dataInicio}"
+                                    )
+
+                                    Text(
+                                        text =
+                                            "Saída: ${morador.dataFim}"
+                                    )
                                 }
+                            }
                         }
                     }
                 }
