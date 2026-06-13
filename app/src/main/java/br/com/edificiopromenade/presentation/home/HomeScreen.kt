@@ -17,7 +17,8 @@ import androidx.compose.ui.unit.dp
 fun HomeScreen(
     onMoradoresClick: () -> Unit,
     onCondominioClick: () -> Unit,
-    onApartamentosClick: () -> Unit
+    onApartamentosClick: () -> Unit,
+    onNovoFechamentoClick: () -> Unit
 ) {
 
     Scaffold { padding ->
@@ -38,7 +39,9 @@ fun HomeScreen(
                 style = MaterialTheme.typography.headlineMedium
             )
 
-            Button(onClick = {}) {
+            Button(
+                onClick = onNovoFechamentoClick
+            ) {
                 Text("Novo Fechamento")
             }
 

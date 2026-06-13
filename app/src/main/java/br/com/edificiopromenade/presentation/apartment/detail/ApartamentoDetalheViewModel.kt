@@ -125,29 +125,6 @@ class ApartamentoDetalheViewModel @Inject constructor(
     }
 
     fun limparMensagem() {
-        _uiState.value =
-            _uiState.value.copy(
-                mensagem = null
-            )
-    }
-
-    fun inativar() {
-        val detalhe = _uiState.value.apartamento
-                ?: return
-
-        viewModelScope.launch {
-            inativarApartamentoUseCase(
-                detalhe.apartamento.id
-            )
-
-            carregar(
-                detalhe.apartamento.id
-            )
-
-            _uiState.value =
-                _uiState.value.copy(
-                    mensagem = "Apartamento inativado com sucesso"
-                )
-        }
+        _mensagem.value = null
     }
 }

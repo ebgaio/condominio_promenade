@@ -8,6 +8,7 @@ import androidx.navigation.compose.rememberNavController
 import br.com.edificiopromenade.presentation.apartment.ApartamentoScreen
 import br.com.edificiopromenade.presentation.apartment.detail.ApartamentoDetalheScreen
 import br.com.edificiopromenade.presentation.condominio.CondominioScreen
+import br.com.edificiopromenade.presentation.fechamento.NovoFechamentoScreen
 import br.com.edificiopromenade.presentation.home.HomeScreen
 import br.com.edificiopromenade.presentation.moradores.MoradoresScreen
 
@@ -45,6 +46,12 @@ fun AppNavHost(
 
                     navController.navigate(
                         AppDestinations.APARTAMENTOS
+                    )
+                },
+                onNovoFechamentoClick = {
+
+                    navController.navigate(
+                        AppDestinations.NOVO_FECHAMENTO
                     )
                 }
             )
@@ -86,6 +93,12 @@ fun AppNavHost(
                     navController.popBackStack()
                 }
             )
+        }
+
+        composable(
+            AppDestinations.NOVO_FECHAMENTO
+        ) {
+            NovoFechamentoScreen()
         }
     }
 }
