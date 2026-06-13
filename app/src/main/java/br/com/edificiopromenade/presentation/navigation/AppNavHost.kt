@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import br.com.edificiopromenade.presentation.apartment.ApartamentoScreen
+import br.com.edificiopromenade.presentation.apartment.detail.ApartamentoDetalheScreen
 import br.com.edificiopromenade.presentation.condominio.CondominioScreen
 import br.com.edificiopromenade.presentation.home.HomeScreen
 import br.com.edificiopromenade.presentation.moradores.MoradoresScreen
@@ -64,7 +65,27 @@ fun AppNavHost(
         composable(
             AppDestinations.APARTAMENTOS
         ) {
-            ApartamentoScreen()
+            ApartamentoScreen(
+                navController = navController
+            )
+        }
+
+        composable(
+            route = AppDestinations.APARTAMENTO_DETALHE
+        ) { backStackEntry ->
+
+            val id = backStackEntry
+                    .arguments
+                    ?.getString("id")
+                    ?.toLongOrNull()
+                    ?: 0L
+
+            ApartamentoDetalheScreen(
+                apartamentoId = id,
+                onVoltar = {
+                    navController.popBackStack()
+                }
+            )
         }
     }
 }

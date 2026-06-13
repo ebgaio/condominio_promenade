@@ -11,7 +11,6 @@ class CadastrarApartamentoUseCase @Inject constructor(
     suspend operator fun invoke(
         apartamento: ApartamentoEntity
     ): Long {
-
         return repository.insert(apartamento)
     }
 }

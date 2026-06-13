@@ -9,12 +9,12 @@ import br.com.edificiopromenade.domain.usecase.apartamento.ConsultarApartamentoP
 import br.com.edificiopromenade.domain.usecase.apartamento.ConsultarApartamentosUseCase
 import br.com.edificiopromenade.domain.usecase.condominio.ConsultarCondominioAtivoUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlinx.coroutines.Dispatchers
 
 @HiltViewModel
 class ApartamentoViewModel @Inject constructor(

@@ -32,8 +32,8 @@ android {
     compileOptions {
         // Enable core library desugaring for java.time on older devices
         isCoreLibraryDesugaringEnabled = true
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
 
     buildFeatures {
@@ -61,6 +61,7 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.hilt.navigation.compose)
     ksp(libs.hilt.compiler)
+    ksp(libs.kotlinx.metadata.jvm)
 
     // Room - Database
     implementation(libs.room.runtime)

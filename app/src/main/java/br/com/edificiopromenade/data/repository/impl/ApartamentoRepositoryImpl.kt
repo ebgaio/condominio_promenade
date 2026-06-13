@@ -15,6 +15,9 @@ class ApartamentoRepositoryImpl @Inject constructor(
     override fun findAllComMoradores() =
         dao.findAllComMoradores()
 
+    override suspend fun findDetalhado(id: Long) =
+        dao.findDetalhado(id)
+
     override suspend fun findById(id: Long) =
         dao.findById(id)
 
@@ -25,4 +28,8 @@ class ApartamentoRepositoryImpl @Inject constructor(
     override suspend fun update(
         apartamento: ApartamentoEntity
     ) = dao.update(apartamento)
+
+    override suspend fun inativar(
+        id: Long
+    ) = dao.inativar(id)
 }
