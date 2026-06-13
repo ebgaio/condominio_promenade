@@ -194,12 +194,17 @@ fun ApartamentoDetalheScreen(
                                     "📅 Última Movimentação: ${formatarData(ultimaMovimentacao) ?: "-"}"
                             )
 
-                            Text(
-                                if (detalhe.apartamento.ativo)
-                                    "Status: Ativo"
-                                else
-                                    "Status: Inativo"
-                            )
+                            Card {
+                                Text(
+                                    text =
+                                        if (detalhe.apartamento.ativo)
+                                            "✅ Apartamento Ativo"
+                                        else
+                                            "❌ Apartamento Inativo",
+
+                                    modifier = Modifier.padding(12.dp)
+                                )
+                            }
 
                             Spacer(
                                 modifier = Modifier.height(8.dp)
@@ -258,6 +263,81 @@ fun ApartamentoDetalheScreen(
 
                             Spacer(
                                 modifier = Modifier.height(8.dp)
+                            )
+                        }
+                    }
+
+                    Card(
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(16.dp)
+                        ) {
+
+                            Text(
+                                text = "Resumo Executivo",
+                                style = MaterialTheme.typography.titleMedium
+                            )
+
+                            Spacer(
+                                modifier = Modifier.height(8.dp)
+                            )
+
+                            Text(
+                                text = "Apartamento ${detalhe.apartamento.numero}"
+                            )
+
+                            Text(
+                                text = "Possui $qtdAtivos morador(es) ativo(s)"
+                            )
+
+                            Text(
+                                text = "Possui $qtdHistorico registro(s) históricos"
+                            )
+
+                            Text(
+                                text = "Situação atual: $situacao"
+                            )
+                        }
+                    }
+
+                    Card(
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(16.dp)
+                        ) {
+                            Text(
+                                text = "Indicadores",
+                                style = MaterialTheme.typography.titleMedium
+                            )
+
+                            Spacer(
+                                modifier = Modifier.height(8.dp)
+                            )
+
+                            Text(
+                                text = "👥 Moradores Ativos: $qtdAtivos"
+                            )
+
+                            Text(
+                                text = "📚 Histórico: $qtdHistorico"
+                            )
+
+                            Text(
+                                text = "🏠 Situação: $situacao"
+                            )
+
+                            Text(
+                                text = "⏳ Ocupação Atual: $diasOcupacaoAtual dias"
+                            )
+
+                            Text(
+                                text = "📊 Ocupação Histórica: ${percentualOcupacao.toInt()}%"
+                            )
+
+                            Text(
+                                text = "📅 Última Movimentação: ${formatarData(ultimaMovimentacao) ?: "-"}"
                             )
                         }
                     }
@@ -402,7 +482,7 @@ fun ApartamentoDetalheScreen(
                                 viewModel.inativarApartamento()
                             }
                         ) {
-                            Text("Inativar Apartamento")
+                            Text("Inativar")
                         }
 
                         Button(

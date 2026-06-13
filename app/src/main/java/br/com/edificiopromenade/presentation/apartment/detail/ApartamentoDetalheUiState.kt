@@ -14,5 +14,9 @@ data class ApartamentoDetalheUiState(
 
     val modoEdicao: Boolean = false,
 
-    val mensagem: String? = null
+    val mensagem: String? = null,
+
+    val totalMoradoresAtivos: Int = 0,
+
+    val totalMoradoresHistorico: Int = 0
 )

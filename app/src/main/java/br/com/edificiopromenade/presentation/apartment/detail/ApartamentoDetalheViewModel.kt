@@ -36,18 +36,20 @@ class ApartamentoDetalheViewModel @Inject constructor(
 
             val apartamento = consultarApartamentoDetalhadoUseCase(id)
 
+            val ativos = apartamento?.moradores
+                    ?.count { it.ativo }
+                    ?: 0
+
+            val historico = apartamento?.moradores
+                    ?.count { !it.ativo }
+                    ?: 0
+
             _uiState.value =
                 _uiState.value.copy(
-
                     carregando = false,
                     apartamento = apartamento,
-                    numero = apartamento?.apartamento?.numero ?: "",
-                    fracaoIdealAtual =
-                        apartamento
-                            ?.apartamento
-                            ?.fracaoIdealAtual
-                            ?.toString()
-                            ?: ""
+                    totalMoradoresAtivos = ativos,
+                    totalMoradoresHistorico = historico
                 )
         }
     }
