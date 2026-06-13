@@ -4,7 +4,7 @@ import br.com.edificiopromenade.data.local.dao.MoradorDao
 import br.com.edificiopromenade.data.local.entity.MoradorEntity
 import br.com.edificiopromenade.domain.repository.MoradorRepository
 import java.time.LocalDate
-import javax.inject.Inject
+import jakarta.inject.Inject
 
 class MoradorRepositoryImpl @Inject constructor(
     private val dao: MoradorDao

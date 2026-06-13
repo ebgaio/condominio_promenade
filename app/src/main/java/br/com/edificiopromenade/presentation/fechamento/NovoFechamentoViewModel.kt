@@ -5,17 +5,18 @@ import androidx.lifecycle.viewModelScope
 import br.com.edificiopromenade.data.local.entity.FechamentoMensalEntity
 import br.com.edificiopromenade.domain.usecase.fechamento.ConsultarFechamentosUseCase
 import br.com.edificiopromenade.domain.usecase.fechamento.CriarFechamentoMensalUseCase
+import br.com.edificiopromenade.domain.usecase.fechamento.ConsultarFechamentoPorMesAnoUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import javax.inject.Inject
+import jakarta.inject.Inject
 
 @HiltViewModel
 class NovoFechamentoViewModel @Inject constructor(
 
     private val criarFechamentoMensalUseCase: CriarFechamentoMensalUseCase,
-
+    private val consultarFechamentoPorMesAnoUseCase: ConsultarFechamentoPorMesAnoUseCase,
     private val consultarFechamentosUseCase: ConsultarFechamentosUseCase
 
 ) : ViewModel() {
@@ -81,7 +82,30 @@ class NovoFechamentoViewModel @Inject constructor(
         if (mes == null || ano == null)
             return
 
+        if (mes !in 1..12) {
+
+            _uiState.value =
+                _uiState.value.copy(
+                    mensagem = "Mês deve estar entre 1 e 12"
+                )
+            return
+        }
+
         viewModelScope.launch {
+            val fechamentoExistente = consultarFechamentoPorMesAnoUseCase(
+                    mes,
+                    ano
+                )
+
+            if (fechamentoExistente != null) {
+                _uiState.value =
+                    _uiState.value.copy(
+                        mensagem =
+                            "Já existe fechamento para esta competência."
+                    )
+                return@launch
+            }
+
             criarFechamentoMensalUseCase(
                 FechamentoMensalEntity(
 

@@ -3,7 +3,7 @@ package br.com.edificiopromenade.data.repository.impl
 import br.com.edificiopromenade.data.local.dao.FechamentoMensalDao
 import br.com.edificiopromenade.data.local.entity.FechamentoMensalEntity
 import br.com.edificiopromenade.domain.repository.FechamentoRepository
-import javax.inject.Inject
+import jakarta.inject.Inject
 
 class FechamentoRepositoryImpl @Inject constructor(
     private val dao: FechamentoMensalDao

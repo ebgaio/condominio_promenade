@@ -1,17 +1,17 @@
 package br.com.edificiopromenade.domain.usecase.fechamento
 
-import br.com.edificiopromenade.data.local.entity.FechamentoMensalEntity
 import br.com.edificiopromenade.domain.repository.FechamentoRepository
 import jakarta.inject.Inject
 
-class CriarFechamentoMensalUseCase @Inject constructor(
+class ConsultarFechamentoPorMesAnoUseCase @Inject constructor(
     private val repository: FechamentoRepository
 ) {
 
     suspend operator fun invoke(
-        fechamento: FechamentoMensalEntity
-    ): Long {
-
-        return repository.insert(fechamento)
-    }
+        mes: Int,
+        ano: Int
+    ) = repository.findByMesAno(
+            mes,
+            ano
+        )
 }

@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -56,7 +55,6 @@ fun NovoFechamentoScreen(
     ) { padding ->
         Column (
             modifier = Modifier
-                .offset()
                 .fillMaxSize()
                 .padding(padding)
                 .padding(16.dp),
@@ -103,7 +101,9 @@ fun NovoFechamentoScreen(
                 "Fechamentos"
             )
 
-            LazyColumn() {
+            LazyColumn(
+                modifier = Modifier.weight(1f)
+            ) {
                 items(state.fechamentos) {
                     Card (
                         modifier = Modifier
@@ -114,7 +114,9 @@ fun NovoFechamentoScreen(
                             modifier = Modifier.padding(12.dp)
                         ) {
                             Text(
-                                "Competência ${it.mes}/${it.ano}"
+                                "Competência  ${it.mes.toString()
+                                    .padStart(2, '0')
+                                }/${it.ano}"
                             )
 
                             Text(

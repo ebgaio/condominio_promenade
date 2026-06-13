@@ -2,7 +2,7 @@ package br.com.edificiopromenade.domain.usecase.morador
 
 import br.com.edificiopromenade.data.local.entity.MoradorEntity
 import br.com.edificiopromenade.domain.repository.MoradorRepository
-import javax.inject.Inject
+import jakarta.inject.Inject
 
 class AlterarMoradorUseCase @Inject constructor(
     private val repository: MoradorRepository

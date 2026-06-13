@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
-import javax.inject.Inject
+import jakarta.inject.Inject
 
 @HiltViewModel
 class CondominioViewModel @Inject constructor(

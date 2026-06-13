@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDate
-import javax.inject.Inject
+import jakarta.inject.Inject
 
 @HiltViewModel
 class MoradoresViewModel @Inject constructor(

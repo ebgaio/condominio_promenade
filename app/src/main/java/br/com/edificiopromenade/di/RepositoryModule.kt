@@ -2,10 +2,12 @@ package br.com.edificiopromenade.di
 
 import br.com.edificiopromenade.data.repository.impl.ApartamentoRepositoryImpl
 import br.com.edificiopromenade.data.repository.impl.CondominioRepositoryImpl
+import br.com.edificiopromenade.data.repository.impl.DespesaRepositoryImpl
 import br.com.edificiopromenade.data.repository.impl.FechamentoRepositoryImpl
 import br.com.edificiopromenade.data.repository.impl.MoradorRepositoryImpl
 import br.com.edificiopromenade.domain.repository.ApartamentoRepository
 import br.com.edificiopromenade.domain.repository.CondominioRepository
+import br.com.edificiopromenade.domain.repository.DespesaRepository
 import br.com.edificiopromenade.domain.repository.FechamentoRepository
 import br.com.edificiopromenade.domain.repository.MoradorRepository
 import dagger.Binds
@@ -41,4 +43,10 @@ abstract class RepositoryModule {
     abstract fun bindCondominioRepository(
         impl: CondominioRepositoryImpl
     ): CondominioRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindDespesaRepository(
+        impl: DespesaRepositoryImpl
+    ): DespesaRepository
 }

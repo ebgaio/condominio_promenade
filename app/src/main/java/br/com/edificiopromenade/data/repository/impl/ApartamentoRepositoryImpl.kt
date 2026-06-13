@@ -3,7 +3,7 @@ package br.com.edificiopromenade.data.repository.impl
 import br.com.edificiopromenade.data.local.dao.ApartamentoDao
 import br.com.edificiopromenade.data.local.entity.ApartamentoEntity
 import br.com.edificiopromenade.domain.repository.ApartamentoRepository
-import javax.inject.Inject
+import jakarta.inject.Inject
 
 class ApartamentoRepositoryImpl @Inject constructor(
     private val dao: ApartamentoDao

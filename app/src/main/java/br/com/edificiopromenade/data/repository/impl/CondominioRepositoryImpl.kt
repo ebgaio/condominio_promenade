@@ -4,7 +4,7 @@ import br.com.edificiopromenade.data.local.dao.CondominioDao
 import br.com.edificiopromenade.data.local.entity.CondominioEntity
 import br.com.edificiopromenade.domain.repository.CondominioRepository
 import kotlinx.coroutines.flow.Flow
-import javax.inject.Inject
+import jakarta.inject.Inject
 
 class CondominioRepositoryImpl @Inject constructor(
     private val dao: CondominioDao

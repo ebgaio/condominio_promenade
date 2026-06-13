@@ -1,7 +1,7 @@
 package br.com.edificiopromenade.domain.usecase.fechamento
 
 import br.com.edificiopromenade.domain.repository.FechamentoRepository
-import javax.inject.Inject
+import jakarta.inject.Inject
 
 class ConsultarFechamentosUseCase @Inject constructor(
     private val repository: FechamentoRepository

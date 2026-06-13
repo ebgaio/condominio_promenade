@@ -2,7 +2,7 @@ package br.com.edificiopromenade.domain.usecase.morador
 
 import br.com.edificiopromenade.domain.repository.MoradorRepository
 import java.time.LocalDate
-import javax.inject.Inject
+import jakarta.inject.Inject
 
 class EncerrarMoradorUseCase @Inject constructor(
     private val repository: MoradorRepository

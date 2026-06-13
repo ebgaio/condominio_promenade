@@ -3,7 +3,7 @@ package br.com.edificiopromenade.domain.usecase.condominio
 import br.com.edificiopromenade.data.local.entity.CondominioEntity
 import br.com.edificiopromenade.domain.repository.CondominioRepository
 import java.time.LocalDateTime
-import javax.inject.Inject
+import jakarta.inject.Inject
 
 class CadastrarCondominioUseCase @Inject constructor(
     private val repository: CondominioRepository
