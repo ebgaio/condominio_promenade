@@ -32,4 +32,7 @@ class ApartamentoRepositoryImpl @Inject constructor(
     override suspend fun inativar(
         id: Long
     ) = dao.inativar(id)
+
+    override suspend fun findAllAtivosList() =
+        dao.findAllAtivosList()
 }

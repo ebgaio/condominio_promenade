@@ -30,4 +30,7 @@ interface ApartamentoRepository {
     suspend fun inativar(
         id: Long
     )
+
+    suspend fun findAllAtivosList():
+        List<ApartamentoEntity>
 }

@@ -74,4 +74,13 @@ interface ApartamentoDao {
     suspend fun inativar(
         id: Long
     )
+
+    @Query("""
+        SELECT *
+        FROM apartamentos
+        WHERE ativo = 1
+        ORDER BY numero
+    """)
+    suspend fun findAllAtivosList():
+            List<ApartamentoEntity>
 }
