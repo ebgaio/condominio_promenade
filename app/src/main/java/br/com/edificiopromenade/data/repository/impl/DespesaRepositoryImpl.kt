@@ -11,21 +11,21 @@ class DespesaRepositoryImpl @Inject constructor(
 
     override fun findByFechamento(
         fechamentoId: Long
-    ) =
-        dao.findByFechamento(fechamentoId)
+    ) = dao.findByFechamento(fechamentoId)
 
     override suspend fun insert(
         despesa: DespesaEntity
-    ) =
-        dao.insert(despesa)
+    ) = dao.insert(despesa)
 
     override suspend fun update(
         despesa: DespesaEntity
-    ) =
-        dao.update(despesa)
+    ) = dao.update(despesa)
 
     override suspend fun delete(
         despesa: DespesaEntity
-    ) =
-        dao.delete(despesa)
+    ) = dao.delete(despesa)
+
+    override suspend fun findByFechamentoList(
+        fechamentoId: Long
+    ) = dao.findByFechamentoList(fechamentoId)
 }

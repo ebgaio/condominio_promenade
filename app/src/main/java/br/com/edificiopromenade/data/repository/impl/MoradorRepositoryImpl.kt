@@ -38,4 +38,13 @@ class MoradorRepositoryImpl @Inject constructor(
     ) = dao.findHistoricoPorApartamento(
             apartamentoId
         )
+
+    override suspend fun findMoradorAtivoPorApartamento(
+        apartamentoId: Long
+    ) = dao.findMoradorAtivoPorApartamento(
+            apartamentoId
+        )
+
+    override suspend fun findAllAtivosList() =
+        dao.findAllAtivosList()
 }

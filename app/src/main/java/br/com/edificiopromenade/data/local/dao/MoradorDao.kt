@@ -1,6 +1,7 @@
 package br.com.edificiopromenade.data.local.dao
 
 import androidx.room.*
+import br.com.edificiopromenade.data.local.entity.ApartamentoEntity
 import br.com.edificiopromenade.data.local.entity.MoradorEntity
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
@@ -25,17 +26,6 @@ interface MoradorDao {
         ORDER BY nome
     """)
     fun findAllAtivos(): Flow<List<MoradorEntity>>
-
-    @Query("""
-        SELECT *
-        FROM moradores
-        WHERE apartamentoId = :apartamentoId
-        AND ativo = 1
-        LIMIT 1
-    """)
-    suspend fun findMoradorAtual(
-        apartamentoId: Long
-    ): MoradorEntity?
 
     @Query("""
         SELECT *
@@ -66,4 +56,24 @@ interface MoradorDao {
     suspend fun findHistoricoPorApartamento(
         apartamentoId: Long
     ): List<MoradorEntity>
+
+    @Query("""
+        SELECT *
+        FROM moradores
+        WHERE apartamentoId = :apartamentoId
+        AND ativo = 1
+        LIMIT 1
+    """)
+    suspend fun findMoradorAtivoPorApartamento(
+        apartamentoId: Long
+    ): MoradorEntity?
+
+    @Query("""
+        SELECT *
+        FROM apartamentos
+        WHERE ativo = 1
+        ORDER BY numero
+    """)
+    suspend fun findAllAtivosList():
+            List<ApartamentoEntity>
 }

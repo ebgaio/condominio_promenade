@@ -35,4 +35,14 @@ interface DespesaDao {
     fun findByFechamento(
         fechamentoId: Long
     ): Flow<List<DespesaEntity>>
+
+    @Query("""
+        SELECT *
+        FROM despesas
+        WHERE fechamentoId = :fechamentoId
+        ORDER BY descricao
+    """)
+    suspend fun findByFechamentoList(
+        fechamentoId: Long
+    ): List<DespesaEntity>
 }

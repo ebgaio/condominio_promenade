@@ -43,6 +43,8 @@ data class DemonstrativoApartamentoEntity(
 
     val percentualCopasaHistorica: Double,
 
+    val numeroApartamentoHistorico: String,
+
     val rateioMensal: Double,
 
     val copasa: Double,

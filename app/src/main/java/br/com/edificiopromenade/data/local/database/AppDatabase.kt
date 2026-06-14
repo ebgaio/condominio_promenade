@@ -34,7 +34,7 @@ import br.com.edificiopromenade.data.local.entity.TipoDespesaEntity
         ConfiguracaoEmailEntity::class,
         HistoricoEnvioEmailEntity::class
                 ],
-    version = 4,
+    version = 5,
     exportSchema = true
 )
 @TypeConverters(

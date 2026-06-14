@@ -20,4 +20,8 @@ interface DespesaRepository {
     suspend fun delete(
         despesa: DespesaEntity
     )
+
+    suspend fun findByFechamentoList(
+        fechamentoId: Long
+    ): List<DespesaEntity>
 }
