@@ -84,10 +84,10 @@ fun ApartamentoScreen(
 
             OutlinedTextField(
 
-                value = uiState.fracaoIdealAtual,
+                value = uiState.percentualCopasa,
                 onValueChange = viewModel::onFracaoChanged,
                 label = {
-                    Text("Fração Ideal")
+                    Text("Percentual COPASA")
                 },
                 modifier =Modifier.fillMaxWidth()
             )
@@ -163,7 +163,7 @@ fun ApartamentoScreen(
                                 text =
                                     "Fração: ${
                                         formatarFracao(
-                                            apartamento.fracaoIdealAtual
+                                            apartamento.percentualCopasa
                                         )
                                     }"
                             )

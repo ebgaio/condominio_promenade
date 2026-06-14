@@ -41,7 +41,7 @@ data class DemonstrativoApartamentoEntity(
 
     val nomeMoradorHistorico: String,
 
-    val fracaoIdealHistorica: Double,
+    val percentualCopasaHistorica: Double,
 
     val rateioMensal: Double,
 

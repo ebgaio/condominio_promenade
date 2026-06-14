@@ -30,7 +30,7 @@ data class ApartamentoEntity(
 
     val numero: String,
 
-    val fracaoIdealAtual: Double,
+    val percentualCopasa: Double,
 
     val ativo: Boolean = true
 )

@@ -10,7 +10,7 @@ data class ApartamentoDetalheUiState(
 
     val numero: String = "",
 
-    val fracaoIdealAtual: String = "",
+    val percentualCopasa: String = "",
 
     val modoEdicao: Boolean = false,
 

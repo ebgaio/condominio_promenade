@@ -50,7 +50,7 @@ class ApartamentoViewModel @Inject constructor(
     ) {
         _uiState.value =
             _uiState.value.copy(
-                fracaoIdealAtual = valor
+                percentualCopasa = valor
             )
     }
 
@@ -68,7 +68,7 @@ class ApartamentoViewModel @Inject constructor(
             val fracao =
 
                 _uiState.value
-                    .fracaoIdealAtual
+                    .percentualCopasa
                     .replace(",", ".")
                     .toDoubleOrNull()?: 0.0
 
@@ -80,7 +80,7 @@ class ApartamentoViewModel @Inject constructor(
                         id = _uiState.value.apartamentoSelecionadoId,
                         condominioId = condominio.id,
                         numero = _uiState.value.numero,
-                        fracaoIdealAtual = fracao,
+                        percentualCopasa = fracao,
                         ativo = true
                     )
                 )
@@ -92,7 +92,7 @@ class ApartamentoViewModel @Inject constructor(
                     ApartamentoEntity(
                         condominioId = condominio.id,
                         numero = _uiState.value.numero,
-                        fracaoIdealAtual = fracao,
+                        percentualCopasa = fracao,
                         ativo = true
                     )
                 )
@@ -108,7 +108,7 @@ class ApartamentoViewModel @Inject constructor(
                 _uiState.value.copy(
 
                     numero = "",
-                    fracaoIdealAtual = "",
+                    percentualCopasa = "",
                     apartamentoSelecionadoId = 0,
                     condominioIdSelecionado = 0,
                     modoEdicao = false,
@@ -139,7 +139,7 @@ class ApartamentoViewModel @Inject constructor(
             _uiState.value.copy(
 
                 numero = "",
-                fracaoIdealAtual = "",
+                percentualCopasa = "",
                 apartamentoSelecionadoId = 0,
                 condominioIdSelecionado = 0,
                 modoEdicao = false,
@@ -169,7 +169,7 @@ class ApartamentoViewModel @Inject constructor(
                         apartamentoSelecionadoId = apartamento.id,
                         condominioIdSelecionado = apartamento.condominioId,
                         numero = apartamento.numero,
-                        fracaoIdealAtual = apartamento.fracaoIdealAtual.toString(),
+                        percentualCopasa = apartamento.percentualCopasa.toString(),
                         modoEdicao = true
                     )
             }

@@ -141,11 +141,11 @@ fun ApartamentoDetalheScreen(
 
                             Text(
                                 text =
-                                    "Fração Ideal: ${formatarFracao(detalhe.apartamento.fracaoIdealAtual)}"
+                                    "Percentual COPASA: ${formatarFracao(detalhe.apartamento.percentualCopasa)}"
                             )
 
                             Text(
-                                "Fração: ${detalhe.apartamento.fracaoIdealAtual}"
+                                "Fração: ${detalhe.apartamento.percentualCopasa}"
                             )
 
                             Spacer(
@@ -249,10 +249,10 @@ fun ApartamentoDetalheScreen(
 
                                 OutlinedTextField(
 
-                                    value = state.fracaoIdealAtual,
+                                    value = state.percentualCopasa,
                                     onValueChange = viewModel::onFracaoChanged,
                                     label = {
-                                        Text("Fração Ideal")
+                                        Text("Percentual COPASA")
                                     }
                                 )
 

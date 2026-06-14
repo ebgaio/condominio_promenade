@@ -68,7 +68,7 @@ class ApartamentoDetalheViewModel @Inject constructor(
     ) {
         _uiState.value =
             _uiState.value.copy(
-                fracaoIdealAtual = valor
+                percentualCopasa = valor
             )
     }
 
@@ -88,9 +88,9 @@ class ApartamentoDetalheViewModel @Inject constructor(
                 detalhe.apartamento.copy(
 
                     numero = _uiState.value.numero,
-                    fracaoIdealAtual =
+                    percentualCopasa =
                         _uiState.value
-                            .fracaoIdealAtual
+                            .percentualCopasa
                             .replace(",", ".")
                             .toDoubleOrNull()
                             ?: 0.0
