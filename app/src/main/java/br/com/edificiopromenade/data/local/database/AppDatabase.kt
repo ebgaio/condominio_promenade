@@ -6,6 +6,7 @@ import androidx.room.TypeConverters
 import br.com.edificiopromenade.data.local.converter.DateConverters
 import br.com.edificiopromenade.data.local.dao.ApartamentoDao
 import br.com.edificiopromenade.data.local.dao.CondominioDao
+import br.com.edificiopromenade.data.local.dao.DemonstrativoApartamentoDao
 import br.com.edificiopromenade.data.local.dao.DespesaDao
 import br.com.edificiopromenade.data.local.dao.FechamentoMensalDao
 import br.com.edificiopromenade.data.local.dao.MoradorDao
@@ -53,4 +54,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun condominioDao(): CondominioDao
 
     abstract fun despesaDao(): DespesaDao
+
+    abstract fun demonstrativoDao(): DemonstrativoApartamentoDao
 }

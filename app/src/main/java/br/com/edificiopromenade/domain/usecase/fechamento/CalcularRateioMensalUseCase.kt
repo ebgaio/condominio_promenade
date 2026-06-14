@@ -36,22 +36,18 @@ class CalcularRateioMensalUseCase @Inject constructor(
 
         val valorCopasaTotal = despesas
             .firstOrNull {
-                it.descricao.equals(
-                    "COPASA",
-                    ignoreCase = true
-                )
+                it.descricao == "COPASA"
             }
             ?.valor
             ?: 0.0
 
-        val totalRateio = despesas
+        val despesasRateio = despesas
             .filterNot {
-                it.descricao.equals(
-                    "COPASA",
-                    ignoreCase = true
-                )
+                it.descricao != "COPASA"
             }
-            .sumOf {
+
+        val totalRateio =
+            despesasRateio.sumOf {
                 it.valor
             }
 
