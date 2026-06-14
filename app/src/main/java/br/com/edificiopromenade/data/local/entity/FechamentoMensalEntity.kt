@@ -26,5 +26,9 @@ data class FechamentoMensalEntity(
 
     val dataCriacao: LocalDateTime,
 
+    val valorFundoReserva: Double = 0.0,
+
+    val valorDecimoTerceiroFerias: Double = 0.0,
+
     val finalizado: Boolean = false
 )

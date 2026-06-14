@@ -17,4 +17,10 @@ object AppDestinations {
     const val APARTAMENTOS = "apartamentos"
 
     const val APARTAMENTO_DETALHE = "apartamento_detalhe/{id}"
+
+    const val DESPESAS = "despesas/{fechamentoId}"
+
+    fun despesasRoute(
+        fechamentoId: Long
+    ) = "despesas/$fechamentoId"
 }

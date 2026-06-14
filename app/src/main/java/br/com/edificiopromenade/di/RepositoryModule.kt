@@ -10,6 +10,8 @@ import br.com.edificiopromenade.domain.repository.CondominioRepository
 import br.com.edificiopromenade.domain.repository.DespesaRepository
 import br.com.edificiopromenade.domain.repository.FechamentoRepository
 import br.com.edificiopromenade.domain.repository.MoradorRepository
+import br.com.edificiopromenade.data.repository.impl.TipoDespesaRepositoryImpl
+import br.com.edificiopromenade.domain.repository.TipoDespesaRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -49,4 +51,10 @@ abstract class RepositoryModule {
     abstract fun bindDespesaRepository(
         impl: DespesaRepositoryImpl
     ): DespesaRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindTipoDespesaRepository(
+        impl: TipoDespesaRepositoryImpl
+    ): TipoDespesaRepository
 }

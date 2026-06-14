@@ -8,6 +8,7 @@ import androidx.navigation.compose.rememberNavController
 import br.com.edificiopromenade.presentation.apartment.ApartamentoScreen
 import br.com.edificiopromenade.presentation.apartment.detail.ApartamentoDetalheScreen
 import br.com.edificiopromenade.presentation.condominio.CondominioScreen
+import br.com.edificiopromenade.presentation.despesa.DespesaScreen
 import br.com.edificiopromenade.presentation.fechamento.NovoFechamentoScreen
 import br.com.edificiopromenade.presentation.home.HomeScreen
 import br.com.edificiopromenade.presentation.moradores.MoradoresScreen
@@ -28,28 +29,23 @@ fun AppNavHost(
         composable(
             AppDestinations.HOME
         ) {
-
             HomeScreen(
                 onMoradoresClick = {
-
                     navController.navigate(
                         AppDestinations.MORADORES
                     )
                 },
                 onCondominioClick = {
-
                     navController.navigate(
                         AppDestinations.CONDOMINIO
                     )
                 },
                 onApartamentosClick = {
-
                     navController.navigate(
                         AppDestinations.APARTAMENTOS
                     )
                 },
                 onNovoFechamentoClick = {
-
                     navController.navigate(
                         AppDestinations.NOVO_FECHAMENTO
                     )
@@ -98,7 +94,28 @@ fun AppNavHost(
         composable(
             AppDestinations.NOVO_FECHAMENTO
         ) {
-            NovoFechamentoScreen()
+            NovoFechamentoScreen(
+                navController = navController
+            )
+        }
+
+        composable(
+            route = AppDestinations.DESPESAS
+        ) { backStackEntry ->
+
+            val fechamentoId =
+                backStackEntry
+                    .arguments
+                    ?.getString("fechamentoId")
+                    ?.toLongOrNull()
+                    ?: 0L
+
+            DespesaScreen(
+                fechamentoId = fechamentoId,
+                onVoltar = {
+                    navController.popBackStack()
+                }
+            )
         }
     }
 }

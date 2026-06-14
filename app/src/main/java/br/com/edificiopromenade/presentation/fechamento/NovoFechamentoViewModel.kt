@@ -6,6 +6,7 @@ import br.com.edificiopromenade.data.local.entity.FechamentoMensalEntity
 import br.com.edificiopromenade.domain.usecase.fechamento.ConsultarFechamentosUseCase
 import br.com.edificiopromenade.domain.usecase.fechamento.CriarFechamentoMensalUseCase
 import br.com.edificiopromenade.domain.usecase.fechamento.ConsultarFechamentoPorMesAnoUseCase
+import br.com.edificiopromenade.domain.usecase.tipodespesa.PopularTiposDespesaUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,7 +18,8 @@ class NovoFechamentoViewModel @Inject constructor(
 
     private val criarFechamentoMensalUseCase: CriarFechamentoMensalUseCase,
     private val consultarFechamentoPorMesAnoUseCase: ConsultarFechamentoPorMesAnoUseCase,
-    private val consultarFechamentosUseCase: ConsultarFechamentosUseCase
+    private val consultarFechamentosUseCase: ConsultarFechamentosUseCase,
+    private val popularTiposDespesaUseCase: PopularTiposDespesaUseCase
 
 ) : ViewModel() {
 
@@ -29,11 +31,13 @@ class NovoFechamentoViewModel @Inject constructor(
     val uiState = _uiState.asStateFlow()
 
     init {
+        viewModelScope.launch {
+            popularTiposDespesaUseCase()
+        }
         carregarFechamentos()
     }
 
     private fun carregarFechamentos() {
-
         viewModelScope.launch {
 
             consultarFechamentosUseCase()
@@ -44,6 +48,36 @@ class NovoFechamentoViewModel @Inject constructor(
                             fechamentos = lista
                         )
                 }
+        }
+    }
+
+    fun onFundoReservaChanged(
+        valor: String
+    ) {
+        if (
+            valor.matches(
+                Regex("^\\d*([.,]\\d{0,2})?$")
+            )
+        ) {
+            _uiState.value =
+                _uiState.value.copy(
+                    fundoReserva = valor
+                )
+        }
+    }
+
+    fun onDecimoTerceiroChanged(
+        valor: String
+    ) {
+        if (
+            valor.matches(
+                Regex("^\\d*([.,]\\d{0,2})?$")
+            )
+        ) {
+            _uiState.value =
+                _uiState.value.copy(
+                    decimoTerceiroFerias = valor
+                )
         }
     }
 
@@ -59,10 +93,15 @@ class NovoFechamentoViewModel @Inject constructor(
     fun onAnoChanged(
         valor: String
     ) {
-        _uiState.value =
-            _uiState.value.copy(
-                ano = valor
-            )
+        if (
+            valor.length <= 4 &&
+            valor.all { it.isDigit() }
+        ) {
+            _uiState.value =
+                _uiState.value.copy(
+                    ano = valor
+                )
+        }
     }
 
     fun limparMensagem() {
@@ -70,6 +109,25 @@ class NovoFechamentoViewModel @Inject constructor(
         _uiState.value =
             _uiState.value.copy(
                 mensagem = null
+            )
+    }
+
+    fun alterarExpandirMeses(
+        expandido: Boolean
+    ) {
+        _uiState.value =
+            _uiState.value.copy(
+                expandirMeses = expandido
+            )
+    }
+
+    fun selecionarMes(
+        mes: String
+    ) {
+        _uiState.value =
+            _uiState.value.copy(
+                mes = mes,
+                expandirMeses = false
             )
     }
 
@@ -112,7 +170,19 @@ class NovoFechamentoViewModel @Inject constructor(
                     mes = mes,
                     ano = ano,
 
-                    dataCriacao = java.time.LocalDateTime.now()
+                    dataCriacao = java.time.LocalDateTime.now(),
+
+                    valorFundoReserva =
+                        _uiState.value.fundoReserva
+                            .replace(",", ".")
+                            .toDoubleOrNull()
+                            ?: 0.0,
+
+                    valorDecimoTerceiroFerias =
+                        _uiState.value.decimoTerceiroFerias
+                            .replace(",", ".")
+                            .toDoubleOrNull()
+                            ?: 0.0
                 )
             )
 
