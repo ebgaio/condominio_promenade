@@ -190,6 +190,8 @@ class NovoFechamentoViewModel @Inject constructor(
                 _uiState.value.copy(
                     mes = "",
                     ano = "",
+                    fundoReserva = "",
+                    decimoTerceiroFerias = "",
                     mensagem = "Fechamento criado com sucesso"
                 )
         }
