@@ -17,6 +17,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -75,14 +77,46 @@ fun NovoFechamentoScreen(
                         .headlineSmall
             )
 
-            OutlinedTextField(
-                value = state.mes,
-                onValueChange = viewModel::onMesChanged,
+            ExposedDropdownMenuBox(
 
-                label = {
-                    Text("Mês")
+                expanded = state.expandirMeses,
+
+                onExpandedChange = {
+                    viewModel.alterarExpandirMeses(it)
                 }
-            )
+
+            ) {
+
+                OutlinedTextField(
+                    value = state.mes,
+                    onValueChange = {},
+                    readOnly = true,
+                    label = {
+                        Text("Mês")
+                    },
+                    modifier = Modifier
+                        .menuAnchor()
+                        .fillMaxWidth()
+                )
+
+                ExposedDropdownMenu(
+                    expanded = state.expandirMeses,
+                    onDismissRequest = {
+                        viewModel.alterarExpandirMeses(false)
+                    }
+                ) {
+                    state.meses.forEach { mes ->
+                        DropdownMenuItem(
+                            text = {
+                                Text(mes)
+                            },
+                            onClick = {
+                                viewModel.selecionarMes(mes)
+                            }
+                        )
+                    }
+                }
+            }
 
             OutlinedTextField(
                 value = state.ano,
