@@ -10,6 +10,10 @@ interface FechamentoRepository {
     fun findAll():
             Flow<List<FechamentoMensalEntity>>
 
+    suspend fun findById(
+        id: Long
+    ): FechamentoMensalEntity?
+
     suspend fun findByMesAno(
         mes: Int,
         ano: Int

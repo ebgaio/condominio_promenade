@@ -57,4 +57,14 @@ interface FechamentoMensalDao {
     suspend fun findComDemonstrativos(
         fechamentoId: Long
     ): FechamentoComDemonstrativos?
+
+    @Query("""
+        SELECT *
+        FROM fechamentos_mensais
+        WHERE id = :id
+        LIMIT 1
+    """)
+    suspend fun findById(
+        id: Long
+    ): FechamentoMensalEntity?
 }

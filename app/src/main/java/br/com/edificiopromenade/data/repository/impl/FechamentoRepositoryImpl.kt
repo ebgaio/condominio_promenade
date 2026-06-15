@@ -12,6 +12,10 @@ class FechamentoRepositoryImpl @Inject constructor(
     override fun findAll() =
         dao.findAll()
 
+    override suspend fun findById(
+        id: Long
+    ) = dao.findById(id)
+
     override suspend fun findByMesAno(
         mes: Int,
         ano: Int
