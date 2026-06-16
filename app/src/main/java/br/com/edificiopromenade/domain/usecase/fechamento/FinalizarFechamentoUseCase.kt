@@ -1,12 +1,13 @@
 package br.com.edificiopromenade.domain.usecase.fechamento
 
 import br.com.edificiopromenade.domain.repository.FechamentoRepository
-import javax.inject.Inject
+import br.com.edificiopromenade.domain.usecase.demonstrativo.GerarDemonstrativosUseCase
+import jakarta.inject.Inject
 
 class FinalizarFechamentoUseCase @Inject constructor(
     private val fechamentoRepository: FechamentoRepository,
-    private val calcularRateioMensalUseCase: CalcularRateioMensalUseCase,
     private val gerarDemonstrativosUseCase: GerarDemonstrativosUseCase
+
 ) {
     suspend operator fun invoke(
         fechamentoId: Long
@@ -16,13 +17,8 @@ class FinalizarFechamentoUseCase @Inject constructor(
             )
                 ?: return
 
-        val demonstrativos = calcularRateioMensalUseCase(
-            fechamentoId
-        )
-
         gerarDemonstrativosUseCase(
-            fechamentoId = fechamentoId,
-            demonstrativos = demonstrativos
+            fechamentoId = fechamentoId
         )
 
         fechamentoRepository.update(

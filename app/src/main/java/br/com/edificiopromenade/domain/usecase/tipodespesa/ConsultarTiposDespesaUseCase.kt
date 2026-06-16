@@ -1,7 +1,7 @@
 package br.com.edificiopromenade.domain.usecase.tipodespesa
 
 import br.com.edificiopromenade.domain.repository.TipoDespesaRepository
-import javax.inject.Inject
+import jakarta.inject.Inject
 
 class ConsultarTiposDespesaUseCase @Inject constructor(
     private val repository: TipoDespesaRepository

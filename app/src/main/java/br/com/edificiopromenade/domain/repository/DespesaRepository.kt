@@ -21,7 +21,7 @@ interface DespesaRepository {
         despesa: DespesaEntity
     )
 
-    suspend fun findByFechamentoList(
+    suspend fun findListByFechamento(
         fechamentoId: Long
     ): List<DespesaEntity>
 }

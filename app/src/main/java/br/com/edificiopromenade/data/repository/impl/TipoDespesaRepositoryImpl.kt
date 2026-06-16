@@ -3,7 +3,7 @@ package br.com.edificiopromenade.data.repository.impl
 import br.com.edificiopromenade.data.local.dao.TipoDespesaDao
 import br.com.edificiopromenade.data.local.entity.TipoDespesaEntity
 import br.com.edificiopromenade.domain.repository.TipoDespesaRepository
-import javax.inject.Inject
+import jakarta.inject.Inject
 
 class TipoDespesaRepositoryImpl @Inject constructor(
     private val dao: TipoDespesaDao

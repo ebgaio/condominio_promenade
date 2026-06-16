@@ -25,7 +25,7 @@ class DespesaRepositoryImpl @Inject constructor(
         despesa: DespesaEntity
     ) = dao.delete(despesa)
 
-    override suspend fun findByFechamentoList(
+    override suspend fun findListByFechamento(
         fechamentoId: Long
-    ) = dao.findByFechamentoList(fechamentoId)
+    ) = dao.findListByFechamento(fechamentoId)
 }

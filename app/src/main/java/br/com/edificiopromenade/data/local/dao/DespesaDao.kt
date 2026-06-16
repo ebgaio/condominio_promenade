@@ -42,7 +42,7 @@ interface DespesaDao {
         WHERE fechamentoId = :fechamentoId
         ORDER BY descricao
     """)
-    suspend fun findByFechamentoList(
+    suspend fun findListByFechamento(
         fechamentoId: Long
     ): List<DespesaEntity>
 }

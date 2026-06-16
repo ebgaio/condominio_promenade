@@ -24,7 +24,7 @@ class CalcularRateioMensalUseCase @Inject constructor(
             ?: return emptyList()
 
         val despesas = despesaRepository
-            .findByFechamentoList(
+            .findListByFechamento(
                 fechamentoId
             )
 
@@ -43,7 +43,7 @@ class CalcularRateioMensalUseCase @Inject constructor(
 
         val despesasRateio = despesas
             .filterNot {
-                it.descricao != "COPASA"
+                it.descricao == "COPASA"
             }
 
         val totalRateio =
@@ -66,8 +66,7 @@ class CalcularRateioMensalUseCase @Inject constructor(
                         apartamento.id
                     )
 
-            val nomeMorador =
-                morador?.nome ?: "Sem Morador"
+            val nomeMorador = morador?.nome ?: "Sem Morador"
 
             val valorCopasa = valorCopasaTotal * apartamento.percentualCopasa / 100.0
 
