@@ -15,15 +15,11 @@ class DemonstrativoRepositoryImpl @Inject constructor(
 
     override suspend fun salvarTodos(
         demonstrativos: List<DemonstrativoApartamentoEntity>
-    ) {
-        dao.insertAll(demonstrativos)
-    }
+    ) = dao.insertAll(demonstrativos)
 
     override suspend fun excluirPorFechamento(
         fechamentoId: Long
-    ) = dao.deletePorFechamento(
-        fechamentoId
-    )
+    ) = dao.deletePorFechamento(fechamentoId)
 
     override suspend fun consultarPorFechamento(
         fechamentoId: Long

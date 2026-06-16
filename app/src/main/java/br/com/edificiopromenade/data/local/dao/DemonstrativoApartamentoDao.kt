@@ -16,7 +16,7 @@ interface DemonstrativoApartamentoDao {
     @Insert
     suspend fun insertAll(
         demonstrativos: List<DemonstrativoApartamentoEntity>
-    ): Long
+    ): List<Long>
 
     @Query("""
         DELETE

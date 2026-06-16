@@ -10,7 +10,7 @@ interface DemonstrativoRepository {
 
     suspend fun salvarTodos(
         demonstrativos: List<DemonstrativoApartamentoEntity>
-    )
+    ): List<Long>
 
     suspend fun excluirPorFechamento(
         fechamentoId: Long
