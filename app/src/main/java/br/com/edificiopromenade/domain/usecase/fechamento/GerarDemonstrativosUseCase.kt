@@ -13,7 +13,7 @@ class GerarDemonstrativosUseCase @Inject constructor(
         demonstrativos: List<DemonstrativoCalculado>
     ) {
         demonstrativoRepository
-            .deletePorFechamento(
+            .excluirPorFechamento(
                 fechamentoId
             )
 

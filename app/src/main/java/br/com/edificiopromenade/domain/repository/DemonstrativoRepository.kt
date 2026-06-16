@@ -8,7 +8,15 @@ interface DemonstrativoRepository {
         demonstrativo: DemonstrativoApartamentoEntity
     ): Long
 
-    suspend fun deletePorFechamento(
+    suspend fun salvarTodos(
+        demonstrativos: List<DemonstrativoApartamentoEntity>
+    )
+
+    suspend fun excluirPorFechamento(
         fechamentoId: Long
     )
+
+    suspend fun consultarPorFechamento(
+        fechamentoId: Long
+    ): List<DemonstrativoApartamentoEntity>
 }

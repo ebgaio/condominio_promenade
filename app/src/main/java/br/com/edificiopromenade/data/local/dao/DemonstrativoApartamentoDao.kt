@@ -13,6 +13,11 @@ interface DemonstrativoApartamentoDao {
         demonstrativo: DemonstrativoApartamentoEntity
     ): Long
 
+    @Insert
+    suspend fun insertAll(
+        demonstrativos: List<DemonstrativoApartamentoEntity>
+    ): Long
+
     @Query("""
         DELETE
         FROM demonstrativos_apartamento
@@ -21,4 +26,14 @@ interface DemonstrativoApartamentoDao {
     suspend fun deletePorFechamento(
         fechamentoId: Long
     )
+
+    @Query("""
+        SELECT *
+        FROM demonstrativos_apartamento
+        WHERE fechamentoId = :fechamentoId
+        ORDER BY numeroApartamentoHistorico
+    """)
+    suspend fun consultarPorFechamento(
+        fechamentoId: Long
+    ): List<DemonstrativoApartamentoEntity>
 }
