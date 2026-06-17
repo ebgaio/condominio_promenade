@@ -38,6 +38,7 @@ import br.com.edificiopromenade.presentation.util.formatarMoeda
 fun DespesaScreen(
     fechamentoId: Long,
     onVoltar: () -> Unit,
+    onAbrirDemonstrativos: (Long) -> Unit,
     viewModel: DespesaViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
@@ -127,17 +128,6 @@ fun DespesaScreen(
                 style = MaterialTheme.typography
                         .headlineSmall
             )
-
-//            OutlinedTextField(
-//                value = state.descricao,
-//                onValueChange = viewModel::onDescricaoChanged,
-//
-//                label = {
-//                    Text("Descrição")
-//                },
-//
-//                modifier = Modifier.fillMaxWidth()
-//            )
 
             ExposedDropdownMenuBox(
                 expanded = state.expandirTipos,
@@ -269,6 +259,20 @@ fun DespesaScreen(
                 horizontalArrangement =
                     Arrangement.spacedBy(8.dp)
             ) {
+                Button(
+                    onClick = {
+                        viewModel.finalizarFechamento {
+                            onAbrirDemonstrativos(
+                                fechamentoId
+                            )
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                {
+                    Text("Finalizar Fechamento")
+                }
+
                 Button(
                     onClick = onVoltar
                 ) {

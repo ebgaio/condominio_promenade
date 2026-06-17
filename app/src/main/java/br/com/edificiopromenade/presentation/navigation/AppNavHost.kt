@@ -8,6 +8,7 @@ import androidx.navigation.compose.rememberNavController
 import br.com.edificiopromenade.presentation.apartment.ApartamentoScreen
 import br.com.edificiopromenade.presentation.apartment.detail.ApartamentoDetalheScreen
 import br.com.edificiopromenade.presentation.condominio.CondominioScreen
+import br.com.edificiopromenade.presentation.demonstrativo.DemonstrativosScreen
 import br.com.edificiopromenade.presentation.despesa.DespesaScreen
 import br.com.edificiopromenade.presentation.fechamento.NovoFechamentoScreen
 import br.com.edificiopromenade.presentation.home.HomeScreen
@@ -111,6 +112,31 @@ fun AppNavHost(
                     ?: 0L
 
             DespesaScreen(
+                fechamentoId = fechamentoId,
+
+                onVoltar = {
+                    navController.popBackStack()
+                },
+                onAbrirDemonstrativos = { id ->
+
+                    navController.navigate(
+                        AppDestinations.demonstrativosRoute(id)
+                    )
+                }
+            )
+        }
+
+        composable(
+            route = AppDestinations.DEMONSTRATIVOS
+        ) { backStackEntry ->
+
+            val fechamentoId = backStackEntry
+                    .arguments
+                    ?.getString("fechamentoId")
+                    ?.toLongOrNull()
+                    ?: 0L
+
+            DemonstrativosScreen(
                 fechamentoId = fechamentoId,
                 onVoltar = {
                     navController.popBackStack()

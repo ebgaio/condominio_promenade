@@ -24,7 +24,7 @@ class PopularTiposDespesaUseCase @Inject constructor(
             "Encargos Sociais",
             "Honorários Síndico",
             "Tributos Federais",
-            "Copasa"
+            "COPASA"
 
         ).forEach { descricao ->
             cadastrarTipoDespesaUseCase(

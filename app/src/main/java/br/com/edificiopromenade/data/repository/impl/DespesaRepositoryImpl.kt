@@ -28,4 +28,14 @@ class DespesaRepositoryImpl @Inject constructor(
     override suspend fun findListByFechamento(
         fechamentoId: Long
     ) = dao.findListByFechamento(fechamentoId)
+
+    override suspend fun existeDespesa(
+        fechamentoId: Long,
+        descricao: String
+    ): Boolean {
+        return dao.countByDescricao(
+            fechamentoId,
+            descricao
+        ) > 0
+    }
 }

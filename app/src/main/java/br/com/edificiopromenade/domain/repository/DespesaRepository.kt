@@ -24,4 +24,9 @@ interface DespesaRepository {
     suspend fun findListByFechamento(
         fechamentoId: Long
     ): List<DespesaEntity>
+
+    suspend fun existeDespesa(
+        fechamentoId: Long,
+        descricao: String
+    ): Boolean
 }

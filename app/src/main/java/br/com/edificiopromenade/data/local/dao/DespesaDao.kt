@@ -45,4 +45,15 @@ interface DespesaDao {
     suspend fun findListByFechamento(
         fechamentoId: Long
     ): List<DespesaEntity>
+
+    @Query("""
+        SELECT COUNT(*)
+        FROM despesas
+        WHERE fechamentoId = :fechamentoId
+        AND descricao = :descricao
+    """)
+    suspend fun countByDescricao(
+        fechamentoId: Long,
+        descricao: String
+    ): Int
 }
