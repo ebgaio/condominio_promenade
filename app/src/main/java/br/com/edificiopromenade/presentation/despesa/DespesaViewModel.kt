@@ -10,6 +10,7 @@ import br.com.edificiopromenade.domain.usecase.despesa.ExcluirDespesaUseCase
 import br.com.edificiopromenade.domain.usecase.despesa.VerificarDespesaExistenteUseCase
 import br.com.edificiopromenade.domain.usecase.fechamento.FinalizarFechamentoUseCase
 import br.com.edificiopromenade.domain.usecase.tipodespesa.ConsultarTiposDespesaUseCase
+import br.com.edificiopromenade.presentation.common.message.UiMessage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -96,7 +97,9 @@ class DespesaViewModel @Inject constructor(
             ) {
                 _uiState.value =
                     _uiState.value.copy(
-                        mensagem = "A despesa '$descricao' já foi cadastrada."
+                        mensagem = UiMessage.Error(
+                        "A despesa '$descricao' já foi cadastrada."
+                        )
                     )
                 return@launch
             }
@@ -111,11 +114,16 @@ class DespesaViewModel @Inject constructor(
                 )
             )
 
+            println("SUCESSO CHEGOU AQUI")
+
             _uiState.value =
                 _uiState.value.copy(
                     valor = "",
-                    mensagem = "Despesa adicionada"
+                    mensagem = UiMessage.Success(
+                     "Despesa adicionada"
+                    )
                 )
+            return@launch
         }
     }
 
@@ -149,7 +157,9 @@ class DespesaViewModel @Inject constructor(
             _uiState.value =
                 _uiState.value.copy(
                     despesaSelecionadaParaExclusao = null,
-                    mensagem = "Despesa excluída"
+                    mensagem = UiMessage.Success(
+                     "Despesa excluída"
+                    )
                 )
         }
     }

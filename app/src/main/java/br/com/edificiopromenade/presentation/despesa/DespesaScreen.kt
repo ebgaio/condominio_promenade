@@ -1,6 +1,7 @@
 package br.com.edificiopromenade.presentation.despesa
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -31,6 +32,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import br.com.edificiopromenade.presentation.common.message.ErrorDialog
+import br.com.edificiopromenade.presentation.common.message.InlineMessageBanner
+import br.com.edificiopromenade.presentation.common.message.UiMessage
 import br.com.edificiopromenade.presentation.util.formatarMoeda
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -95,188 +99,210 @@ fun DespesaScreen(
         )
     }
 
-    LaunchedEffect(state.mensagem) {
-        state.mensagem?.let {
-            snackbarHostState.showSnackbar(it)
-            viewModel.limparMensagem()
-        }
-    }
-
     val total =
         state.despesas.sumOf {
             it.valor
         }
 
-    Scaffold(
-        snackbarHost = {
-            SnackbarHost(
-                hostState = snackbarHostState
-            )
-        }
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(16.dp),
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
 
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-
-            Text(
-                text = "Despesas do Fechamento",
-                style = MaterialTheme.typography
-                        .headlineSmall
-            )
-
-            ExposedDropdownMenuBox(
-                expanded = state.expandirTipos,
-
-                onExpandedChange = {
-                    viewModel.alterarExpandido(it)
-                }
-            ) {
-                OutlinedTextField(
-
-                    value = state.tipoSelecionado?.descricao ?: "",
-                    onValueChange = {},
-                    readOnly = true,
-
-                    label = {
-                        Text("Tipo de Despesa")
-                    },
-
-                    modifier = Modifier
-                            .menuAnchor()
-                            .fillMaxWidth()
+        Scaffold(
+            snackbarHost = {
+                SnackbarHost(
+                    hostState = snackbarHostState
                 )
-                ExposedDropdownMenu(
+            }
+        ) { padding ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .padding(16.dp),
+
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+
+                Text(
+                    text = "Despesas do Fechamento",
+                    style = MaterialTheme.typography.headlineSmall
+                )
+
+                state.mensagem?.let { mensagem ->
+
+                    when (mensagem) {
+                        is UiMessage.Success -> {
+
+                            InlineMessageBanner(
+                                message = mensagem.text,
+                                onDismiss = {
+                                    viewModel.limparMensagem()
+                                }
+                            )
+                        }
+
+                        is UiMessage.Error -> {
+
+                            ErrorDialog(
+                                message = mensagem.text,
+                                onDismiss = {
+                                    viewModel.limparMensagem()
+                                }
+                            )
+                        }
+                    }
+                }
+
+                ExposedDropdownMenuBox(
                     expanded = state.expandirTipos,
 
-                    onDismissRequest = {
-                        viewModel.alterarExpandido(false)
+                    onExpandedChange = {
+                        viewModel.alterarExpandido(it)
                     }
                 ) {
-                    state.tiposDespesa.forEach { tipo ->
+                    OutlinedTextField(
 
-                        DropdownMenuItem(
-                            text = {
-                                Text(tipo.descricao)
-                            },
+                        value = state.tipoSelecionado?.descricao ?: "",
+                        onValueChange = {},
+                        readOnly = true,
 
-                            onClick = {
-                                viewModel.selecionarTipo(tipo)
-                            }
-                        )
-                    }
-                }
-            }
+                        label = {
+                            Text("Tipo de Despesa")
+                        },
 
-            OutlinedTextField(
-                value = state.valor,
-                onValueChange = viewModel::onValorChanged,
-
-                label = {
-                    Text("Valor")
-                },
-
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Button(
-                onClick = {
-                    viewModel.salvar()
-                }
-            ) {
-                Text("Adicionar")
-            }
-
-            HorizontalDivider()
-
-            Text(
-                text = "Despesas",
-                style = MaterialTheme.typography
-                        .titleMedium
-            )
-
-            LazyColumn(
-                modifier = Modifier.weight(1f)
-            ) {
-                items(
-                    items = state.despesas,
-                    key = { it.id }
-                ) { despesa ->
-                    Card(
                         modifier = Modifier
+                            .menuAnchor()
                             .fillMaxWidth()
-                            .padding(vertical = 4.dp)
+                    )
+                    ExposedDropdownMenu(
+                        expanded = state.expandirTipos,
+
+                        onDismissRequest = {
+                            viewModel.alterarExpandido(false)
+                        }
                     ) {
-                        Column(
-                            modifier = Modifier.padding(12.dp)
-                        ) {
+                        state.tiposDespesa.forEach { tipo ->
 
-                            Text(
-                                text = despesa.descricao
-                            )
+                            DropdownMenuItem(
+                                text = {
+                                    Text(tipo.descricao)
+                                },
 
-                            Text(
-                                text = formatarMoeda(despesa.valor)
-                            )
-
-                            Spacer(
-                                modifier = Modifier.height(8.dp)
-                            )
-
-                            Button(
                                 onClick = {
-                                    viewModel.solicitarExclusao(
-                                        despesa
-                                    )
+                                    viewModel.selecionarTipo(tipo)
                                 }
-                            ) {
-                                Text("Excluir")
-                            }
+                            )
                         }
                     }
                 }
-            }
 
-            HorizontalDivider()
+                OutlinedTextField(
+                    value = state.valor,
+                    onValueChange = viewModel::onValorChanged,
 
-            Text(
-                text = "Total",
-                style = MaterialTheme.typography
-                        .titleMedium
-            )
+                    label = {
+                        Text("Valor")
+                    },
 
-            Text(
-                text = formatarMoeda(total),
-                style = MaterialTheme.typography
-                        .titleLarge
-            )
+                    modifier = Modifier.fillMaxWidth()
+                )
 
-            Row(
-                horizontalArrangement =
-                    Arrangement.spacedBy(8.dp)
-            ) {
                 Button(
                     onClick = {
-                        viewModel.finalizarFechamento {
-                            onAbrirDemonstrativos(
-                                fechamentoId
-                            )
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                )
-                {
-                    Text("Finalizar Fechamento")
+                        viewModel.salvar()
+                    }
+                ) {
+                    Text("Adicionar")
                 }
 
-                Button(
-                    onClick = onVoltar
+                HorizontalDivider()
+
+                Text(
+                    text = "Despesas",
+                    style = MaterialTheme.typography
+                        .titleMedium
+                )
+
+                LazyColumn(
+                    modifier = Modifier.weight(1f)
                 ) {
-                    Text("Voltar")
+                    items(
+                        items = state.despesas,
+                        key = { it.id }
+                    ) { despesa ->
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp)
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(12.dp)
+                            ) {
+
+                                Text(
+                                    text = despesa.descricao
+                                )
+
+                                Text(
+                                    text = formatarMoeda(despesa.valor)
+                                )
+
+                                Spacer(
+                                    modifier = Modifier.height(8.dp)
+                                )
+
+                                Button(
+                                    onClick = {
+                                        viewModel.solicitarExclusao(
+                                            despesa
+                                        )
+                                    }
+                                ) {
+                                    Text("Excluir")
+                                }
+                            }
+                        }
+                    }
+                }
+
+                HorizontalDivider()
+
+                Text(
+                    text = "Total",
+                    style = MaterialTheme.typography
+                        .titleMedium
+                )
+
+                Text(
+                    text = formatarMoeda(total),
+                    style = MaterialTheme.typography
+                        .titleLarge
+                )
+
+                Row(
+                    horizontalArrangement =
+                        Arrangement.spacedBy(8.dp)
+                ) {
+                    Button(
+                        onClick = {
+                            viewModel.finalizarFechamento {
+                                onAbrirDemonstrativos(
+                                    fechamentoId
+                                )
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                    {
+                        Text("Finalizar Fechamento")
+                    }
+
+                    Button(
+                        onClick = onVoltar
+                    ) {
+                        Text("Voltar")
+                    }
                 }
             }
         }

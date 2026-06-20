@@ -2,6 +2,7 @@ package br.com.edificiopromenade.presentation.despesa
 
 import br.com.edificiopromenade.data.local.entity.DespesaEntity
 import br.com.edificiopromenade.data.local.entity.TipoDespesaEntity
+import br.com.edificiopromenade.presentation.common.message.UiMessage
 
 data class DespesaUiState(
 
@@ -15,7 +16,7 @@ data class DespesaUiState(
 
     val expandirTipos: Boolean = false,
 
-    val mensagem: String? = null,
+    val mensagem: UiMessage? = null,
 
     val despesaSelecionadaParaExclusao: DespesaEntity? = null
 )
