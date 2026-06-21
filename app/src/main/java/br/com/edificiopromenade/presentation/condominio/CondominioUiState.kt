@@ -1,5 +1,7 @@
 package br.com.edificiopromenade.presentation.condominio
 
+import br.com.edificiopromenade.presentation.common.message.UiMessage
+
 data class CondominioUiState(
 
     val nome: String = "",
@@ -18,5 +20,5 @@ data class CondominioUiState(
 
     val mensagemErro: String? = null,
 
-    val mensagem: String? = null
+    val mensagem: UiMessage? = null
 )

@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import br.com.edificiopromenade.presentation.common.message.InlineMessageBanner
 import br.com.edificiopromenade.presentation.util.CnpjVisualTransformation
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -60,7 +61,9 @@ fun CondominioScreen(
             OutlinedTextField(
                 value = state.cnpj,
                 onValueChange = {
-                    viewModel.onCnpjChanged(it)
+                    viewModel.onCnpjChanged(
+                        it.filter(Char::isDigit)
+                    )
                 },
                 label = {
                     Text("CNPJ")
@@ -120,14 +123,21 @@ fun CondominioScreen(
                 Text("Salvar")
             }
 
-            state.mensagem?.let {
+            state.mensagem?.let { mensagem ->
 
                 Spacer(
                     modifier = Modifier.height(8.dp)
                 )
 
-                Text(
-                    text = it
+//                Text(
+//                    text = it
+//                )
+
+                InlineMessageBanner (
+                    message = mensagem.text,
+                    onDismiss = {
+                        viewModel.limparMensagem()
+                    }
                 )
             }
         }

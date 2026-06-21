@@ -2,11 +2,13 @@ package br.com.edificiopromenade.presentation.common.message
 
 sealed class UiMessage {
 
+    abstract val text: String
+
     data class Success(
-        val text: String
+        override val text: String
     ) : UiMessage()
 
     data class Error(
-        val text: String
+        override val text: String
     ) : UiMessage()
 }

@@ -118,8 +118,6 @@ class DespesaViewModel @Inject constructor(
                 )
             )
 
-            println("SUCESSO CHEGOU AQUI")
-
             _uiState.value =
                 _uiState.value.copy(
                     valor = "",

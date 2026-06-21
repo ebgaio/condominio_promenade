@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import br.com.edificiopromenade.data.local.entity.CondominioEntity
 import br.com.edificiopromenade.domain.usecase.condominio.CadastrarCondominioUseCase
 import br.com.edificiopromenade.domain.usecase.condominio.ConsultarCondominioAtivoUseCase
+import br.com.edificiopromenade.presentation.common.message.UiMessage
 import br.com.edificiopromenade.presentation.util.CnpjFormatter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -99,12 +100,9 @@ class CondominioViewModel @Inject constructor(
 
             _uiState.value =
                 _uiState.value.copy(
-                    salvoComSucesso = true
-                )
-
-            _uiState.value =
-                _uiState.value.copy(
-                    mensagem = "Condomínio salvo com sucesso.",
+                    mensagem = UiMessage.Success(
+                        "Condomínio salvo com sucesso."
+                    ),
                     salvoComSucesso = true
                 )
         }
@@ -117,10 +115,19 @@ class CondominioViewModel @Inject constructor(
         if (somenteNumeros.length != 14) {
             _uiState.value =
                 _uiState.value.copy(
-                    mensagem = "CNPJ inválido"
+                    mensagem = UiMessage.Error(
+                        "CNPJ inválido."
+                    ),
                 )
             return
         }
+    }
+
+    fun limparMensagem() {
+        _uiState.value =
+            _uiState.value.copy(
+                mensagem = null
+            )
     }
 
     private fun carregar() {
