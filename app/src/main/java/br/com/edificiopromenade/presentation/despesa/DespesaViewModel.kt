@@ -11,6 +11,7 @@ import br.com.edificiopromenade.domain.usecase.despesa.VerificarDespesaExistente
 import br.com.edificiopromenade.domain.usecase.fechamento.FinalizarFechamentoUseCase
 import br.com.edificiopromenade.domain.usecase.tipodespesa.ConsultarTiposDespesaUseCase
 import br.com.edificiopromenade.presentation.common.message.UiMessage
+import br.com.edificiopromenade.presentation.util.MoneyFormatter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -73,13 +74,16 @@ class DespesaViewModel @Inject constructor(
     ) {
         _uiState.value =
             _uiState.value.copy(
-                valor = valor
+                valor = MoneyFormatter.format(
+                    valor
+                )
             )
     }
 
     fun salvar() {
         viewModelScope.launch {
             val valorDespesa = _uiState.value.valor
+                .replace(".", "")
                 .replace(",", ".")
                 .toDoubleOrNull()
                 ?: return@launch

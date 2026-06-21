@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import br.com.edificiopromenade.data.local.entity.CondominioEntity
 import br.com.edificiopromenade.domain.usecase.condominio.CadastrarCondominioUseCase
 import br.com.edificiopromenade.domain.usecase.condominio.ConsultarCondominioAtivoUseCase
+import br.com.edificiopromenade.presentation.util.CnpjFormatter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -25,8 +26,7 @@ class CondominioViewModel @Inject constructor(
             CondominioUiState()
         )
 
-    val uiState: StateFlow<CondominioUiState> =
-        _uiState.asStateFlow()
+    val uiState: StateFlow<CondominioUiState> = _uiState.asStateFlow()
 
     init {
         carregar()
@@ -42,11 +42,14 @@ class CondominioViewModel @Inject constructor(
     }
 
     fun onCnpjChanged(
-        valor: String
+        cnpj: String
     ) {
         _uiState.value =
             _uiState.value.copy(
-                cnpj = valor
+                cnpj = cnpj.filter {
+                    it.isDigit()
+                }
+                .take(14)
             )
     }
 
@@ -84,19 +87,12 @@ class CondominioViewModel @Inject constructor(
             val novoId = cadastrarCondominioUseCase(
 
                 CondominioEntity(
-
                     nome = _uiState.value.nome,
-
                     cnpj = _uiState.value.cnpj,
-
                     endereco = _uiState.value.endereco,
-
                     nomeAdministradora = _uiState.value.nomeAdministradora,
-
                     emailAdministradora = _uiState.value.emailAdministradora,
-
                     ativo = true,
-
                     dataCriacao = LocalDateTime.now()
                 )
             )
@@ -111,6 +107,19 @@ class CondominioViewModel @Inject constructor(
                     mensagem = "Condomínio salvo com sucesso.",
                     salvoComSucesso = true
                 )
+        }
+
+        val somenteNumeros =
+            _uiState.value.cnpj.filter {
+                it.isDigit()
+            }
+
+        if (somenteNumeros.length != 14) {
+            _uiState.value =
+                _uiState.value.copy(
+                    mensagem = "CNPJ inválido"
+                )
+            return
         }
     }
 

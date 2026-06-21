@@ -11,6 +11,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun InlineMessageBanner(
@@ -20,7 +21,7 @@ fun InlineMessageBanner(
 
     LaunchedEffect(message) {
 
-        delay(3000)
+        delay(3000.milliseconds)
 
         onDismiss()
     }

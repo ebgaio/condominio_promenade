@@ -7,6 +7,7 @@ import br.com.edificiopromenade.domain.usecase.fechamento.ConsultarFechamentosUs
 import br.com.edificiopromenade.domain.usecase.fechamento.CriarFechamentoMensalUseCase
 import br.com.edificiopromenade.domain.usecase.fechamento.ConsultarFechamentoPorMesAnoUseCase
 import br.com.edificiopromenade.domain.usecase.tipodespesa.PopularTiposDespesaUseCase
+import br.com.edificiopromenade.presentation.util.MoneyFormatter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -61,7 +62,7 @@ class NovoFechamentoViewModel @Inject constructor(
         ) {
             _uiState.value =
                 _uiState.value.copy(
-                    fundoReserva = valor
+                    fundoReserva = MoneyFormatter.format(valor)
                 )
         }
     }
@@ -76,7 +77,7 @@ class NovoFechamentoViewModel @Inject constructor(
         ) {
             _uiState.value =
                 _uiState.value.copy(
-                    decimoTerceiroFerias = valor
+                    decimoTerceiroFerias = MoneyFormatter.format(valor)
                 )
         }
     }
@@ -174,12 +175,14 @@ class NovoFechamentoViewModel @Inject constructor(
 
                     valorFundoReserva =
                         _uiState.value.fundoReserva
+                            .replace(".", "")
                             .replace(",", ".")
                             .toDoubleOrNull()
                             ?: 0.0,
 
                     valorDecimoTerceiroFerias =
                         _uiState.value.decimoTerceiroFerias
+                            .replace(".", "")
                             .replace(",", ".")
                             .toDoubleOrNull()
                             ?: 0.0

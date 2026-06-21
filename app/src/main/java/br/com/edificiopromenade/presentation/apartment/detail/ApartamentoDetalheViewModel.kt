@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import br.com.edificiopromenade.domain.usecase.apartamento.AlterarApartamentoUseCase
 import br.com.edificiopromenade.domain.usecase.apartamento.ConsultarApartamentoDetalhadoUseCase
 import br.com.edificiopromenade.domain.usecase.apartamento.InativarApartamentoUseCase
+import br.com.edificiopromenade.presentation.util.MoneyFormatter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -68,7 +69,10 @@ class ApartamentoDetalheViewModel @Inject constructor(
     ) {
         _uiState.value =
             _uiState.value.copy(
-                percentualCopasa = valor
+                percentualCopasa = MoneyFormatter
+                    .format(
+                    valor
+                )
             )
     }
 
@@ -91,6 +95,7 @@ class ApartamentoDetalheViewModel @Inject constructor(
                     percentualCopasa =
                         _uiState.value
                             .percentualCopasa
+                            .replace(".", "")
                             .replace(",", ".")
                             .toDoubleOrNull()
                             ?: 0.0

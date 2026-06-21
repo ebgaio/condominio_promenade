@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -25,6 +26,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import br.com.edificiopromenade.presentation.util.formatarData
@@ -240,7 +242,10 @@ fun ApartamentoDetalheScreen(
                                     onValueChange = viewModel::onNumeroChanged,
                                     label = {
                                         Text("Número")
-                                    }
+                                    },
+                                    keyboardOptions = KeyboardOptions(
+                                        keyboardType = KeyboardType.Number
+                                    )
                                 )
 
                                 Spacer(
@@ -253,7 +258,10 @@ fun ApartamentoDetalheScreen(
                                     onValueChange = viewModel::onFracaoChanged,
                                     label = {
                                         Text("Percentual COPASA")
-                                    }
+                                    },
+                                    keyboardOptions = KeyboardOptions(
+                                        keyboardType = KeyboardType.Decimal
+                                    )
                                 )
 
                                 Spacer(

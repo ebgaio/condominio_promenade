@@ -1,13 +1,27 @@
 package br.com.edificiopromenade.presentation.condominio
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import br.com.edificiopromenade.presentation.util.CnpjVisualTransformation
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -17,49 +31,57 @@ fun CondominioScreen(
 
     val state by viewModel.uiState.collectAsState()
 
-    Scaffold { it ->
-
+    Scaffold { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(it)
+                .padding(padding)
                 .padding(16.dp),
-        ) {
 
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
             Text(
                 text = "Cadastro do Condomínio",
-                style =
-                    MaterialTheme.typography.headlineSmall
+                style = MaterialTheme.typography.headlineSmall
             )
 
             OutlinedTextField(
                 value = state.nome,
-                onValueChange =
-                    viewModel::onNomeChanged,
+                onValueChange = viewModel::onNomeChanged,
                 label = {
                     Text("Nome")
-                }
+                },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Text
+                ),
+                modifier = Modifier.fillMaxWidth()
             )
 
             OutlinedTextField(
                 value = state.cnpj,
-                onValueChange =
-                    viewModel::onCnpjChanged,
+                onValueChange = {
+                    viewModel.onCnpjChanged(it)
+                },
                 label = {
                     Text("CNPJ")
                 },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number
-                )
+                ),
+                visualTransformation = CnpjVisualTransformation(),
+                modifier = Modifier.fillMaxWidth()
             )
 
             OutlinedTextField(
                 value = state.endereco,
-                onValueChange =
-                    viewModel::onEnderecoChanged,
+                onValueChange = viewModel::onEnderecoChanged,
                 label = {
                     Text("Endereço")
-                }
+                },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Text
+                ),
+                modifier = Modifier.fillMaxWidth()
             )
 
             OutlinedTextField(
@@ -69,7 +91,11 @@ fun CondominioScreen(
                     viewModel::onNomeAdministradoraChanged,
                 label = {
                     Text("Administradora")
-                }
+                },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Text
+                ),
+                modifier = Modifier.fillMaxWidth()
             )
 
             OutlinedTextField(
@@ -82,7 +108,8 @@ fun CondominioScreen(
                 },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Email
-                )
+                ),
+                modifier = Modifier.fillMaxWidth()
             )
 
             Button(
