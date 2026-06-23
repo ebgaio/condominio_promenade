@@ -6,11 +6,9 @@ import jakarta.inject.Inject
 class InativarApartamentoUseCase @Inject constructor(
     private val repository: ApartamentoRepository
 ) {
-
     suspend operator fun invoke(
         id: Long
     ) {
-
         repository.inativar(id)
     }
 }

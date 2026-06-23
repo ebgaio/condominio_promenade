@@ -6,15 +6,14 @@ import br.com.edificiopromenade.data.local.entity.CondominioEntity
 import br.com.edificiopromenade.domain.usecase.condominio.CadastrarCondominioUseCase
 import br.com.edificiopromenade.domain.usecase.condominio.ConsultarCondominioAtivoUseCase
 import br.com.edificiopromenade.presentation.common.message.UiMessage
-import br.com.edificiopromenade.presentation.util.CnpjFormatter
 import dagger.hilt.android.lifecycle.HiltViewModel
+import jakarta.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
-import jakarta.inject.Inject
 
 @HiltViewModel
 class CondominioViewModel @Inject constructor(
@@ -136,20 +135,13 @@ class CondominioViewModel @Inject constructor(
 
             val condominio = consultarCondominioAtivoUseCase()
                 .collectLatest { condominio ->
-
                     condominio?.let {
-
                         _uiState.value =
                             _uiState.value.copy(
-
                                 nome = it.nome,
-
                                 cnpj = it.cnpj ?: "",
-
                                 endereco = it.endereco ?: "",
-
                                 nomeAdministradora = it.nomeAdministradora ?: "",
-
                                 emailAdministradora = it.emailAdministradora ?: ""
                             )
                     }

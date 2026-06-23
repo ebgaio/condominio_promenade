@@ -6,7 +6,6 @@ import jakarta.inject.Inject
 class ConsultarApartamentoDetalhadoUseCase @Inject constructor(
     private val repository: ApartamentoRepository
 ) {
-
     suspend operator fun invoke(
         id: Long
     ) = repository.findDetalhado(id)

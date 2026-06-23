@@ -18,7 +18,5 @@ data class CondominioUiState(
 
     val salvoComSucesso: Boolean = false,
 
-    val mensagemErro: String? = null,
-
     val mensagem: UiMessage? = null
 )
