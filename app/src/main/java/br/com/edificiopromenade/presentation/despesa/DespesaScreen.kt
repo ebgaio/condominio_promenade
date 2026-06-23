@@ -31,6 +31,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -48,6 +50,10 @@ fun DespesaScreen(
     viewModel: DespesaViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
+
+    val focusManager = LocalFocusManager.current
+
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     state.despesaSelecionadaParaExclusao
         ?.let { despesa ->
@@ -133,27 +139,15 @@ fun DespesaScreen(
 
                 state.mensagem?.let { mensagem ->
 
-                    when (mensagem) {
-                        is UiMessage.Success -> {
-
-                            InlineMessageBanner(
-                                message = mensagem.text,
-                                onDismiss = {
-                                    viewModel.limparMensagem()
-                                }
-                            )
+                    InlineMessageBanner(
+                        message = when (mensagem) {
+                            is UiMessage.Success -> mensagem.text
+                            is UiMessage.Error -> mensagem.text
+                        },
+                        onDismiss = {
+                            viewModel.limparMensagem()
                         }
-
-                        is UiMessage.Error -> {
-
-                            ErrorDialog(
-                                message = mensagem.text,
-                                onDismiss = {
-                                    viewModel.limparMensagem()
-                                }
-                            )
-                        }
-                    }
+                    )
                 }
 
                 ExposedDropdownMenuBox(
@@ -215,6 +209,8 @@ fun DespesaScreen(
 
                 Button(
                     onClick = {
+                        focusManager.clearFocus()
+                        keyboardController?.hide()
                         viewModel.salvar()
                     }
                 ) {
@@ -259,6 +255,8 @@ fun DespesaScreen(
 
                                 Button(
                                     onClick = {
+                                        focusManager.clearFocus()
+                                        keyboardController?.hide()
                                         viewModel.solicitarExclusao(
                                             despesa
                                         )
@@ -291,6 +289,8 @@ fun DespesaScreen(
                 ) {
                     Button(
                         onClick = {
+                            focusManager.clearFocus()
+                            keyboardController?.hide()
                             viewModel.finalizarFechamento {
                                 onAbrirDemonstrativos(
                                     fechamentoId
