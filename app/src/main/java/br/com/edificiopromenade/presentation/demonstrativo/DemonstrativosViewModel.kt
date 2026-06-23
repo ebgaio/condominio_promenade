@@ -3,7 +3,6 @@ package br.com.edificiopromenade.presentation.demonstrativo
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.edificiopromenade.domain.usecase.demonstrativo.ConsultarDemonstrativosPorFechamentoUseCase
-import br.com.edificiopromenade.domain.usecase.demonstrativo.ConsultarDemonstrativosUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -43,5 +42,12 @@ class DemonstrativosViewModel @Inject constructor(
                         }
                 )
         }
+    }
+
+    fun limparMensagem() {
+        _uiState.value =
+            _uiState.value.copy(
+                mensagem = null
+            )
     }
 }

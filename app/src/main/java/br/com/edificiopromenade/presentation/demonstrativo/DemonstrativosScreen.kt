@@ -22,6 +22,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import br.com.edificiopromenade.presentation.util.formatarMoeda
 import androidx.compose.material3.ExperimentalMaterial3Api
+import br.com.edificiopromenade.presentation.common.message.InlineMessageBanner
+import br.com.edificiopromenade.presentation.common.message.UiMessage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,6 +52,19 @@ fun DemonstrativosScreen(
                 text = "Demonstrativos",
                 style = MaterialTheme.typography.headlineSmall
             )
+
+            state.mensagem?.let { mensagem ->
+
+                InlineMessageBanner (
+                    message = when (mensagem) {
+                        is UiMessage.Success -> mensagem.text
+                        is UiMessage.Error -> mensagem.text
+                    },
+                    onDismiss = {
+                        viewModel.limparMensagem()
+                    }
+                )
+            }
 
             LazyColumn(
                 modifier = Modifier.weight(1f)
