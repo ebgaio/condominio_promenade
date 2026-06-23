@@ -7,6 +7,7 @@ import br.com.edificiopromenade.domain.usecase.fechamento.ConsultarFechamentosUs
 import br.com.edificiopromenade.domain.usecase.fechamento.CriarFechamentoMensalUseCase
 import br.com.edificiopromenade.domain.usecase.fechamento.ConsultarFechamentoPorMesAnoUseCase
 import br.com.edificiopromenade.domain.usecase.tipodespesa.PopularTiposDespesaUseCase
+import br.com.edificiopromenade.presentation.common.message.UiMessage
 import br.com.edificiopromenade.presentation.util.MoneyFormatter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -106,7 +107,6 @@ class NovoFechamentoViewModel @Inject constructor(
     }
 
     fun limparMensagem() {
-
         _uiState.value =
             _uiState.value.copy(
                 mensagem = null
@@ -145,7 +145,9 @@ class NovoFechamentoViewModel @Inject constructor(
 
             _uiState.value =
                 _uiState.value.copy(
-                    mensagem = "Mês deve estar entre 1 e 12"
+                    mensagem = UiMessage.Success(
+                        "Mês deve estar entre 1 e 12"
+                    )
                 )
             return
         }
@@ -159,8 +161,9 @@ class NovoFechamentoViewModel @Inject constructor(
             if (fechamentoExistente != null) {
                 _uiState.value =
                     _uiState.value.copy(
-                        mensagem =
+                        mensagem = UiMessage.Success(
                             "Já existe fechamento para esta competência."
+                        )
                     )
                 return@launch
             }
@@ -195,7 +198,9 @@ class NovoFechamentoViewModel @Inject constructor(
                     ano = "",
                     fundoReserva = "",
                     decimoTerceiroFerias = "",
-                    mensagem = "Fechamento criado com sucesso"
+                    mensagem = UiMessage.Success(
+                        "Fechamento criado com sucesso"
+                    )
                 )
         }
     }
