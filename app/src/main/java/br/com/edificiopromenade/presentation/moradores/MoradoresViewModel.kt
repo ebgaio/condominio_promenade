@@ -8,6 +8,7 @@ import br.com.edificiopromenade.domain.usecase.morador.AlterarMoradorUseCase
 import br.com.edificiopromenade.domain.usecase.morador.CadastrarMoradorUseCase
 import br.com.edificiopromenade.domain.usecase.morador.ConsultarMoradorPorIdUseCase
 import br.com.edificiopromenade.domain.usecase.morador.EncerrarMoradorUseCase
+import br.com.edificiopromenade.presentation.common.message.UiMessage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -108,7 +109,9 @@ class MoradoresViewModel @Inject constructor(
                         apartamentoIdSelecionado = 0,
                         moradorSelecionadoId = 0,
                         modoEdicao = false,
-                        mensagem = "Morador encerrado"
+                        mensagem = UiMessage.Success(
+                            "Morador encerrado com sucesso"
+                        )
                     )
         }
     }
@@ -121,6 +124,13 @@ class MoradoresViewModel @Inject constructor(
                 apartamentoIdSelecionado = 0,
                 moradorSelecionadoId = 0,
                 modoEdicao = false
+            )
+    }
+
+    fun limparMensagem() {
+        _uiState.value =
+            _uiState.value.copy(
+                mensagem = null
             )
     }
 
@@ -177,7 +187,9 @@ class MoradoresViewModel @Inject constructor(
                     moradorSelecionadoId = 0,
                     modoEdicao = false,
                     salvoComSucesso = true,
-                    mensagem = mensagemSucesso
+                    mensagem = UiMessage.Success(
+                        mensagemSucesso
+                    )
                 )
         }
     }

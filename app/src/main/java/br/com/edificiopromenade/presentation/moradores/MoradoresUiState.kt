@@ -1,6 +1,7 @@
 package br.com.edificiopromenade.presentation.moradores
 
 import br.com.edificiopromenade.data.local.relation.ApartamentoComMorador
+import br.com.edificiopromenade.presentation.common.message.UiMessage
 
 data class MoradoresUiState(
 
@@ -16,7 +17,7 @@ data class MoradoresUiState(
 
     val salvoComSucesso: Boolean = false,
 
-    val mensagem: String? = null,
+    val mensagem: UiMessage? = null,
 
     val modoEdicao: Boolean = false,
 

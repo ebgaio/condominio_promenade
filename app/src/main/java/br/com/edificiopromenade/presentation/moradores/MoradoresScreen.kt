@@ -29,8 +29,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import br.com.edificiopromenade.presentation.common.message.InlineMessageBanner
+import br.com.edificiopromenade.presentation.common.message.UiMessage
 import br.com.edificiopromenade.presentation.util.formatarData
 import java.time.LocalDate
 
@@ -42,17 +46,9 @@ fun MoradoresScreen(
 
     val state by viewModel.uiState.collectAsState()
 
-    state.mensagem?.let {
+    val focusManager = LocalFocusManager.current
 
-        Text(
-            text = it,
-            color = MaterialTheme.colorScheme.primary
-        )
-
-        Spacer(
-            modifier = Modifier.height(8.dp)
-        )
-    }
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     var expanded by remember {
         mutableStateOf(false)
@@ -84,6 +80,19 @@ fun MoradoresScreen(
             Text(
                 text = "Cadastro de Morador"
             )
+
+            state.mensagem?.let { mensagem ->
+
+                InlineMessageBanner (
+                    message = when (mensagem) {
+                        is UiMessage.Success -> mensagem.text
+                        is UiMessage.Error -> mensagem.text
+                    },
+                    onDismiss = {
+                        viewModel.limparMensagem()
+                    }
+                )
+            }
 
             Spacer(
                 modifier = Modifier.height(8.dp)
@@ -184,6 +193,8 @@ fun MoradoresScreen(
 
             Button(
                 onClick = {
+                    focusManager.clearFocus()
+                    keyboardController?.hide()
                     viewModel.salvar()
                 }
             ) {
@@ -343,7 +354,7 @@ fun MoradoresScreen(
 
                                     Text(
                                         text = "⚪ ${morador.nome}",
-//                                        style = MaterialTheme.typography.bodyMedium
+                                        style = MaterialTheme.typography.bodyMedium
                                     )
 
                                     Text(
