@@ -83,4 +83,13 @@ interface ApartamentoDao {
     """)
     suspend fun findAllAtivosList():
             List<ApartamentoEntity>
+
+    @Query("""
+        SELECT COUNT(*)
+        FROM apartamentos
+        WHERE numero = :numero
+    """)
+    suspend fun countByDescricao(
+        numero: String
+    ): Int
 }

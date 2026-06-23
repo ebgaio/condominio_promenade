@@ -16,18 +16,17 @@ import kotlin.time.Duration.Companion.milliseconds
 @Composable
 fun InlineMessageBanner(
     message: String,
+    modifier: Modifier = Modifier,
     onDismiss: () -> Unit
 ) {
 
     LaunchedEffect(message) {
-
         delay(3000.milliseconds)
-
         onDismiss()
     }
 
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clickable {
                 onDismiss()
@@ -36,12 +35,10 @@ fun InlineMessageBanner(
 
         Text(
             text = "✓ $message",
-
-            modifier = Modifier.padding(
+            modifier = modifier.padding(
                 horizontal = 16.dp,
                 vertical = 12.dp
             ),
-
             color = MaterialTheme.colorScheme.primary
         )
     }

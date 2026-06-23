@@ -35,4 +35,12 @@ class ApartamentoRepositoryImpl @Inject constructor(
 
     override suspend fun findAllAtivosList() =
         dao.findAllAtivosList()
+
+    override suspend fun existeApartamento(
+        numero: String
+    ): Boolean {
+        return dao.countByDescricao(
+            numero
+        ) > 0
+    }
 }

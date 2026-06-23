@@ -17,18 +17,19 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import br.com.edificiopromenade.presentation.common.message.InlineMessageBanner
+import br.com.edificiopromenade.presentation.common.message.UiMessage
 import br.com.edificiopromenade.presentation.util.formatarData
 import br.com.edificiopromenade.presentation.util.formatarFracao
 
@@ -40,20 +41,11 @@ fun ApartamentoDetalheScreen(
     viewModel: ApartamentoDetalheViewModel = hiltViewModel()
 ) {
 
-    val snackbarHostState = remember {
-        SnackbarHostState()
-    }
-
-    val mensagem by viewModel.mensagem.collectAsState()
-
     val state by viewModel.uiState.collectAsState()
 
-    LaunchedEffect(mensagem) {
-        mensagem?.let {
-            snackbarHostState.showSnackbar(it)
-            viewModel.limparMensagem()
-        }
-    }
+    val focusManager = LocalFocusManager.current
+
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     LaunchedEffect(apartamentoId) {
         viewModel.carregar(
@@ -113,11 +105,6 @@ fun ApartamentoDetalheScreen(
                 .maxOrNull()
 
         Scaffold(
-            snackbarHost = {
-                SnackbarHost(
-                    hostState = snackbarHostState
-                )
-            }
         ) { padding ->
 
             LazyColumn(
@@ -140,6 +127,19 @@ fun ApartamentoDetalheScreen(
                                 "Apartamento ${detalhe.apartamento.numero}",
                                 style = MaterialTheme.typography.titleLarge
                             )
+
+                            state.mensagem?.let { mensagem ->
+
+                                InlineMessageBanner (
+                                    message = when(mensagem) {
+                                        is UiMessage.Success -> mensagem.text
+                                        is UiMessage.Error -> mensagem.text
+                                    },
+                                    onDismiss = {
+                                        viewModel.limparMensagem()
+                                    }
+                                )
+                            }
 
                             Text(
                                 text =
@@ -218,6 +218,8 @@ fun ApartamentoDetalheScreen(
                                 if (!state.modoEdicao) {
                                     Button(
                                         onClick = {
+                                            focusManager.clearFocus()
+                                            keyboardController?.hide()
                                             viewModel.editar()
                                         }
                                     ) {
@@ -230,6 +232,8 @@ fun ApartamentoDetalheScreen(
 
                                 Button(
                                     onClick = {
+                                        focusManager.clearFocus()
+                                        keyboardController?.hide()
                                         viewModel.atualizar()
                                     }
                                 ) {

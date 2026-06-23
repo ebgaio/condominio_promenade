@@ -26,10 +26,15 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
+import br.com.edificiopromenade.domain.usecase.apartamento.FracaoCopasaVisualTransformation
+import br.com.edificiopromenade.presentation.common.message.InlineMessageBanner
+import br.com.edificiopromenade.presentation.common.message.UiMessage
 import br.com.edificiopromenade.presentation.util.formatarFracao
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -39,26 +44,13 @@ fun ApartamentoScreen(
     viewModel: ApartamentoViewModel = hiltViewModel()
 ) {
 
-    val uiState by viewModel.uiState.collectAsState()
+    val state by viewModel.uiState.collectAsState()
 
-    val snackbarHostState =
-        remember {
-            SnackbarHostState()
-        }
+    val focusManager = LocalFocusManager.current
 
-    LaunchedEffect(uiState.mensagem) {
-        uiState.mensagem?.let {
-            snackbarHostState.showSnackbar(it)
-            viewModel.limparMensagem()
-        }
-    }
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     Scaffold (
-        snackbarHost = {
-            SnackbarHost(
-                hostState = snackbarHostState
-            )
-        }
     ) {
         Column(
             modifier = Modifier
@@ -74,9 +66,22 @@ fun ApartamentoScreen(
                 style = MaterialTheme.typography.headlineSmall
             )
 
+            state.mensagem?.let { mensagem ->
+
+                InlineMessageBanner(
+                    message = when (mensagem) {
+                        is UiMessage.Success -> mensagem.text
+                        is UiMessage.Error -> mensagem.text
+                    },
+                    onDismiss = {
+                        viewModel.limparMensagem()
+                    }
+                )
+            }
+
             OutlinedTextField(
 
-                value = uiState.numero,
+                value = state.numero,
                 onValueChange = viewModel::onNumeroChanged,
                 label = {
                     Text("Número")
@@ -89,14 +94,15 @@ fun ApartamentoScreen(
 
             OutlinedTextField(
 
-                value = uiState.percentualCopasa,
+                value = state.percentualCopasa,
                 onValueChange = viewModel::onFracaoChanged,
                 label = {
                     Text("Percentual COPASA")
                 },
                 keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Decimal
+                    keyboardType = KeyboardType.Number
                 ),
+//                visualTransformation = FracaoCopasaVisualTransformation(),
                 modifier =Modifier.fillMaxWidth()
             )
 
@@ -106,25 +112,27 @@ fun ApartamentoScreen(
 
                 Button(
                     onClick = {
+                        focusManager.clearFocus()
+                        keyboardController?.hide()
                         viewModel.salvar()
                     }
                 ) {
                     Text(
-                        if (uiState.modoEdicao)
+                        if (state.modoEdicao)
                             "Atualizar"
                         else
                             "Salvar"
                     )
                 }
 
-                if (uiState.modoEdicao) {
+                if (state.modoEdicao) {
 
                     Button(
                         onClick = {
                             viewModel.cancelarEdicao()
                         }
                     ) {
-                        Text("Voltar")
+                        Text("Cancelar")
                     }
                 }
             }
@@ -132,7 +140,7 @@ fun ApartamentoScreen(
             HorizontalDivider()
 
             Text(
-                text = "Apartamentos Cadastrados - " + "Qtd: ${uiState.apartamentos.size}",
+                text = "Apartamentos Cadastrados - " + "Qtd: ${state.apartamentos.size}",
                 style = MaterialTheme.typography.titleMedium
             )
 
@@ -141,7 +149,7 @@ fun ApartamentoScreen(
             ) {
 
                 items(
-                    items = uiState.apartamentos,
+                    items = state.apartamentos,
                     key = { it.id }
                 ) { apartamento ->
 
@@ -169,7 +177,8 @@ fun ApartamentoScreen(
 
                             Text(
                                 text =
-                                    "Fração: ${
+                                    "Fração: ${apartamento.percentualCopasa}" + " - " +
+                                    "Percentual: ${
                                         formatarFracao(
                                             apartamento.percentualCopasa
                                         )

@@ -1,6 +1,7 @@
 package br.com.edificiopromenade.presentation.apartment
 
 import br.com.edificiopromenade.data.local.entity.ApartamentoEntity
+import br.com.edificiopromenade.presentation.common.message.UiMessage
 
 data class ApartamentoUiState(
 
@@ -22,5 +23,5 @@ data class ApartamentoUiState(
 
     val condominioIdSelecionado: Long = 0,
 
-    val mensagem: String? = null
+    val mensagem: UiMessage? = null
 )

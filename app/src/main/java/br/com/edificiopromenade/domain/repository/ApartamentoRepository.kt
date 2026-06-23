@@ -33,4 +33,8 @@ interface ApartamentoRepository {
 
     suspend fun findAllAtivosList():
         List<ApartamentoEntity>
+
+    suspend fun existeApartamento(
+        numero: String
+    ): Boolean
 }

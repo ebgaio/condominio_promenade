@@ -1,6 +1,7 @@
 package br.com.edificiopromenade.presentation.apartment.detail
 
 import br.com.edificiopromenade.data.local.relation.ApartamentoDetalhado
+import br.com.edificiopromenade.presentation.common.message.UiMessage
 
 data class ApartamentoDetalheUiState(
 
@@ -14,7 +15,7 @@ data class ApartamentoDetalheUiState(
 
     val modoEdicao: Boolean = false,
 
-    val mensagem: String? = null,
+    val mensagem: UiMessage? = null,
 
     val totalMoradoresAtivos: Int = 0,
 

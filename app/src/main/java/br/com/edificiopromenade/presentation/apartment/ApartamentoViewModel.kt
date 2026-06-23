@@ -7,14 +7,16 @@ import br.com.edificiopromenade.domain.usecase.apartamento.AlterarApartamentoUse
 import br.com.edificiopromenade.domain.usecase.apartamento.CadastrarApartamentoUseCase
 import br.com.edificiopromenade.domain.usecase.apartamento.ConsultarApartamentoPorIdUseCase
 import br.com.edificiopromenade.domain.usecase.apartamento.ConsultarApartamentosUseCase
+import br.com.edificiopromenade.domain.usecase.apartamento.VerificarApartamentoExistenteUseCase
 import br.com.edificiopromenade.domain.usecase.condominio.ConsultarCondominioAtivoUseCase
+import br.com.edificiopromenade.presentation.common.message.UiMessage
 import dagger.hilt.android.lifecycle.HiltViewModel
+import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import jakarta.inject.Inject
 
 @HiltViewModel
 class ApartamentoViewModel @Inject constructor(
@@ -22,7 +24,8 @@ class ApartamentoViewModel @Inject constructor(
     private val consultarCondominioAtivoUseCase: ConsultarCondominioAtivoUseCase,
     private val consultarApartamentosUseCase: ConsultarApartamentosUseCase,
     private val consultarApartamentoPorIdUseCase: ConsultarApartamentoPorIdUseCase,
-    private val alterarApartamentoUseCase: AlterarApartamentoUseCase
+    private val alterarApartamentoUseCase: AlterarApartamentoUseCase,
+    private val verificarApartamentoExistenteUseCase: VerificarApartamentoExistenteUseCase
 ) : ViewModel() {
 
     private val _uiState =
@@ -48,9 +51,14 @@ class ApartamentoViewModel @Inject constructor(
     fun onFracaoChanged(
         valor: String
     ) {
+        val filtrado =
+            valor.filter {
+                it.isDigit() || it == ','
+            }
+
         _uiState.value =
             _uiState.value.copy(
-                percentualCopasa = valor
+                percentualCopasa = filtrado
             )
     }
 
@@ -59,27 +67,45 @@ class ApartamentoViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
 
             val condominio = consultarCondominioAtivoUseCase()
-                    .first()
+                .first() ?: return@launch
 
-            if (condominio == null) {
+            if (uiState.value.numero.isBlank()) {
+                _uiState.value =
+                    _uiState.value.copy(
+                        mensagem = UiMessage.Error(
+                            "Informe o número do apartamento."
+                        )
+                    )
                 return@launch
             }
 
             val fracao =
-
                 _uiState.value
                     .percentualCopasa
                     .replace(",", ".")
-                    .toDoubleOrNull()?: 0.0
+                    .toDoubleOrNull()
+
+
+            if (fracao == null) {
+
+                _uiState.value =
+                    _uiState.value.copy(
+                        mensagem = UiMessage.Error(
+                            "Informe um percentual válido."
+                        )
+                    )
+                return@launch
+            }
+
+            val apartamento = uiState.value.numero
 
             if (_uiState.value.modoEdicao) {
 
                 alterarApartamentoUseCase(
-
                     ApartamentoEntity(
-                        id = _uiState.value.apartamentoSelecionadoId,
+                        id = uiState.value.apartamentoSelecionadoId,
                         condominioId = condominio.id,
-                        numero = _uiState.value.numero,
+                        numero = uiState.value.numero,
                         percentualCopasa = fracao,
                         ativo = true
                     )
@@ -87,11 +113,25 @@ class ApartamentoViewModel @Inject constructor(
 
             } else {
 
+                if (
+                    verificarApartamentoExistenteUseCase(
+                        numero = apartamento
+                    )
+                ) {
+                    _uiState.value =
+                        _uiState.value.copy(
+                            mensagem = UiMessage.Error(
+                                "O Apartamento '$apartamento' já foi cadastrado."
+                            )
+                        )
+                    return@launch
+                }
+
                 cadastrarApartamentoUseCase(
 
                     ApartamentoEntity(
                         condominioId = condominio.id,
-                        numero = _uiState.value.numero,
+                        numero = uiState.value.numero,
                         percentualCopasa = fracao,
                         ativo = true
                     )
@@ -106,14 +146,14 @@ class ApartamentoViewModel @Inject constructor(
 
             _uiState.value =
                 _uiState.value.copy(
-
                     numero = "",
                     percentualCopasa = "",
                     apartamentoSelecionadoId = 0,
                     condominioIdSelecionado = 0,
                     modoEdicao = false,
                     salvoComSucesso = true,
-                    mensagem = mensagemSucesso
+                    mensagem = UiMessage.Success
+                        (mensagemSucesso )
                 )
         }
     }
@@ -124,7 +164,6 @@ class ApartamentoViewModel @Inject constructor(
 
             consultarApartamentosUseCase()
                 .collect { lista ->
-
                     _uiState.value =
                         _uiState.value.copy(
                             apartamentos = lista
@@ -137,18 +176,17 @@ class ApartamentoViewModel @Inject constructor(
 
         _uiState.value =
             _uiState.value.copy(
-
                 numero = "",
                 percentualCopasa = "",
                 apartamentoSelecionadoId = 0,
                 condominioIdSelecionado = 0,
                 modoEdicao = false,
-                mensagem = "Edição cancelada"
+                mensagem = UiMessage.Success
+                    ("Alterações descartadas." )
             )
     }
 
     fun limparMensagem() {
-
         _uiState.value =
             _uiState.value.copy(
                 mensagem = null
