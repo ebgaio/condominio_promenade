@@ -110,7 +110,7 @@ class MoradoresViewModel @Inject constructor(
                         moradorSelecionadoId = 0,
                         modoEdicao = false,
                         mensagem = UiMessage.Success(
-                            "Morador encerrado com sucesso"
+                            "Morador encerrado com sucesso."
                         )
                     )
         }
@@ -123,7 +123,10 @@ class MoradoresViewModel @Inject constructor(
                 nome = "",
                 apartamentoIdSelecionado = 0,
                 moradorSelecionadoId = 0,
-                modoEdicao = false
+                modoEdicao = false,
+                mensagem = UiMessage.Success(
+                    "Alterações descartadas."
+                )
             )
     }
 
@@ -137,10 +140,24 @@ class MoradoresViewModel @Inject constructor(
     fun salvar() {
 
         if (_uiState.value.nome.isBlank()) {
+
+            _uiState.value =
+                _uiState.value.copy(
+                    mensagem = UiMessage.Error(
+                        "Informe o nome do morador."
+                    )
+                )
             return
         }
 
         if (_uiState.value.apartamentoIdSelecionado == 0L) {
+
+            _uiState.value =
+                _uiState.value.copy(
+                    mensagem = UiMessage.Error(
+                        "Selecione um apartamento."
+                    )
+                )
             return
         }
 
@@ -176,9 +193,9 @@ class MoradoresViewModel @Inject constructor(
 
             val mensagemSucesso =
                 if (_uiState.value.modoEdicao)
-                    "Morador atualizado com sucesso"
+                    "Morador atualizado com sucesso."
                 else
-                    "Morador cadastrado com sucesso"
+                    "Morador cadastrado com sucesso."
 
             _uiState.value =
                 _uiState.value.copy(

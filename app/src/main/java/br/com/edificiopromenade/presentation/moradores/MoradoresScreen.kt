@@ -78,7 +78,8 @@ fun MoradoresScreen(
         ) {
 
             Text(
-                text = "Cadastro de Morador"
+                text = "Cadastro de Morador",
+                style = MaterialTheme.typography.headlineSmall
             )
 
             state.mensagem?.let { mensagem ->

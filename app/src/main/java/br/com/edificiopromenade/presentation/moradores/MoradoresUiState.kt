@@ -9,8 +9,6 @@ data class MoradoresUiState(
 
     val apartamentos: List<ApartamentoComMorador> = emptyList(),
 
-    val error: String? = null,
-
     val apartamentoIdSelecionado: Long = 0,
 
     val nome: String = "",
