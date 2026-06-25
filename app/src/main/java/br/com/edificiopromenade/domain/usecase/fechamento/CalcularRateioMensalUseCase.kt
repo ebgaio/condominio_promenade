@@ -36,14 +36,14 @@ class CalcularRateioMensalUseCase @Inject constructor(
 
         val valorCopasaTotal = despesas
             .firstOrNull {
-                it.descricao == "COPASA"
+                it.descricao.equals("COPASA", ignoreCase = true)
             }
             ?.valor
             ?: 0.0
 
         val despesasRateio = despesas
             .filterNot {
-                it.descricao == "COPASA"
+                it.descricao.equals("COPASA", ignoreCase = true)
             }
 
         val totalRateio =
@@ -51,13 +51,24 @@ class CalcularRateioMensalUseCase @Inject constructor(
                 it.valor
             }
 
+        val despesaCopasa = despesas
+            .firstOrNull {
+                it.descricao.equals( "COPASA", ignoreCase = true)
+            }
+
+        require(
+            despesaCopasa != null
+        ) {
+            "Despesa COPASA não cadastrada."
+        }
+
         val quantidade = apartamentos.size
 
-        val valorRateio = totalRateio / quantidade
+        val valorRateioIndividual = if (quantidade > 0) totalRateio / quantidade else 0.00
 
-        val valorReserva = fechamento.valorFundoReserva / quantidade
+        val valorReservaIndividual = if (quantidade > 0) fechamento.valorFundoReserva / quantidade else 0.00
 
-        val valorDecimo = fechamento.valorDecimoTerceiroFerias / quantidade
+        val valorDecimoIndividual = if (quantidade > 0) fechamento.valorDecimoTerceiroFerias / quantidade else 0.00
 
         return apartamentos.map { apartamento ->
 
@@ -68,31 +79,22 @@ class CalcularRateioMensalUseCase @Inject constructor(
 
             val nomeMorador = morador?.nome ?: "Sem Morador"
 
-            val valorCopasa = valorCopasaTotal * apartamento.percentualCopasa / 100.0
+            val valorCopasaIndividual = valorCopasaTotal * apartamento.percentualCopasa
 
-            val total = valorRateio +
-                        valorCopasa +
-                        valorReserva +
-                        valorDecimo
+            val total = valorRateioIndividual +
+                        valorCopasaIndividual +
+                        valorReservaIndividual +
+                        valorDecimoIndividual
 
             DemonstrativoCalculado(
-
                 apartamentoId = apartamento.id,
-
                 numeroApartamentoHistorico = apartamento.numero,
-
                 nomeMoradorHistorico = nomeMorador,
-
                 percentualCopasaHistorica = apartamento.percentualCopasa,
-
-                valorRateio = valorRateio,
-
-                valorCopasa = valorCopasa,
-
-                valorReserva = valorReserva,
-
-                valorDecimoTerceiro = valorDecimo,
-
+                valorRateio = valorRateioIndividual,
+                valorCopasa = valorCopasaIndividual,
+                valorReserva = valorReservaIndividual,
+                valorDecimoTerceiro = valorDecimoIndividual,
                 valorTotal = total
             )
         }

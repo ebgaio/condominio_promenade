@@ -24,4 +24,8 @@ class DemonstrativoRepositoryImpl @Inject constructor(
     override suspend fun consultarPorFechamento(
         fechamentoId: Long
     ) = dao.consultarPorFechamento(fechamentoId)
+
+    override suspend fun consultarPorApartamento(
+        apartamentoId: Long
+    ) = dao.consultarPorApartamento(apartamentoId)
 }

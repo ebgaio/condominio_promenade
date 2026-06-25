@@ -18,5 +18,7 @@ data class DespesaUiState(
 
     val mensagem: UiMessage? = null,
 
-    val despesaSelecionadaParaExclusao: DespesaEntity? = null
+    val despesaSelecionadaParaExclusao: DespesaEntity? = null,
+
+    val fechamentoFinalizado: Boolean = false
 )

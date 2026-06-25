@@ -18,7 +18,8 @@ fun HomeScreen(
     onMoradoresClick: () -> Unit,
     onCondominioClick: () -> Unit,
     onApartamentosClick: () -> Unit,
-    onNovoFechamentoClick: () -> Unit
+    onNovoFechamentoClick: () -> Unit,
+    onHistoricoClick: () -> Unit
 ) {
 
     Scaffold { padding ->
@@ -45,7 +46,9 @@ fun HomeScreen(
                 Text("Novo Fechamento")
             }
 
-            Button(onClick = {}) {
+            Button(
+                onClick = onHistoricoClick
+            ) {
                 Text("Histórico")
             }
 

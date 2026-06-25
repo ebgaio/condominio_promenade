@@ -19,4 +19,8 @@ interface DemonstrativoRepository {
     suspend fun consultarPorFechamento(
         fechamentoId: Long
     ): List<DemonstrativoApartamentoEntity>
+
+    suspend fun consultarPorApartamento(
+        apartamentoId: Long
+    ): List<DemonstrativoApartamentoEntity>
 }

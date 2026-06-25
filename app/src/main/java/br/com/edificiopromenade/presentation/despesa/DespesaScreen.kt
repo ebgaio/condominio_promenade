@@ -22,21 +22,17 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import br.com.edificiopromenade.presentation.common.message.ErrorDialog
 import br.com.edificiopromenade.presentation.common.message.InlineMessageBanner
 import br.com.edificiopromenade.presentation.common.message.UiMessage
 import br.com.edificiopromenade.presentation.util.formatarMoeda
@@ -68,7 +64,7 @@ fun DespesaScreen(
 
                 text = {
                     Text(
-                        "Deseja excluir '${despesa.descricao}'?"
+                        "Deseja realmente excluir a despesa '${despesa.descricao}'?"
                     )
                 },
 
@@ -96,11 +92,6 @@ fun DespesaScreen(
             )
         }
 
-    val snackbarHostState =
-        remember {
-            SnackbarHostState()
-        }
-
     LaunchedEffect(fechamentoId) {
         viewModel.carregar(
             fechamentoId
@@ -117,11 +108,6 @@ fun DespesaScreen(
     ) {
 
         Scaffold(
-            snackbarHost = {
-                SnackbarHost(
-                    hostState = snackbarHostState
-                )
-            }
         ) { padding ->
             Column(
                 modifier = Modifier
@@ -136,6 +122,15 @@ fun DespesaScreen(
                     text = "Despesas do Fechamento",
                     style = MaterialTheme.typography.headlineSmall
                 )
+
+                if (state.fechamentoFinalizado) {
+
+                    Text(
+                        text = "FECHAMENTO FINALIZADO",
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                }
 
                 state.mensagem?.let { mensagem ->
 
@@ -158,7 +153,7 @@ fun DespesaScreen(
                     }
                 ) {
                     OutlinedTextField(
-
+                        enabled = !state.fechamentoFinalizado,
                         value = state.tipoSelecionado?.descricao ?: "",
                         onValueChange = {},
                         readOnly = true,
@@ -194,12 +189,14 @@ fun DespesaScreen(
                 }
 
                 OutlinedTextField(
+                    enabled = !state.fechamentoFinalizado,
                     value = state.valor,
                     onValueChange = viewModel::onValorChanged,
 
                     label = {
                         Text("Valor")
                     },
+                    placeholder = { Text("0,00") },
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Number
                     ),
@@ -208,6 +205,7 @@ fun DespesaScreen(
                 )
 
                 Button(
+                    enabled = !state.fechamentoFinalizado,
                     onClick = {
                         focusManager.clearFocus()
                         keyboardController?.hide()
@@ -254,6 +252,7 @@ fun DespesaScreen(
                                 )
 
                                 Button(
+                                    enabled = !state.fechamentoFinalizado,
                                     onClick = {
                                         focusManager.clearFocus()
                                         keyboardController?.hide()

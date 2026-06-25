@@ -5,6 +5,8 @@ import br.com.edificiopromenade.presentation.common.message.UiMessage
 
 data class DemonstrativosUiState(
 
+    val fechamentoId: Long? = null,
+
     val demonstrativos:
         List<DemonstrativoApartamentoEntity> =
             emptyList(),

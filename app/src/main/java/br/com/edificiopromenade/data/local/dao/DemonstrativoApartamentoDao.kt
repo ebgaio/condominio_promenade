@@ -36,4 +36,14 @@ interface DemonstrativoApartamentoDao {
     suspend fun consultarPorFechamento(
         fechamentoId: Long
     ): List<DemonstrativoApartamentoEntity>
+
+    @Query("""
+        SELECT *
+        FROM demonstrativos_apartamento
+        WHERE apartamentoId = :apartamentoId
+        ORDER BY id DESC
+    """)
+    suspend fun consultarPorApartamento(
+        apartamentoId: Long
+    ): List<DemonstrativoApartamentoEntity>
 }

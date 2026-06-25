@@ -6,26 +6,18 @@ import java.util.Locale
 object MoneyFormatter {
 
     fun format(input: String): String {
+        val digits = input.filter { it.isDigit() }
+        if (digits.isEmpty()) return ""
 
-        val digits =
-            input.filter {
-                it.isDigit()
-            }
+        val value = digits.toBigDecimal().divide(java.math.BigDecimal(100))
 
-        if (digits.isEmpty()) {
-            return ""
-        }
-
-        val value = digits.toLong() / 100.0
-
-        return NumberFormat
-            .getNumberInstance(
-                Locale("pt", "BR")
-            )
+        return NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
             .apply {
                 minimumFractionDigits = 2
                 maximumFractionDigits = 2
             }
             .format(value)
+            .replace("R$", "")
+            .trim()
     }
 }

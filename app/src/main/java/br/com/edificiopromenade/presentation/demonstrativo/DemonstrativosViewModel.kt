@@ -2,16 +2,25 @@ package br.com.edificiopromenade.presentation.demonstrativo
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import br.com.edificiopromenade.domain.repository.DespesaRepository
+import br.com.edificiopromenade.domain.repository.FechamentoRepository
 import br.com.edificiopromenade.domain.usecase.demonstrativo.ConsultarDemonstrativosPorFechamentoUseCase
+import br.com.edificiopromenade.domain.usecase.email.GerarCorpoEmailHtmlUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.time.Month
+import java.time.format.TextStyle
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
 class DemonstrativosViewModel @Inject constructor(
-    private val consultarDemonstrativosPorFechamentoUseCase: ConsultarDemonstrativosPorFechamentoUseCase
+    private val consultarDemonstrativosPorFechamentoUseCase: ConsultarDemonstrativosPorFechamentoUseCase,
+    private val fechamentoRepository: FechamentoRepository,
+    private val despesaRepository: DespesaRepository,
+    private val gerarCorpoEmailHtmlUseCase: GerarCorpoEmailHtmlUseCase
 ) : ViewModel() {
 
     private val _uiState =
@@ -34,6 +43,7 @@ class DemonstrativosViewModel @Inject constructor(
 
             _uiState.value =
                 DemonstrativosUiState(
+                    fechamentoId = fechamentoId,
                     demonstrativos = lista,
 
                     totalGeral =
@@ -41,6 +51,27 @@ class DemonstrativosViewModel @Inject constructor(
                             it.total
                         }
                 )
+        }
+    }
+
+    fun gerarCorpoEmail(onResult: (String) -> Unit) {
+        val fechamentoId = _uiState.value.fechamentoId ?: return
+        viewModelScope.launch {
+            val fechamento = fechamentoRepository.findById(fechamentoId) ?: return@launch
+            val despesas = despesaRepository.findListByFechamento(fechamentoId)
+            if (despesas.isEmpty())
+                return@launch
+            val mesNome = Month.of(fechamento.mes).getDisplayName(TextStyle.FULL, Locale("pt", "BR"))
+            
+            val html = gerarCorpoEmailHtmlUseCase(
+                mesNome = mesNome,
+                ano = fechamento.ano,
+                despesas = despesas,
+                totalGeralDespesas = despesas.sumOf { it.valor },
+                demonstrativos = _uiState.value.demonstrativos,
+                totalGeralArrecadar = _uiState.value.totalGeral
+            )
+            onResult(html)
         }
     }
 

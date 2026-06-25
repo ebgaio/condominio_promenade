@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.edificiopromenade.data.local.entity.DespesaEntity
 import br.com.edificiopromenade.data.local.entity.TipoDespesaEntity
+import br.com.edificiopromenade.domain.repository.FechamentoRepository
 import br.com.edificiopromenade.domain.usecase.despesa.CadastrarDespesaUseCase
 import br.com.edificiopromenade.domain.usecase.despesa.ConsultarDespesasPorFechamentoUseCase
 import br.com.edificiopromenade.domain.usecase.despesa.ExcluirDespesaUseCase
@@ -25,7 +26,8 @@ class DespesaViewModel @Inject constructor(
     private val excluirDespesaUseCase: ExcluirDespesaUseCase,
     private val consultarTiposDespesaUseCase: ConsultarTiposDespesaUseCase,
     private val finalizarFechamentoUseCase: FinalizarFechamentoUseCase,
-    private val verificarDespesaExistenteUseCase: VerificarDespesaExistenteUseCase
+    private val verificarDespesaExistenteUseCase: VerificarDespesaExistenteUseCase,
+    private val fechamentoRepository: FechamentoRepository
 ) : ViewModel() {
 
     private val _uiState =
@@ -41,6 +43,18 @@ class DespesaViewModel @Inject constructor(
         fechamentoId: Long
     ) {
         this.fechamentoId = fechamentoId
+
+        viewModelScope.launch {
+            val fechamento = fechamentoRepository.findById(
+                    fechamentoId
+                )
+
+            _uiState.value =
+                _uiState.value.copy(
+                    fechamentoFinalizado =
+                        fechamento?.finalizado ?: false
+                )
+        }
 
         viewModelScope.launch {
             consultarDespesasPorFechamentoUseCase(
@@ -72,26 +86,50 @@ class DespesaViewModel @Inject constructor(
     fun onValorChanged(
         valor: String
     ) {
+        val cleanValor = valor.filter { it.isDigit() }
+        if (cleanValor.length > 12) return
+
         _uiState.value =
             _uiState.value.copy(
                 valor = MoneyFormatter.format(
-                    valor
+                    cleanValor
                 )
             )
     }
 
     fun salvar() {
         viewModelScope.launch {
+
             val valorDespesa = _uiState.value.valor
                 .replace(".", "")
                 .replace(",", ".")
                 .toDoubleOrNull()
-                ?: return@launch
+
+            if (valorDespesa == null || valorDespesa <= 0.0) {
+                _uiState.value =
+                    _uiState.value.copy(
+                        mensagem = UiMessage.Error(
+                            "Informe um valor válido para a despesa."
+                        )
+                    )
+
+                return@launch
+            }
 
             val descricao =
                 _uiState.value.tipoSelecionado
                     ?.descricao
-                    ?: return@launch
+
+            if (descricao.isNullOrBlank()) {
+                _uiState.value =
+                    _uiState.value.copy(
+                        mensagem = UiMessage.Error(
+                            "Selecione um tipo de despesa."
+                        )
+                    )
+
+                return@launch
+            }
 
             if (
                 verificarDespesaExistenteUseCase(
@@ -122,7 +160,7 @@ class DespesaViewModel @Inject constructor(
                 _uiState.value.copy(
                     valor = "",
                     mensagem = UiMessage.Success(
-                     "Despesa adicionada"
+                     "Despesa cadastrada com sucesso."
                     )
                 )
             return@launch
@@ -160,19 +198,9 @@ class DespesaViewModel @Inject constructor(
                 _uiState.value.copy(
                     despesaSelecionadaParaExclusao = null,
                     mensagem = UiMessage.Success(
-                     "Despesa excluída"
+                     "Despesa excluída com sucesso."
                     )
                 )
-        }
-    }
-
-    fun excluir(
-        despesa: DespesaEntity
-    ) {
-        viewModelScope.launch {
-            excluirDespesaUseCase(
-                despesa
-            )
         }
     }
 
@@ -206,6 +234,17 @@ class DespesaViewModel @Inject constructor(
         onSucesso: () -> Unit
     ) {
         viewModelScope.launch {
+
+            if (_uiState.value.despesas.isEmpty()) {
+                _uiState.value =
+                    _uiState.value.copy(
+                        mensagem = UiMessage.Error(
+                            "Cadastre pelo menos uma despesa antes de finalizar o fechamento."
+                        )
+                    )
+                return@launch
+            }
+
             finalizarFechamentoUseCase(
                 fechamentoId
             )

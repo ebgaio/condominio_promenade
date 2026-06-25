@@ -17,12 +17,10 @@ import jakarta.inject.Inject
 
 @HiltViewModel
 class NovoFechamentoViewModel @Inject constructor(
-
     private val criarFechamentoMensalUseCase: CriarFechamentoMensalUseCase,
     private val consultarFechamentoPorMesAnoUseCase: ConsultarFechamentoPorMesAnoUseCase,
     private val consultarFechamentosUseCase: ConsultarFechamentosUseCase,
     private val popularTiposDespesaUseCase: PopularTiposDespesaUseCase
-
 ) : ViewModel() {
 
     private val _uiState =
@@ -56,31 +54,25 @@ class NovoFechamentoViewModel @Inject constructor(
     fun onFundoReservaChanged(
         valor: String
     ) {
-        if (
-            valor.matches(
-                Regex("^\\d*([.,]\\d{0,2})?$")
+        val cleanValor = valor.filter { it.isDigit() }
+        if (cleanValor.length > 12) return // Limite de 12 dígitos
+
+        _uiState.value =
+            _uiState.value.copy(
+                fundoReserva = MoneyFormatter.format(cleanValor)
             )
-        ) {
-            _uiState.value =
-                _uiState.value.copy(
-                    fundoReserva = MoneyFormatter.format(valor)
-                )
-        }
     }
 
     fun onDecimoTerceiroChanged(
         valor: String
     ) {
-        if (
-            valor.matches(
-                Regex("^\\d*([.,]\\d{0,2})?$")
+        val cleanValor = valor.filter { it.isDigit() }
+        if (cleanValor.length > 12) return // Limite de 12 dígitos
+
+        _uiState.value =
+            _uiState.value.copy(
+                decimoTerceiroFerias = MoneyFormatter.format(cleanValor)
             )
-        ) {
-            _uiState.value =
-                _uiState.value.copy(
-                    decimoTerceiroFerias = MoneyFormatter.format(valor)
-                )
-        }
     }
 
     fun onMesChanged(

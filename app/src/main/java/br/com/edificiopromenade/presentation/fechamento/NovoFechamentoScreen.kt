@@ -135,8 +135,9 @@ fun NovoFechamentoScreen(
                 label = {
                     Text("Fundo de Reserva")
                 },
+                placeholder = { Text("0,00") },
                 keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Decimal
+                        keyboardType = KeyboardType.Number
                     )
             )
 
@@ -147,8 +148,9 @@ fun NovoFechamentoScreen(
                 label = {
                     Text("13º / Férias")
                 },
+                placeholder = { Text("0,00") },
                 keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Decimal
+                        keyboardType = KeyboardType.Number
                     )
             )
             val formularioValido = state.mes.isNotBlank()

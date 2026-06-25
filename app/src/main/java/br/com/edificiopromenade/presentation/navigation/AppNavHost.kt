@@ -11,6 +11,7 @@ import br.com.edificiopromenade.presentation.condominio.CondominioScreen
 import br.com.edificiopromenade.presentation.demonstrativo.DemonstrativosScreen
 import br.com.edificiopromenade.presentation.despesa.DespesaScreen
 import br.com.edificiopromenade.presentation.fechamento.NovoFechamentoScreen
+import br.com.edificiopromenade.presentation.history.HistoryScreen
 import br.com.edificiopromenade.presentation.home.HomeScreen
 import br.com.edificiopromenade.presentation.moradores.MoradoresScreen
 
@@ -50,6 +51,21 @@ fun AppNavHost(
                     navController.navigate(
                         AppDestinations.NOVO_FECHAMENTO
                     )
+                },
+                onHistoricoClick = {
+                    navController.navigate(
+                        AppDestinations.HISTORICO
+                    )
+                }
+            )
+        }
+
+        composable(
+            AppDestinations.HISTORICO
+        ) {
+            HistoryScreen(
+                onVoltar = {
+                    navController.popBackStack()
                 }
             )
         }
@@ -118,7 +134,6 @@ fun AppNavHost(
                     navController.popBackStack()
                 },
                 onAbrirDemonstrativos = { id ->
-
                     navController.navigate(
                         AppDestinations.demonstrativosRoute(id)
                     )
