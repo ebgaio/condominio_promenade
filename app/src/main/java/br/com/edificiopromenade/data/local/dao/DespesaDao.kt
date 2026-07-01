@@ -4,7 +4,9 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
+import br.com.edificiopromenade.data.local.entity.DespesaComTipoEntity
 import br.com.edificiopromenade.data.local.entity.DespesaEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -27,10 +29,18 @@ interface DespesaDao {
     )
 
     @Query("""
+        DELETE FROM despesas
+        WHERE id = :id
+    """)
+    suspend fun deleteById(
+        id: Long
+    )
+
+    @Query("""
         SELECT *
         FROM despesas
         WHERE fechamentoId = :fechamentoId
-        ORDER BY descricao
+        ORDER BY descricaoLivre
     """)
     fun findByFechamento(
         fechamentoId: Long
@@ -40,7 +50,7 @@ interface DespesaDao {
         SELECT *
         FROM despesas
         WHERE fechamentoId = :fechamentoId
-        ORDER BY descricao
+        ORDER BY descricaoLivre
     """)
     suspend fun findListByFechamento(
         fechamentoId: Long
@@ -50,10 +60,41 @@ interface DespesaDao {
         SELECT COUNT(*)
         FROM despesas
         WHERE fechamentoId = :fechamentoId
-        AND descricao = :descricao
+        AND tipoDespesaId = :tipoDespesaId
     """)
     suspend fun countByDescricao(
         fechamentoId: Long,
-        descricao: String
+        tipoDespesaId: Long
     ): Int
+
+    @Transaction
+    @Query("""
+        SELECT *
+        FROM despesas
+        WHERE fechamentoId = :fechamentoId
+        ORDER BY descricaoLivre
+    """)
+    suspend fun findComTipoByFechamento(
+        fechamentoId: Long
+    ): List<DespesaComTipoEntity>
+
+    @Transaction
+    @Query("""
+        SELECT *
+        FROM despesas
+        WHERE fechamentoId = :fechamentoId
+        ORDER BY descricaoLivre
+    """)
+    fun findComTipoByFechamentoFlow(
+        fechamentoId: Long
+    ): Flow<List<DespesaComTipoEntity>>
+
+    @Query("""
+        SELECT *
+        FROM despesas
+        WHERE id = :id
+    """)
+    suspend fun findById(
+        id: Long
+    ): DespesaEntity?
 }

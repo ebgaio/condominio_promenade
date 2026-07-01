@@ -15,5 +15,7 @@ data class TipoDespesaEntity(
 
     val recorrente: Boolean,
 
+    val usaFracaoIdeal: Boolean = false,
+
     val ativo: Boolean = true
 )

@@ -24,7 +24,7 @@ class CalcularRateioMensalUseCase @Inject constructor(
             ?: return emptyList()
 
         val despesas = despesaRepository
-            .findListByFechamento(
+            .findComTipoByFechamento(
                 fechamentoId
             )
 
@@ -34,33 +34,25 @@ class CalcularRateioMensalUseCase @Inject constructor(
         if (apartamentos.isEmpty())
             return emptyList()
 
-        val valorCopasaTotal = despesas
-            .firstOrNull {
-                it.descricao.equals("COPASA", ignoreCase = true)
+        val despesasFracaoIdeal =
+            despesas.filter {
+                it.tipo.usaFracaoIdeal
             }
-            ?.valor
-            ?: 0.0
 
-        val despesasRateio = despesas
-            .filterNot {
-                it.descricao.equals("COPASA", ignoreCase = true)
+        val despesasRateioIgual =
+            despesas.filter {
+                !it.tipo.usaFracaoIdeal
+            }
+
+        val totalCopasa =
+            despesasFracaoIdeal.sumOf {
+                it.despesa.valor
             }
 
         val totalRateio =
-            despesasRateio.sumOf {
-                it.valor
+            despesasRateioIgual.sumOf {
+                it.despesa.valor
             }
-
-        val despesaCopasa = despesas
-            .firstOrNull {
-                it.descricao.equals( "COPASA", ignoreCase = true)
-            }
-
-        require(
-            despesaCopasa != null
-        ) {
-            "Despesa COPASA não cadastrada."
-        }
 
         val quantidade = apartamentos.size
 
@@ -79,7 +71,7 @@ class CalcularRateioMensalUseCase @Inject constructor(
 
             val nomeMorador = morador?.nome ?: "Sem Morador"
 
-            val valorCopasaIndividual = valorCopasaTotal * apartamento.percentualCopasa
+            val valorCopasaIndividual = totalCopasa * apartamento.percentualCopasa
 
             val total = valorRateioIndividual +
                         valorCopasaIndividual +

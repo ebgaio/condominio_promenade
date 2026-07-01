@@ -24,20 +24,5 @@ object FracaoCopasaFormatter {
             append(",")
             append(padded.substring(1))
         }
-
-//        val value =
-//            digits.toLongOrNull()
-//                ?: 0L
-//
-//        val inteiro =
-//            value / 100000
-//
-//        val decimal =
-//            value % 100000
-//
-//        return "%d,%05d".format(
-//            inteiro,
-//            decimal
-//        )
     }
 }

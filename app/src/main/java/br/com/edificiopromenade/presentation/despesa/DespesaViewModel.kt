@@ -3,7 +3,6 @@ package br.com.edificiopromenade.presentation.despesa
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.edificiopromenade.data.local.entity.DespesaEntity
-import br.com.edificiopromenade.data.local.entity.TipoDespesaEntity
 import br.com.edificiopromenade.domain.repository.FechamentoRepository
 import br.com.edificiopromenade.domain.usecase.despesa.CadastrarDespesaUseCase
 import br.com.edificiopromenade.domain.usecase.despesa.ConsultarDespesasPorFechamentoUseCase
@@ -12,12 +11,15 @@ import br.com.edificiopromenade.domain.usecase.despesa.VerificarDespesaExistente
 import br.com.edificiopromenade.domain.usecase.fechamento.FinalizarFechamentoUseCase
 import br.com.edificiopromenade.domain.usecase.tipodespesa.ConsultarTiposDespesaUseCase
 import br.com.edificiopromenade.presentation.common.message.UiMessage
+import br.com.edificiopromenade.presentation.despesa.mapper.toUi
+import br.com.edificiopromenade.presentation.despesa.model.DespesaItemUi
+import br.com.edificiopromenade.presentation.despesa.model.TipoDespesaUi
 import br.com.edificiopromenade.presentation.util.MoneyFormatter
 import dagger.hilt.android.lifecycle.HiltViewModel
+import jakarta.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import jakarta.inject.Inject
 
 @HiltViewModel
 class DespesaViewModel @Inject constructor(
@@ -63,7 +65,9 @@ class DespesaViewModel @Inject constructor(
 
                 _uiState.value =
                     _uiState.value.copy(
-                        despesas = lista
+                        despesas = lista.map {
+                            it.toUi()
+                        }
                     )
             }
         }
@@ -72,12 +76,13 @@ class DespesaViewModel @Inject constructor(
             consultarTiposDespesaUseCase()
                 .collect { tipos ->
 
+                    val listaUi = tipos.map { it.toUi() }
+
                     _uiState.value =
                         _uiState.value.copy(
-                            tiposDespesa = tipos,
-
+                            tiposDespesa = listaUi,
                             tipoSelecionado = _uiState.value.tipoSelecionado
-                                    ?: tipos.firstOrNull()
+                                    ?: listaUi.firstOrNull()
                         )
                 }
         }
@@ -94,6 +99,15 @@ class DespesaViewModel @Inject constructor(
                 valor = MoneyFormatter.format(
                     cleanValor
                 )
+            )
+    }
+
+    fun onDescricaoChanged(
+        descricao: String
+    ) {
+        _uiState.value =
+            _uiState.value.copy(
+                descricaoLivre = descricao
             )
     }
 
@@ -116,25 +130,13 @@ class DespesaViewModel @Inject constructor(
                 return@launch
             }
 
-            val descricao =
-                _uiState.value.tipoSelecionado
-                    ?.descricao
-
-            if (descricao.isNullOrBlank()) {
-                _uiState.value =
-                    _uiState.value.copy(
-                        mensagem = UiMessage.Error(
-                            "Selecione um tipo de despesa."
-                        )
-                    )
-
-                return@launch
-            }
+            val descricao = _uiState.value.descricaoLivre.trim()
 
             if (
                 verificarDespesaExistenteUseCase(
                     fechamentoId,
-                    descricao
+                    _uiState.value.tipoSelecionado!!.id
+
                 )
             ) {
                 _uiState.value =
@@ -149,12 +151,17 @@ class DespesaViewModel @Inject constructor(
             cadastrarDespesaUseCase(
                 DespesaEntity(
                     fechamentoId = fechamentoId,
-                    descricao = _uiState.value.tipoSelecionado
-                        ?.descricao
-                        ?: "",
+                    tipoDespesaId = _uiState.value.tipoSelecionado!!.id,
+                    descricaoLivre = _uiState.value.descricaoLivre,
                     valor = valorDespesa
                 )
             )
+
+            _uiState.value =
+                _uiState.value.copy(
+                    valor = "",
+                    descricaoLivre = ""
+                )
 
             _uiState.value =
                 _uiState.value.copy(
@@ -168,7 +175,7 @@ class DespesaViewModel @Inject constructor(
     }
 
     fun solicitarExclusao(
-        despesa: DespesaEntity
+        despesa: DespesaItemUi
     ) {
         _uiState.value =
             _uiState.value.copy(
@@ -190,9 +197,8 @@ class DespesaViewModel @Inject constructor(
                 ?: return
 
         viewModelScope.launch {
-            excluirDespesaUseCase(
-                despesa
-            )
+
+            excluirDespesaUseCase(despesa.id)
 
             _uiState.value =
                 _uiState.value.copy(
@@ -207,7 +213,8 @@ class DespesaViewModel @Inject constructor(
     fun limparMensagem() {
         _uiState.value =
             _uiState.value.copy(
-                mensagem = null
+                valor = "",
+                descricaoLivre = ""
             )
     }
 
@@ -221,7 +228,7 @@ class DespesaViewModel @Inject constructor(
     }
 
     fun selecionarTipo(
-        tipo: TipoDespesaEntity
+        tipo: TipoDespesaUi
     ) {
         _uiState.value =
             _uiState.value.copy(

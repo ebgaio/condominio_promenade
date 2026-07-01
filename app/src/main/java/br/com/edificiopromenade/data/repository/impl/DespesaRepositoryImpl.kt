@@ -1,6 +1,7 @@
 package br.com.edificiopromenade.data.repository.impl
 
 import br.com.edificiopromenade.data.local.dao.DespesaDao
+import br.com.edificiopromenade.data.local.entity.DespesaComTipoEntity
 import br.com.edificiopromenade.data.local.entity.DespesaEntity
 import br.com.edificiopromenade.domain.repository.DespesaRepository
 import jakarta.inject.Inject
@@ -21,9 +22,9 @@ class DespesaRepositoryImpl @Inject constructor(
         despesa: DespesaEntity
     ) = dao.update(despesa)
 
-    override suspend fun delete(
-        despesa: DespesaEntity
-    ) = dao.delete(despesa)
+    override suspend fun deleteById(
+        id: Long
+    ) = dao.deleteById(id)
 
     override suspend fun findListByFechamento(
         fechamentoId: Long
@@ -31,11 +32,30 @@ class DespesaRepositoryImpl @Inject constructor(
 
     override suspend fun existeDespesa(
         fechamentoId: Long,
-        descricao: String
+        tipoDespesaId: Long
     ): Boolean {
         return dao.countByDescricao(
             fechamentoId,
-            descricao
+            tipoDespesaId
         ) > 0
     }
+
+    override suspend fun findComTipoByFechamento(
+        fechamentoId: Long
+    ): List<DespesaComTipoEntity> {
+        return dao.findComTipoByFechamento(
+            fechamentoId
+        )
+    }
+
+    override fun findComTipoByFechamentoFlow(
+        fechamentoId: Long
+    ) = dao.findComTipoByFechamentoFlow(
+            fechamentoId
+        )
+
+    override suspend fun findById(
+        id: Long
+    ) =
+        dao.findById(id)
 }

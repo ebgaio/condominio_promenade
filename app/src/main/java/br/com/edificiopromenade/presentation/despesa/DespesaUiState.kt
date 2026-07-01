@@ -1,24 +1,26 @@
 package br.com.edificiopromenade.presentation.despesa
 
-import br.com.edificiopromenade.data.local.entity.DespesaEntity
-import br.com.edificiopromenade.data.local.entity.TipoDespesaEntity
 import br.com.edificiopromenade.presentation.common.message.UiMessage
+import br.com.edificiopromenade.presentation.despesa.model.DespesaItemUi
+import br.com.edificiopromenade.presentation.despesa.model.TipoDespesaUi
 
 data class DespesaUiState(
 
     val valor: String = "",
 
-    val despesas: List<DespesaEntity> = emptyList(),
+    val descricaoLivre: String = "",
 
-    val tiposDespesa: List<TipoDespesaEntity> = emptyList(),
+    val despesas: List<DespesaItemUi> = emptyList(),
 
-    val tipoSelecionado: TipoDespesaEntity? = null,
+    val tiposDespesa: List<TipoDespesaUi> = emptyList(),
+
+    val tipoSelecionado: TipoDespesaUi? = null,
 
     val expandirTipos: Boolean = false,
 
     val mensagem: UiMessage? = null,
 
-    val despesaSelecionadaParaExclusao: DespesaEntity? = null,
+    val despesaSelecionadaParaExclusao: DespesaItemUi? = null,
 
     val fechamentoFinalizado: Boolean = false
 )

@@ -8,11 +8,11 @@ class VerificarDespesaExistenteUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(
         fechamentoId: Long,
-        descricao: String
+        tipoDespesaId: Long
     ): Boolean {
         return repository.existeDespesa(
             fechamentoId,
-            descricao
+            tipoDespesaId
         )
     }
 }

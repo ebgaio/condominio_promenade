@@ -10,7 +10,7 @@ class ConsultarDespesasPorFechamentoUseCase @Inject constructor(
     operator fun invoke(
         fechamentoId: Long
     ) =
-        repository.findByFechamento(
+        repository.findComTipoByFechamentoFlow(
             fechamentoId
         )
 }

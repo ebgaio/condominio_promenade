@@ -30,7 +30,8 @@ class PopularTiposDespesaUseCase @Inject constructor(
             cadastrarTipoDespesaUseCase(
                 TipoDespesaEntity(
                     descricao = descricao,
-                    recorrente = false
+                    recorrente = false,
+                    usaFracaoIdeal = descricao == "COPASA"
                 )
             )
         }

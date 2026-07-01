@@ -25,8 +25,6 @@ class ApartamentoDetalheViewModel @Inject constructor(
 
     val uiState = _uiState.asStateFlow()
 
-//    private val _mensagem = MutableStateFlow<String?>(null)
-
     fun carregar(
         id: Long
     ) {
@@ -158,7 +156,6 @@ class ApartamentoDetalheViewModel @Inject constructor(
 
         viewModelScope.launch {
             inativarApartamentoUseCase(id)
-//            _mensagem.value = "Apartamento inativado com sucesso"
             carregar(id)
         }
 
