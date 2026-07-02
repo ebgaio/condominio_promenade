@@ -8,6 +8,7 @@ import br.com.edificiopromenade.data.local.dao.ApartamentoDao
 import br.com.edificiopromenade.data.local.dao.CondominioDao
 import br.com.edificiopromenade.data.local.dao.DemonstrativoApartamentoDao
 import br.com.edificiopromenade.data.local.dao.DespesaDao
+import br.com.edificiopromenade.data.local.dao.DespesaItemDao
 import br.com.edificiopromenade.data.local.dao.FechamentoMensalDao
 import br.com.edificiopromenade.data.local.dao.MoradorDao
 import br.com.edificiopromenade.data.local.dao.TipoDespesaDao
@@ -17,6 +18,7 @@ import br.com.edificiopromenade.data.local.entity.ConfiguracaoEmailEntity
 import br.com.edificiopromenade.data.local.entity.DemonstrativoApartamentoEntity
 import br.com.edificiopromenade.data.local.entity.DespesaEntity
 import br.com.edificiopromenade.data.local.entity.DespesaFechamentoEntity
+import br.com.edificiopromenade.data.local.entity.DespesaItemEntity
 import br.com.edificiopromenade.data.local.entity.FechamentoMensalEntity
 import br.com.edificiopromenade.data.local.entity.HistoricoEnvioEmailEntity
 import br.com.edificiopromenade.data.local.entity.MoradorEntity
@@ -29,13 +31,14 @@ import br.com.edificiopromenade.data.local.entity.TipoDespesaEntity
         MoradorEntity::class,
         FechamentoMensalEntity::class,
         DespesaEntity::class,
+        DespesaItemEntity::class,
         TipoDespesaEntity::class,
         DespesaFechamentoEntity::class,
         DemonstrativoApartamentoEntity::class,
         ConfiguracaoEmailEntity::class,
         HistoricoEnvioEmailEntity::class
                 ],
-    version = 7,
+    version = 8,
     exportSchema = true
 )
 @TypeConverters(
@@ -56,4 +59,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun despesaDao(): DespesaDao
 
     abstract fun demonstrativoDao(): DemonstrativoApartamentoDao
+
+    abstract fun despesaItemDao(): DespesaItemDao
 }

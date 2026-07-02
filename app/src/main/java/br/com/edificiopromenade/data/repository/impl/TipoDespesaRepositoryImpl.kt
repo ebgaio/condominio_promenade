@@ -14,16 +14,13 @@ class TipoDespesaRepositoryImpl @Inject constructor(
 
     override suspend fun findById(
         id: Long
-    ) =
-        dao.findById(id)
+    ) = dao.findById(id)
 
     override suspend fun insert(
         tipo: TipoDespesaEntity
-    ) =
-        dao.insert(tipo)
+    ) = dao.insert(tipo)
 
     override suspend fun update(
         tipo: TipoDespesaEntity
-    ) =
-        dao.update(tipo)
+    ) = dao.update(tipo)
 }

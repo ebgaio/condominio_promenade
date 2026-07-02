@@ -41,5 +41,6 @@ data class DespesaEntity(
 
     val descricaoLivre: String,
 
-    val valor: Double
+    // Total calculado automaticamente pela soma dos itens
+    val valor: Double = 0.0
 )
