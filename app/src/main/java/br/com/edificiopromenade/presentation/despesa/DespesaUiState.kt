@@ -2,7 +2,7 @@ package br.com.edificiopromenade.presentation.despesa
 
 import br.com.edificiopromenade.presentation.common.message.UiMessage
 import br.com.edificiopromenade.presentation.despesa.model.DespesaItemUi
-import br.com.edificiopromenade.presentation.despesa.model.TipoDespesaUi
+import br.com.edificiopromenade.presentation.tipodespesa.model.TipoDespesaItemUi
 
 data class DespesaUiState(
 
@@ -12,9 +12,9 @@ data class DespesaUiState(
 
     val despesas: List<DespesaItemUi> = emptyList(),
 
-    val tiposDespesa: List<TipoDespesaUi> = emptyList(),
+    val tiposDespesa: List<TipoDespesaItemUi> = emptyList(),
 
-    val tipoSelecionado: TipoDespesaUi? = null,
+    val tipoSelecionado: TipoDespesaItemUi? = null,
 
     val expandirTipos: Boolean = false,
 

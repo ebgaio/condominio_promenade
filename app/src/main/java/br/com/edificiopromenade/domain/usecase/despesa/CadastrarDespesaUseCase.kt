@@ -1,6 +1,7 @@
 package br.com.edificiopromenade.domain.usecase.despesa
 
 import br.com.edificiopromenade.data.local.entity.DespesaEntity
+import br.com.edificiopromenade.domain.model.CadastrarDespesaCommand
 import br.com.edificiopromenade.domain.repository.DespesaRepository
 import jakarta.inject.Inject
 
@@ -9,9 +10,15 @@ class CadastrarDespesaUseCase @Inject constructor(
 ) {
 
     suspend operator fun invoke(
-        despesa: DespesaEntity
+        command: CadastrarDespesaCommand
     ): Long {
 
-        return repository.insert(despesa)
+        val entity = DespesaEntity(
+            fechamentoId = command.fechamentoId,
+            tipoDespesaId = command.tipoDespesaId,
+            descricaoLivre = command.descricaoLivre,
+            valor = command.valor
+        )
+        return repository.insert(entity)
     }
 }

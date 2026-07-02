@@ -2,18 +2,19 @@ package br.com.edificiopromenade.presentation.despesa
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import br.com.edificiopromenade.data.local.entity.DespesaEntity
+import br.com.edificiopromenade.domain.model.CadastrarDespesaCommand
+import br.com.edificiopromenade.domain.model.ExcluirDespesaCommand
 import br.com.edificiopromenade.domain.repository.FechamentoRepository
 import br.com.edificiopromenade.domain.usecase.despesa.CadastrarDespesaUseCase
 import br.com.edificiopromenade.domain.usecase.despesa.ConsultarDespesasPorFechamentoUseCase
 import br.com.edificiopromenade.domain.usecase.despesa.ExcluirDespesaUseCase
 import br.com.edificiopromenade.domain.usecase.despesa.VerificarDespesaExistenteUseCase
 import br.com.edificiopromenade.domain.usecase.fechamento.FinalizarFechamentoUseCase
-import br.com.edificiopromenade.domain.usecase.tipodespesa.ConsultarTiposDespesaUseCase
 import br.com.edificiopromenade.presentation.common.message.UiMessage
 import br.com.edificiopromenade.presentation.despesa.mapper.toUi
 import br.com.edificiopromenade.presentation.despesa.model.DespesaItemUi
-import br.com.edificiopromenade.presentation.despesa.model.TipoDespesaUi
+import br.com.edificiopromenade.presentation.tipodespesa.model.TipoDespesaItemUi
+import br.com.edificiopromenade.presentation.tipodespesa.usecase.ConsultarTiposDespesaUiUseCase
 import br.com.edificiopromenade.presentation.util.MoneyFormatter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
@@ -26,7 +27,7 @@ class DespesaViewModel @Inject constructor(
     private val cadastrarDespesaUseCase: CadastrarDespesaUseCase,
     private val consultarDespesasPorFechamentoUseCase: ConsultarDespesasPorFechamentoUseCase,
     private val excluirDespesaUseCase: ExcluirDespesaUseCase,
-    private val consultarTiposDespesaUseCase: ConsultarTiposDespesaUseCase,
+    private val consultarTiposDespesaUiUseCase: ConsultarTiposDespesaUiUseCase,
     private val finalizarFechamentoUseCase: FinalizarFechamentoUseCase,
     private val verificarDespesaExistenteUseCase: VerificarDespesaExistenteUseCase,
     private val fechamentoRepository: FechamentoRepository
@@ -73,10 +74,8 @@ class DespesaViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            consultarTiposDespesaUseCase()
-                .collect { tipos ->
-
-                    val listaUi = tipos.map { it.toUi() }
+            consultarTiposDespesaUiUseCase()
+                .collect { listaUi ->
 
                     _uiState.value =
                         _uiState.value.copy(
@@ -149,7 +148,7 @@ class DespesaViewModel @Inject constructor(
             }
 
             cadastrarDespesaUseCase(
-                DespesaEntity(
+                CadastrarDespesaCommand(
                     fechamentoId = fechamentoId,
                     tipoDespesaId = _uiState.value.tipoSelecionado!!.id,
                     descricaoLivre = _uiState.value.descricaoLivre,
@@ -198,7 +197,11 @@ class DespesaViewModel @Inject constructor(
 
         viewModelScope.launch {
 
-            excluirDespesaUseCase(despesa.id)
+            excluirDespesaUseCase(
+                ExcluirDespesaCommand(
+                    despesa.id
+                )
+            )
 
             _uiState.value =
                 _uiState.value.copy(
@@ -228,7 +231,7 @@ class DespesaViewModel @Inject constructor(
     }
 
     fun selecionarTipo(
-        tipo: TipoDespesaUi
+        tipo: TipoDespesaItemUi
     ) {
         _uiState.value =
             _uiState.value.copy(
