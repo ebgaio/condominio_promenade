@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
+import br.com.edificiopromenade.data.local.entity.DespesaComItensEntity
 import br.com.edificiopromenade.data.local.entity.DespesaComTipoEntity
 import br.com.edificiopromenade.data.local.entity.DespesaEntity
 import kotlinx.coroutines.flow.Flow
@@ -97,4 +98,36 @@ interface DespesaDao {
     suspend fun findById(
         id: Long
     ): DespesaEntity?
+
+    @Transaction
+    @Query("""
+        SELECT *
+        FROM despesas
+        WHERE id = :despesaId
+    """)
+    suspend fun findComItens(
+        despesaId: Long
+    ): DespesaComItensEntity?
+
+    @Transaction
+    @Query("""
+        SELECT *
+        FROM despesas
+        WHERE fechamentoId = :fechamentoId
+        ORDER BY descricaoLivre
+    """)
+    fun findComItensByFechamento(
+        fechamentoId: Long
+    ): Flow<List<DespesaComItensEntity>>
+
+    @Transaction
+    @Query("""
+        SELECT *
+        FROM despesas
+        WHERE fechamentoId = :fechamentoId
+        ORDER BY descricaoLivre
+    """)
+    suspend fun findComItensListByFechamento(
+        fechamentoId: Long
+    ): List<DespesaComItensEntity>
 }

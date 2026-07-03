@@ -33,5 +33,5 @@ class DespesaItemRepositoryImpl @Inject constructor(
 
     override suspend fun calcularTotalItens(
         despesaId: Long
-    ) = dao.calcularTotalItens(despesaId) ?: 0.0
+    ) = dao.calcularTotalItens(despesaId)
 }

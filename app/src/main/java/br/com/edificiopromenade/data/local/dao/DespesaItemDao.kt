@@ -53,5 +53,5 @@ interface DespesaItemDao {
     """)
     suspend fun calcularTotalItens(
         despesaId: Long
-    ): Double?
+    ): Double
 }

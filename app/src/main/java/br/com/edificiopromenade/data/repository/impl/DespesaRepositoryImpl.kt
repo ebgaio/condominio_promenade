@@ -1,6 +1,7 @@
 package br.com.edificiopromenade.data.repository.impl
 
 import br.com.edificiopromenade.data.local.dao.DespesaDao
+import br.com.edificiopromenade.data.local.entity.DespesaComItensEntity
 import br.com.edificiopromenade.data.local.entity.DespesaComTipoEntity
 import br.com.edificiopromenade.data.local.entity.DespesaEntity
 import br.com.edificiopromenade.domain.repository.DespesaRepository
@@ -56,6 +57,28 @@ class DespesaRepositoryImpl @Inject constructor(
 
     override suspend fun findById(
         id: Long
-    ) =
-        dao.findById(id)
+    ) = dao.findById(id)
+
+    override suspend fun findComItens(
+        despesaId: Long
+    ): DespesaComItensEntity? {
+
+        return dao.findComItens(
+            despesaId
+        )
+    }
+
+    override fun findComItensByFechamento(
+        fechamentoId: Long
+    ) = dao.findComItensByFechamento(
+            fechamentoId
+        )
+
+    override suspend fun findComItensListByFechamento(
+        fechamentoId: Long
+    ): List<DespesaComItensEntity> {
+        return dao.findComItensListByFechamento(
+            fechamentoId
+        )
+    }
 }

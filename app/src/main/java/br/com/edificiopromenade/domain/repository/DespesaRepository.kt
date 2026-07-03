@@ -1,5 +1,6 @@
 package br.com.edificiopromenade.domain.repository
 
+import br.com.edificiopromenade.data.local.entity.DespesaComItensEntity
 import br.com.edificiopromenade.data.local.entity.DespesaComTipoEntity
 import br.com.edificiopromenade.data.local.entity.DespesaEntity
 import kotlinx.coroutines.flow.Flow
@@ -42,4 +43,16 @@ interface DespesaRepository {
     suspend fun findById(
         id: Long
     ): DespesaEntity?
+
+    suspend fun findComItens(
+        despesaId: Long
+    ): DespesaComItensEntity?
+
+    fun findComItensByFechamento(
+        fechamentoId: Long
+    ): Flow<List<DespesaComItensEntity>>
+
+    suspend fun findComItensListByFechamento(
+        fechamentoId: Long
+    ): List<DespesaComItensEntity>
 }
