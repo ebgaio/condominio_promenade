@@ -1,4 +1,4 @@
-package br.com.edificiopromenade.presentation.despesa.model
+package br.com.edificiopromenade.presentation.common.model
 
 data class TipoDespesaUi(
 

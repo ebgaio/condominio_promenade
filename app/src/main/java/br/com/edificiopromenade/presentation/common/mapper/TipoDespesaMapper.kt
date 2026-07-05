@@ -1,11 +1,11 @@
-package br.com.edificiopromenade.presentation.tipodespesa.mapper
+package br.com.edificiopromenade.presentation.common.mapper
 
 import br.com.edificiopromenade.data.local.entity.TipoDespesaEntity
-import br.com.edificiopromenade.presentation.tipodespesa.model.TipoDespesaItemUi
+import br.com.edificiopromenade.presentation.common.model.DespesaItemUi
 
 fun TipoDespesaEntity.toUi() =
 
-    TipoDespesaItemUi(
+    DespesaItemUi(
 
         id = id,
 

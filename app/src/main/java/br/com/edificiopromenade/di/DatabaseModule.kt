@@ -6,6 +6,7 @@ import br.com.edificiopromenade.data.local.dao.ApartamentoDao
 import br.com.edificiopromenade.data.local.dao.CondominioDao
 import br.com.edificiopromenade.data.local.dao.DemonstrativoApartamentoDao
 import br.com.edificiopromenade.data.local.dao.DespesaDao
+import br.com.edificiopromenade.data.local.dao.DespesaItemDao
 import br.com.edificiopromenade.data.local.dao.FechamentoMensalDao
 import br.com.edificiopromenade.data.local.dao.MoradorDao
 import br.com.edificiopromenade.data.local.dao.TipoDespesaDao
@@ -77,4 +78,10 @@ object DatabaseModule {
         database: AppDatabase
     ): DemonstrativoApartamentoDao =
         database.demonstrativoDao()
+
+    @Provides
+    fun provideDespesaItemDao(
+        database: AppDatabase
+    ): DespesaItemDao =
+        database.despesaItemDao()
 }

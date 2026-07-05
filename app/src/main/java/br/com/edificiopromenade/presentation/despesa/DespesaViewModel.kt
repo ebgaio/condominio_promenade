@@ -11,9 +11,9 @@ import br.com.edificiopromenade.domain.usecase.despesa.ExcluirDespesaUseCase
 import br.com.edificiopromenade.domain.usecase.despesa.VerificarDespesaExistenteUseCase
 import br.com.edificiopromenade.domain.usecase.fechamento.FinalizarFechamentoUseCase
 import br.com.edificiopromenade.presentation.common.message.UiMessage
-import br.com.edificiopromenade.presentation.despesa.mapper.toUi
-import br.com.edificiopromenade.presentation.despesa.model.DespesaItemUi
-import br.com.edificiopromenade.presentation.tipodespesa.model.TipoDespesaItemUi
+import br.com.edificiopromenade.presentation.common.mapper.toUi
+import br.com.edificiopromenade.presentation.common.model.DespesaUi
+import br.com.edificiopromenade.presentation.common.model.DespesaItemUi
 import br.com.edificiopromenade.presentation.tipodespesa.usecase.ConsultarTiposDespesaUiUseCase
 import br.com.edificiopromenade.presentation.util.MoneyFormatter
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -174,7 +174,7 @@ class DespesaViewModel @Inject constructor(
     }
 
     fun solicitarExclusao(
-        despesa: DespesaItemUi
+        despesa: DespesaUi
     ) {
         _uiState.value =
             _uiState.value.copy(
@@ -231,7 +231,7 @@ class DespesaViewModel @Inject constructor(
     }
 
     fun selecionarTipo(
-        tipo: TipoDespesaItemUi
+        tipo: DespesaItemUi
     ) {
         _uiState.value =
             _uiState.value.copy(

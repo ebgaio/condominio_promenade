@@ -4,13 +4,9 @@ import br.com.edificiopromenade.domain.repository.DespesaItemRepository
 import jakarta.inject.Inject
 
 class ConsultarItensDespesaUseCase @Inject constructor(
-
     private val repository: DespesaItemRepository
-
 ) {
-
     operator fun invoke(
         despesaId: Long
-    ) =
-        repository.findByDespesa(despesaId)
+    ) = repository.findByDespesa(despesaId)
 }

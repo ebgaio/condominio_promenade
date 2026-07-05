@@ -1,6 +1,6 @@
-package br.com.edificiopromenade.presentation.tipodespesa.model
+package br.com.edificiopromenade.presentation.common.model
 
-data class TipoDespesaItemUi(
+data class DespesaItemUi(
 
     val id: Long,
 
