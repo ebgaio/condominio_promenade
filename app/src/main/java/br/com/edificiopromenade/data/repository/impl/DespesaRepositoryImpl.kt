@@ -81,4 +81,14 @@ class DespesaRepositoryImpl @Inject constructor(
             fechamentoId
         )
     }
+
+    override suspend fun atualizarValor(
+        despesaId: Long,
+        novoValor: Double
+    ) {
+        dao.atualizarValor(
+            despesaId,
+            novoValor
+        )
+    }
 }

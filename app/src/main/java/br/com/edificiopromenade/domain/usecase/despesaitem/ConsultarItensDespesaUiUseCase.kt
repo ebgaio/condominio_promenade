@@ -1,6 +1,5 @@
-package br.com.edificiopromenade.presentation.despesaitem.usecase
+package br.com.edificiopromenade.domain.usecase.despesaitem
 
-import br.com.edificiopromenade.domain.usecase.despesaitem.ConsultarItensDespesaUseCase
 import br.com.edificiopromenade.presentation.common.mapper.toUi
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.map

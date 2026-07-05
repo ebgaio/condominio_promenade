@@ -113,10 +113,7 @@ class DespesaViewModel @Inject constructor(
     fun salvar() {
         viewModelScope.launch {
 
-            val valorDespesa = _uiState.value.valor
-                .replace(".", "")
-                .replace(",", ".")
-                .toDoubleOrNull()
+            val valorDespesa = stateToDouble()
 
             if (valorDespesa == null || valorDespesa <= 0.0) {
                 _uiState.value =
@@ -125,7 +122,6 @@ class DespesaViewModel @Inject constructor(
                             "Informe um valor válido para a despesa."
                         )
                     )
-
                 return@launch
             }
 
@@ -173,6 +169,13 @@ class DespesaViewModel @Inject constructor(
         }
     }
 
+    private fun stateToDouble(): Double? {
+        return _uiState.value.valor
+            .replace(".", "")
+            .replace(",", ".")
+            .toDoubleOrNull()
+    }
+
     fun solicitarExclusao(
         despesa: DespesaUi
     ) {
@@ -216,6 +219,7 @@ class DespesaViewModel @Inject constructor(
     fun limparMensagem() {
         _uiState.value =
             _uiState.value.copy(
+                mensagem = null,
                 valor = "",
                 descricaoLivre = ""
             )

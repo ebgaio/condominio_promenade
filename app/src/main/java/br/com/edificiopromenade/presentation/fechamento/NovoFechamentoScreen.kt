@@ -94,9 +94,7 @@ fun NovoFechamentoScreen(
                     label = {
                         Text("Mês")
                     },
-                    modifier = Modifier
-                        .menuAnchor()
-                        .fillMaxWidth()
+                    modifier = Modifier.menuAnchor().fillMaxWidth()
                 )
 
                 ExposedDropdownMenu(

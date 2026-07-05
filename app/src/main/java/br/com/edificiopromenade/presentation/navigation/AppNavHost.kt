@@ -2,14 +2,17 @@ package br.com.edificiopromenade.presentation.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import br.com.edificiopromenade.presentation.apartment.ApartamentoScreen
 import br.com.edificiopromenade.presentation.apartment.detail.ApartamentoDetalheScreen
 import br.com.edificiopromenade.presentation.condominio.CondominioScreen
 import br.com.edificiopromenade.presentation.demonstrativo.DemonstrativosScreen
 import br.com.edificiopromenade.presentation.despesa.DespesaScreen
+import br.com.edificiopromenade.presentation.despesaitem.DespesaItemScreen
 import br.com.edificiopromenade.presentation.fechamento.NovoFechamentoScreen
 import br.com.edificiopromenade.presentation.history.HistoryScreen
 import br.com.edificiopromenade.presentation.home.HomeScreen
@@ -129,7 +132,6 @@ fun AppNavHost(
 
             DespesaScreen(
                 fechamentoId = fechamentoId,
-
                 onVoltar = {
                     navController.popBackStack()
                 },
@@ -137,6 +139,32 @@ fun AppNavHost(
                     navController.navigate(
                         AppDestinations.demonstrativosRoute(id)
                     )
+                },
+                onAbrirItensDespesa = { despesaId ->
+                    navController.navigate(
+                        AppDestinations.despesaItemRoute(despesaId
+                        )
+                    )
+                }
+            )
+        }
+
+        composable(
+            route = AppDestinations.DESPESA_ITEM,
+            arguments = listOf(
+                navArgument("despesaId") {
+                    type = NavType.LongType
+                }
+            )
+
+        ) { backStackEntry ->
+            val despesaId = backStackEntry.arguments!!
+                    .getLong("despesaId")
+
+            DespesaItemScreen(
+                despesaId = despesaId,
+                onVoltar = {
+                    navController.popBackStack()
                 }
             )
         }

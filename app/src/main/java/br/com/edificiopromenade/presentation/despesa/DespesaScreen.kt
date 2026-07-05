@@ -43,6 +43,7 @@ fun DespesaScreen(
     fechamentoId: Long,
     onVoltar: () -> Unit,
     onAbrirDemonstrativos: (Long) -> Unit,
+    onAbrirItensDespesa: (Long) -> Unit,
     viewModel: DespesaViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
@@ -63,9 +64,7 @@ fun DespesaScreen(
                 },
 
                 text = {
-                    Text(
-                        "Deseja realmente excluir a despesa '${despesa.descricao}'?"
-                    )
+                    Text("Deseja realmente excluir a despesa '${despesa.descricao}'?")
                 },
 
                 confirmButton = {
@@ -76,6 +75,14 @@ fun DespesaScreen(
                         }
                     ) {
                         Text("Sim")
+                    }
+
+                    Button(
+                        onClick = {
+                            onAbrirItensDespesa(despesa.id)
+                        }
+                    ) {
+                        Text("Itens")
                     }
                 },
 
@@ -106,9 +113,7 @@ fun DespesaScreen(
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-
-        Scaffold(
-        ) { padding ->
+        Scaffold { padding ->
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -124,7 +129,6 @@ fun DespesaScreen(
                 )
 
                 if (state.fechamentoFinalizado) {
-
                     Text(
                         text = "FECHAMENTO FINALIZADO",
                         color = MaterialTheme.colorScheme.error,
@@ -133,7 +137,6 @@ fun DespesaScreen(
                 }
 
                 state.mensagem?.let { mensagem ->
-
                     InlineMessageBanner(
                         message = when (mensagem) {
                             is UiMessage.Success -> mensagem.text
@@ -162,10 +165,9 @@ fun DespesaScreen(
                             Text("Tipo de Despesa")
                         },
 
-                        modifier = Modifier
-                            .menuAnchor()
-                            .fillMaxWidth()
+                        modifier = Modifier.menuAnchor().fillMaxWidth()
                     )
+
                     ExposedDropdownMenu(
                         expanded = state.expandirTipos,
 
@@ -251,17 +253,27 @@ fun DespesaScreen(
                                     modifier = Modifier.height(8.dp)
                                 )
 
-                                Button(
-                                    enabled = !state.fechamentoFinalizado,
-                                    onClick = {
-                                        focusManager.clearFocus()
-                                        keyboardController?.hide()
-                                        viewModel.solicitarExclusao(
-                                            despesa
-                                        )
-                                    }
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
-                                    Text("Excluir")
+                                    Button(
+                                        onClick = {
+                                            onAbrirItensDespesa(despesa.id)
+                                        }
+                                    ) {
+                                        Text("Itens")
+                                    }
+
+                                    Button(
+                                        enabled = !state.fechamentoFinalizado,
+                                        onClick = {
+                                            focusManager.clearFocus()
+                                            keyboardController?.hide()
+                                            viewModel.solicitarExclusao(despesa)
+                                        }
+                                    ) {
+                                        Text("Excluir")
+                                    }
                                 }
                             }
                         }
@@ -272,14 +284,12 @@ fun DespesaScreen(
 
                 Text(
                     text = "Total",
-                    style = MaterialTheme.typography
-                        .titleMedium
+                    style = MaterialTheme.typography.titleMedium
                 )
 
                 Text(
                     text = formatarMoeda(total),
-                    style = MaterialTheme.typography
-                        .titleLarge
+                    style = MaterialTheme.typography.titleLarge
                 )
 
                 Row(
