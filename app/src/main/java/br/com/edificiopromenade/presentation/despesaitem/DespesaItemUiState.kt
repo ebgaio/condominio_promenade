@@ -1,7 +1,7 @@
 package br.com.edificiopromenade.presentation.despesaitem
 
 import br.com.edificiopromenade.presentation.common.message.UiMessage
-import br.com.edificiopromenade.presentation.common.model.DespesaUi
+import br.com.edificiopromenade.presentation.despesaitem.model.DespesaItemUi
 
 data class DespesaItemUiState(
 
@@ -9,7 +9,9 @@ data class DespesaItemUiState(
 
     val valor: String = "",
 
-    val itens: List<DespesaUi> = emptyList(),
+    val itens: List<DespesaItemUi> = emptyList(),
 
-    val mensagem: UiMessage? = null
+    val mensagem: UiMessage? = null,
+
+    val itemSelecionadoParaExclusao: DespesaItemUi? = null
 )

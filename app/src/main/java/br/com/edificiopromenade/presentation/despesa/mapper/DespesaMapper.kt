@@ -1,7 +1,7 @@
-package br.com.edificiopromenade.presentation.common.mapper
+package br.com.edificiopromenade.presentation.despesa.mapper
 
 import br.com.edificiopromenade.data.local.entity.DespesaComTipoEntity
-import br.com.edificiopromenade.presentation.common.model.DespesaUi
+import br.com.edificiopromenade.presentation.despesa.model.DespesaUi
 
 fun DespesaComTipoEntity.toUi() =
 
