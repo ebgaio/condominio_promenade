@@ -2,14 +2,13 @@ package br.com.edificiopromenade.presentation.despesaitem
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import br.com.edificiopromenade.data.local.entity.DespesaItemEntity
-import br.com.edificiopromenade.domain.usecase.despesa.AtualizarValorDespesaUseCase
-import br.com.edificiopromenade.domain.usecase.despesaitem.CadastrarItemDespesaUseCase
-import br.com.edificiopromenade.domain.usecase.despesaitem.CalcularTotalItensDespesaUseCase
+import br.com.edificiopromenade.domain.usecase.despesa.AtualizarTotalDespesaUseCase
+import br.com.edificiopromenade.domain.usecase.despesaitem.AtualizarDespesaItemUseCase
+import br.com.edificiopromenade.domain.usecase.despesaitem.CadastrarDespesaItemUseCase
 import br.com.edificiopromenade.domain.usecase.despesaitem.ConsultarItensDespesaUiUseCase
 import br.com.edificiopromenade.domain.usecase.despesaitem.ExcluirItemDespesaUseCase
-import br.com.edificiopromenade.presentation.despesaitem.mapper.toEntity
 import br.com.edificiopromenade.presentation.common.message.UiMessage
+import br.com.edificiopromenade.presentation.despesaitem.mapper.toEntity
 import br.com.edificiopromenade.presentation.despesaitem.model.DespesaItemUi
 import br.com.edificiopromenade.presentation.util.MoneyFormatter
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,10 +20,10 @@ import kotlinx.coroutines.launch
 @HiltViewModel
 class DespesaItemViewModel @Inject constructor(
     private val consultarItensDespesaUiUseCase: ConsultarItensDespesaUiUseCase,
-    private val cadastrarItemDespesaUseCase: CadastrarItemDespesaUseCase,
-    private val calcularTotalItensUseCase: CalcularTotalItensDespesaUseCase,
-    private val atualizarValorDespesaUseCase: AtualizarValorDespesaUseCase,
-    private val excluirItemDespesaUseCase: ExcluirItemDespesaUseCase
+    private val cadastrarDespesaItemUseCase: CadastrarDespesaItemUseCase,
+    private val atualizarTotalDespesaUseCase: AtualizarTotalDespesaUseCase,
+    private val excluirItemDespesaUseCase: ExcluirItemDespesaUseCase,
+    private val atualizarDespesaItemUseCase: AtualizarDespesaItemUseCase
 ) : ViewModel() {
 
     private val _uiState =
@@ -56,9 +55,9 @@ class DespesaItemViewModel @Inject constructor(
     fun salvar() {
         viewModelScope.launch {
 
-            val valor = stateToDouble()
+            val valorItem = stateToDouble()
 
-            if (valor == null || valor <= 0.0) {
+            if (valorItem == null || valorItem <= 0.0) {
                 _uiState.value =
                     _uiState.value.copy(
                         mensagem = UiMessage.Error(
@@ -68,13 +67,25 @@ class DespesaItemViewModel @Inject constructor(
                 return@launch
             }
 
-            cadastrarItemDespesaUseCase(
-                DespesaItemEntity(
-                    despesaId = despesaId,
-                    descricao = _uiState.value.descricao,
-                    valor = valor
+            val itemEdicao = uiState.value.itemEmEdicao
+
+            if (itemEdicao == null) {
+                cadastrarDespesaItemUseCase(
+                    DespesaItemUi(
+                        id = 0,
+                        despesaId = despesaId,
+                        descricao = uiState.value.descricao,
+                        valor = valorItem
+                    ).toEntity()
                 )
-            )
+            } else {
+                atualizarDespesaItemUseCase(
+                    itemEdicao.copy(
+                        descricao = uiState.value.descricao,
+                        valor = valorItem
+                    ).toEntity()
+                )
+            }
 
             atualizarTotalDespesa()
 
@@ -82,8 +93,12 @@ class DespesaItemViewModel @Inject constructor(
                 _uiState.value.copy(
                     descricao = "",
                     valor = "",
+                    itemEmEdicao = null,
                     mensagem = UiMessage.Success(
-                            "Item cadastrado."
+                        if (itemEdicao == null)
+                            "Item cadastrado com sucesso."
+                        else
+                            "Item atualizado com sucesso."
                         )
                 )
         }
@@ -105,7 +120,7 @@ class DespesaItemViewModel @Inject constructor(
             )
     }
 
-    fun confirmarExclusao() {
+    fun excluir() {
         val item = _uiState.value.itemSelecionadoParaExclusao
                 ?: return
 
@@ -120,19 +135,28 @@ class DespesaItemViewModel @Inject constructor(
                 _uiState.value.copy(
                     itemSelecionadoParaExclusao = null,
                     mensagem = UiMessage.Success(
-                            "Item excluído."
+                            "Item excluído com sucesso."
                         )
                 )
         }
     }
 
+    fun editar(
+        item: DespesaItemUi
+    ) {
+        _uiState.value =
+            _uiState.value.copy(
+                itemEmEdicao = item,
+                descricao = item.descricao,
+                valor = MoneyFormatter.format(
+                    (item.valor * 100).toLong().toString()
+                )
+            )
+    }
+
     private suspend fun atualizarTotalDespesa() {
-        val total = calcularTotalItensUseCase(
+        atualizarTotalDespesaUseCase(
             despesaId
-        )
-        atualizarValorDespesaUseCase(
-            despesaId,
-            total
         )
     }
 

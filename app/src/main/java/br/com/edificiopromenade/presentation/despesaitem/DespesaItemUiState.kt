@@ -13,5 +13,7 @@ data class DespesaItemUiState(
 
     val mensagem: UiMessage? = null,
 
-    val itemSelecionadoParaExclusao: DespesaItemUi? = null
+    val itemSelecionadoParaExclusao: DespesaItemUi? = null,
+
+    val itemEmEdicao: DespesaItemUi? = null
 )

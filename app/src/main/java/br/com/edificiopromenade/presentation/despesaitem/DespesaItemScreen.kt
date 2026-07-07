@@ -140,6 +140,27 @@ fun DespesaItemScreen(
                                 Text(item.descricao)
                                 Text(formatarMoeda(item.valor)
                                 )
+
+                                Button(
+                                    onClick = {
+                                        focusManager.clearFocus()
+                                        keyboardController?.hide()
+                                        viewModel.solicitarExclusao(item)
+                                        viewModel.excluir()
+                                    }
+                                ) {
+                                    Text("Excluir")
+                                }
+
+                                Button(
+                                    onClick = {
+                                        focusManager.clearFocus()
+                                        keyboardController?.hide()
+                                        viewModel.editar(item)
+                                    }
+                                ) {
+                                    Text("Editar")
+                                }
                             }
                         }
                     }
