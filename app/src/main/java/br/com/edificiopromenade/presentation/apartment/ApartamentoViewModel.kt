@@ -2,13 +2,14 @@ package br.com.edificiopromenade.presentation.apartment
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import br.com.edificiopromenade.data.local.entity.ApartamentoEntity
 import br.com.edificiopromenade.domain.usecase.apartamento.AlterarApartamentoUseCase
 import br.com.edificiopromenade.domain.usecase.apartamento.CadastrarApartamentoUseCase
 import br.com.edificiopromenade.domain.usecase.apartamento.ConsultarApartamentoPorIdUseCase
-import br.com.edificiopromenade.domain.usecase.apartamento.ConsultarApartamentosUseCase
+import br.com.edificiopromenade.domain.usecase.apartamento.ConsultarApartamentosUiUseCase
 import br.com.edificiopromenade.domain.usecase.apartamento.VerificarApartamentoExistenteUseCase
 import br.com.edificiopromenade.domain.usecase.condominio.ConsultarCondominioAtivoUseCase
+import br.com.edificiopromenade.presentation.apartment.mapper.toEntity
+import br.com.edificiopromenade.presentation.apartment.model.ApartamentoUi
 import br.com.edificiopromenade.presentation.common.message.UiMessage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
@@ -22,7 +23,7 @@ import kotlinx.coroutines.launch
 class ApartamentoViewModel @Inject constructor(
     private val cadastrarApartamentoUseCase: CadastrarApartamentoUseCase,
     private val consultarCondominioAtivoUseCase: ConsultarCondominioAtivoUseCase,
-    private val consultarApartamentosUseCase: ConsultarApartamentosUseCase,
+    private val consultarApartamentosUiUseCase: ConsultarApartamentosUiUseCase,
     private val consultarApartamentoPorIdUseCase: ConsultarApartamentoPorIdUseCase,
     private val alterarApartamentoUseCase: AlterarApartamentoUseCase,
     private val verificarApartamentoExistenteUseCase: VerificarApartamentoExistenteUseCase
@@ -102,13 +103,13 @@ class ApartamentoViewModel @Inject constructor(
             if (_uiState.value.modoEdicao) {
 
                 alterarApartamentoUseCase(
-                    ApartamentoEntity(
+                    ApartamentoUi(
                         id = uiState.value.apartamentoSelecionadoId,
                         condominioId = condominio.id,
                         numero = uiState.value.numero,
                         percentualCopasa = fracao,
                         ativo = true
-                    )
+                    ).toEntity()
                 )
 
             } else {
@@ -128,13 +129,12 @@ class ApartamentoViewModel @Inject constructor(
                 }
 
                 cadastrarApartamentoUseCase(
-
-                    ApartamentoEntity(
+                    ApartamentoUi(
                         condominioId = condominio.id,
                         numero = uiState.value.numero,
                         percentualCopasa = fracao,
                         ativo = true
-                    )
+                    ).toEntity()
                 )
             }
 
@@ -162,7 +162,7 @@ class ApartamentoViewModel @Inject constructor(
 
         viewModelScope.launch {
 
-            consultarApartamentosUseCase()
+            consultarApartamentosUiUseCase()
                 .collect { lista ->
                     _uiState.value =
                         _uiState.value.copy(
