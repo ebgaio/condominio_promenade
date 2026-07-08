@@ -2,10 +2,11 @@ package br.com.edificiopromenade.presentation.condominio
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import br.com.edificiopromenade.data.local.entity.CondominioEntity
 import br.com.edificiopromenade.domain.usecase.condominio.CadastrarCondominioUseCase
 import br.com.edificiopromenade.domain.usecase.condominio.ConsultarCondominioAtivoUseCase
 import br.com.edificiopromenade.presentation.common.message.UiMessage
+import br.com.edificiopromenade.presentation.condominio.mapper.toEntity
+import br.com.edificiopromenade.presentation.condominio.mapper.toUi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,7 +14,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import java.time.LocalDateTime
 
 @HiltViewModel
 class CondominioViewModel @Inject constructor(
@@ -37,7 +37,10 @@ class CondominioViewModel @Inject constructor(
     ) {
         _uiState.value =
             _uiState.value.copy(
-                nome = valor
+                condominio =
+                    _uiState.value.condominio.copy(
+                        nome = valor
+                    )
             )
     }
 
@@ -46,10 +49,13 @@ class CondominioViewModel @Inject constructor(
     ) {
         _uiState.value =
             _uiState.value.copy(
-                cnpj = cnpj.filter {
-                    it.isDigit()
-                }
-                .take(14)
+                condominio =
+                    _uiState.value.condominio.copy(
+                        cnpj = cnpj.filter {
+                            it.isDigit()
+                        }
+                        .take(14)
+                    )
             )
     }
 
@@ -58,7 +64,10 @@ class CondominioViewModel @Inject constructor(
     ) {
         _uiState.value =
             _uiState.value.copy(
-                endereco = valor
+                condominio =
+                    _uiState.value.condominio.copy(
+                        endereco = valor
+                    )
             )
     }
 
@@ -67,7 +76,10 @@ class CondominioViewModel @Inject constructor(
     ) {
         _uiState.value =
             _uiState.value.copy(
-                nomeAdministradora = valor
+                condominio =
+                    _uiState.value.condominio.copy(
+                        nomeAdministradora = valor
+                    )
             )
     }
 
@@ -76,7 +88,10 @@ class CondominioViewModel @Inject constructor(
     ) {
         _uiState.value =
             _uiState.value.copy(
-                emailAdministradora = valor
+                condominio =
+                    _uiState.value.condominio.copy(
+                        emailAdministradora = valor
+                    )
             )
     }
 
@@ -84,41 +99,33 @@ class CondominioViewModel @Inject constructor(
 
         viewModelScope.launch {
 
-            val novoId = cadastrarCondominioUseCase(
+            val somenteNumeros =
+                _uiState.value.condominio.cnpj.filter {
+                    it.isDigit()
+                }
 
-                CondominioEntity(
-                    nome = _uiState.value.nome,
-                    cnpj = _uiState.value.cnpj,
-                    endereco = _uiState.value.endereco,
-                    nomeAdministradora = _uiState.value.nomeAdministradora,
-                    emailAdministradora = _uiState.value.emailAdministradora,
-                    ativo = true,
-                    dataCriacao = LocalDateTime.now()
-                )
+            if (somenteNumeros.length != 14) {
+                _uiState.value =
+                    _uiState.value.copy(
+                        mensagem = UiMessage.Error(
+                            "CNPJ inválido."
+                        ),
+                    )
+                return@launch
+            }
+
+            val novoId = cadastrarCondominioUseCase(
+            _uiState.value
+                .condominio
+                .toEntity()
             )
 
             _uiState.value =
                 _uiState.value.copy(
                     mensagem = UiMessage.Success(
                         "Condomínio salvo com sucesso."
-                    ),
-                    salvoComSucesso = true
+                    )
                 )
-        }
-
-        val somenteNumeros =
-            _uiState.value.cnpj.filter {
-                it.isDigit()
-            }
-
-        if (somenteNumeros.length != 14) {
-            _uiState.value =
-                _uiState.value.copy(
-                    mensagem = UiMessage.Error(
-                        "CNPJ inválido."
-                    ),
-                )
-            return
         }
     }
 
@@ -138,11 +145,7 @@ class CondominioViewModel @Inject constructor(
                     condominio?.let {
                         _uiState.value =
                             _uiState.value.copy(
-                                nome = it.nome,
-                                cnpj = it.cnpj ?: "",
-                                endereco = it.endereco ?: "",
-                                nomeAdministradora = it.nomeAdministradora ?: "",
-                                emailAdministradora = it.emailAdministradora ?: ""
+                                condominio = it.toUi()
                             )
                     }
             }

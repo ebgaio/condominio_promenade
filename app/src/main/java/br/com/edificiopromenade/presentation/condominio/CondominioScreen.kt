@@ -13,6 +13,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -28,6 +29,7 @@ import br.com.edificiopromenade.presentation.util.CnpjVisualTransformation
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CondominioScreen(
+    onConcluido: (() -> Unit)? = null,
     viewModel: CondominioViewModel = hiltViewModel()
 ) {
 
@@ -65,7 +67,7 @@ fun CondominioScreen(
             }
 
             OutlinedTextField(
-                value = state.nome,
+                value = state.condominio.nome,
                 onValueChange = viewModel::onNomeChanged,
                 label = {
                     Text("Nome")
@@ -77,7 +79,7 @@ fun CondominioScreen(
             )
 
             OutlinedTextField(
-                value = state.cnpj,
+                value = state.condominio.cnpj,
                 onValueChange = {
                     viewModel.onCnpjChanged(
                         it.filter(Char::isDigit)
@@ -94,7 +96,7 @@ fun CondominioScreen(
             )
 
             OutlinedTextField(
-                value = state.endereco,
+                value = state.condominio.endereco,
                 onValueChange = viewModel::onEnderecoChanged,
                 label = {
                     Text("Endereço")
@@ -107,7 +109,7 @@ fun CondominioScreen(
 
             OutlinedTextField(
                 value =
-                    state.nomeAdministradora,
+                    state.condominio.nomeAdministradora,
                 onValueChange =
                     viewModel::onNomeAdministradoraChanged,
                 label = {
@@ -121,7 +123,7 @@ fun CondominioScreen(
 
             OutlinedTextField(
                 value =
-                    state.emailAdministradora,
+                    state.condominio.emailAdministradora,
                 onValueChange =
                     viewModel::onEmailAdministradoraChanged,
                 label = {
@@ -138,6 +140,7 @@ fun CondominioScreen(
                     focusManager.clearFocus()
                     keyboardController?.hide()
                     viewModel.salvar()
+                    onConcluido?.invoke()
                 }
             ) {
                 Text("Salvar")
