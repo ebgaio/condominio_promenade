@@ -16,7 +16,9 @@ import br.com.edificiopromenade.presentation.despesaitem.DespesaItemScreen
 import br.com.edificiopromenade.presentation.fechamento.NovoFechamentoScreen
 import br.com.edificiopromenade.presentation.history.HistoryScreen
 import br.com.edificiopromenade.presentation.home.HomeScreen
+import br.com.edificiopromenade.presentation.initialization.InitializationFlowScreen
 import br.com.edificiopromenade.presentation.moradores.MoradoresScreen
+import br.com.edificiopromenade.presentation.splah.SplashScreen
 
 @Composable
 fun AppNavHost(
@@ -27,9 +29,102 @@ fun AppNavHost(
 
     NavHost(
         navController = navController,
-        startDestination = AppDestinations.HOME,
+        startDestination = AppDestinations.SPLASH,
         modifier = modifier
     ) {
+
+        composable(
+            AppDestinations.SPLASH
+        ) {
+            SplashScreen(
+                onReady = {
+                    navController.navigate(
+                        AppDestinations.HOME
+                    ) {
+                        popUpTo(AppDestinations.SPLASH) {
+                            inclusive = true
+                        }
+                    }
+                },
+
+                onNeedCondominio = {
+                    navController.navigate(
+                        AppDestinations.CONDOMINIO
+                    ) {
+                        popUpTo(AppDestinations.SPLASH) {
+                            inclusive = true
+                        }
+                    }
+                },
+
+                onNeedApartamento = {
+                    navController.navigate(
+                        AppDestinations.APARTAMENTOS
+                    ) {
+                        popUpTo(AppDestinations.SPLASH) {
+                            inclusive = true
+                        }
+                    }
+                },
+
+                onNeedMorador = {
+                    navController.navigate(
+                        AppDestinations.MORADORES
+                    ) {
+                        popUpTo(AppDestinations.SPLASH) {
+                            inclusive = true
+                        }
+                    }
+                }
+            )
+        }
+
+        composable(
+            AppDestinations.INITIALIZATION
+        ) {
+
+            InitializationFlowScreen(
+                onCondominio = {
+                    navController.navigate(
+                        AppDestinations.CONDOMINIO
+                    ) {
+                        popUpTo(AppDestinations.INITIALIZATION) {
+                            inclusive = true
+                        }
+                    }
+                },
+
+                onApartamentos = {
+                    navController.navigate(
+                        AppDestinations.APARTAMENTOS
+                    ) {
+                        popUpTo(AppDestinations.INITIALIZATION) {
+                            inclusive = true
+                        }
+                    }
+                },
+
+                onMoradores = {
+                    navController.navigate(
+                        AppDestinations.MORADORES
+                    ) {
+                        popUpTo(AppDestinations.INITIALIZATION) {
+                            inclusive = true
+                        }
+                    }
+                },
+
+                onHome = {
+                    navController.navigate(
+                        AppDestinations.HOME
+                    ) {
+                        popUpTo(AppDestinations.INITIALIZATION) {
+                            inclusive = true
+                        }
+                    }
+                }
+            )
+        }
 
         composable(
             AppDestinations.HOME
@@ -40,21 +135,25 @@ fun AppNavHost(
                         AppDestinations.MORADORES
                     )
                 },
+
                 onCondominioClick = {
                     navController.navigate(
                         AppDestinations.CONDOMINIO
                     )
                 },
+
                 onApartamentosClick = {
                     navController.navigate(
                         AppDestinations.APARTAMENTOS
                     )
                 },
+
                 onNovoFechamentoClick = {
                     navController.navigate(
                         AppDestinations.NOVO_FECHAMENTO
                     )
                 },
+
                 onHistoricoClick = {
                     navController.navigate(
                         AppDestinations.HISTORICO
@@ -79,10 +178,26 @@ fun AppNavHost(
             MoradoresScreen()
         }
 
+//        composable(
+//            AppDestinations.CONDOMINIO
+//        ) {
+//            CondominioScreen()
+//        }
+
         composable(
             AppDestinations.CONDOMINIO
         ) {
-            CondominioScreen()
+            CondominioScreen(
+                onConcluido = {
+                    navController.navigate(
+                        AppDestinations.APARTAMENTOS
+                    ) {
+                        popUpTo(AppDestinations.CONDOMINIO) {
+                            inclusive = true
+                        }
+                    }
+                }
+            )
         }
 
         composable(
@@ -135,11 +250,13 @@ fun AppNavHost(
                 onVoltar = {
                     navController.popBackStack()
                 },
+
                 onAbrirDemonstrativos = { id ->
                     navController.navigate(
                         AppDestinations.demonstrativosRoute(id)
                     )
                 },
+
                 onAbrirItensDespesa = { despesaId ->
                     navController.navigate(
                         AppDestinations.despesaItemRoute(despesaId

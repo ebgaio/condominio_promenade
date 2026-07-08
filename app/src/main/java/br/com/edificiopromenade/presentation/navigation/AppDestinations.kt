@@ -24,6 +24,10 @@ object AppDestinations {
 
     const val DESPESA_ITEM = "despesa_item/{despesaId}"
 
+    const val SPLASH = "splash"
+
+    const val INITIALIZATION = "initialization"
+
     fun despesaItemRoute(
         despesaId: Long
     ) = "despesa_item/$despesaId"
