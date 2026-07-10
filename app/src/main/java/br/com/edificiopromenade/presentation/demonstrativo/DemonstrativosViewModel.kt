@@ -4,8 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.edificiopromenade.domain.repository.DespesaRepository
 import br.com.edificiopromenade.domain.repository.FechamentoRepository
-import br.com.edificiopromenade.domain.usecase.demonstrativo.ConsultarDemonstrativosPorFechamentoUseCase
+import br.com.edificiopromenade.domain.usecase.demonstrativo.ConsultarDemonstrativosPorFechamentoUiUseCase
 import br.com.edificiopromenade.domain.usecase.email.GerarCorpoEmailHtmlUseCase
+import br.com.edificiopromenade.presentation.demonstrativo.mapper.toEntity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,7 +18,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DemonstrativosViewModel @Inject constructor(
-    private val consultarDemonstrativosPorFechamentoUseCase: ConsultarDemonstrativosPorFechamentoUseCase,
+    private val consultarDemonstrativosPorFechamentoUiUseCase: ConsultarDemonstrativosPorFechamentoUiUseCase,
     private val fechamentoRepository: FechamentoRepository,
     private val despesaRepository: DespesaRepository,
     private val gerarCorpoEmailHtmlUseCase: GerarCorpoEmailHtmlUseCase
@@ -37,7 +38,7 @@ class DemonstrativosViewModel @Inject constructor(
         viewModelScope.launch {
 
             val lista =
-                consultarDemonstrativosPorFechamentoUseCase(
+                consultarDemonstrativosPorFechamentoUiUseCase(
                     fechamentoId
                 )
 
@@ -68,7 +69,7 @@ class DemonstrativosViewModel @Inject constructor(
                 ano = fechamento.ano,
                 despesas = despesas,
                 totalGeralDespesas = despesas.sumOf { it.valor },
-                demonstrativos = _uiState.value.demonstrativos,
+                demonstrativos = _uiState.value.demonstrativos.map { it.toEntity() },
                 totalGeralArrecadar = _uiState.value.totalGeral
             )
             onResult(html)

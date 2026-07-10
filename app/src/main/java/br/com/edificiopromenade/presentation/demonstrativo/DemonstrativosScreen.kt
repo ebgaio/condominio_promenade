@@ -81,12 +81,12 @@ fun DemonstrativosScreen(
                         ) {
 
                             Text(
-                                text = "Apartamento ${item.numeroApartamentoHistorico}",
+                                text = "Apartamento ${item.numeroApartamento}",
                                 style = MaterialTheme.typography.titleMedium
                             )
 
                             Text(
-                                text = item.nomeMoradorHistorico
+                                text = item.nomeMorador
                             )
 
                             HorizontalDivider(
@@ -102,7 +102,7 @@ fun DemonstrativosScreen(
                             )
 
                             Text(
-                                "Fração COPASA: ${item.percentualCopasaHistorica}%"
+                                "Fração COPASA: ${item.percentualCopasa}%"
                             )
 
                             Text(

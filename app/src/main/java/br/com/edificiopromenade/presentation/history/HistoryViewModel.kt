@@ -6,15 +6,13 @@ import br.com.edificiopromenade.domain.repository.ApartamentoRepository
 import br.com.edificiopromenade.domain.repository.FechamentoRepository
 import br.com.edificiopromenade.domain.usecase.historico.ConsultarDemonstrativosPorApartamentoUiUseCase
 import br.com.edificiopromenade.domain.usecase.historico.ConsultarDemonstrativosPorFechamentoUiUseCase
-import br.com.edificiopromenade.domain.usecase.historico.FormatarTextoWhatsAppUseCase
+import br.com.edificiopromenade.domain.usecase.historico.FormatarResumoWhatsAppUseCase
+import br.com.edificiopromenade.presentation.history.model.DemonstrativoHistoricoUi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.time.Month
-import java.time.format.TextStyle
-import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -23,7 +21,7 @@ class HistoryViewModel @Inject constructor(
     private val apartamentoRepository: ApartamentoRepository,
     private val consultarPorFechamentoUi: ConsultarDemonstrativosPorFechamentoUiUseCase,
     private val consultarPorApartamentoUi: ConsultarDemonstrativosPorApartamentoUiUseCase,
-    private val formatarTextoWhatsAppUseCase: FormatarTextoWhatsAppUseCase
+    private val formatarResumoWhatsAppUseCase: FormatarResumoWhatsAppUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HistoryUiState())
@@ -122,16 +120,14 @@ class HistoryViewModel @Inject constructor(
         }
     }
 
-    fun formatarParaWhatsApp(demo: br.com.edificiopromenade.presentation.history.model.DemonstrativoHistoricoUi): String {
-        // Precisamos do mês e ano do demonstrativo. Como o demonstrativoEntity não tem mês/ano direto, 
-        // em um app real buscaríamos do fechamento associado. 
-        // Para simplificar neste ViewModel, usaremos os selecionados se searchByMonth for true, 
-        // ou precisaremos de um novo UseCase para buscar os detalhes do fechamento.
-        val mesNome = Month.of(_uiState.value.selectedMonth)
-            .getDisplayName(TextStyle.FULL,
-                Locale("pt", "BR")
-            )
-        return formatarTextoWhatsAppUseCase(
-            demo, mesNome, _uiState.value.selectedYear)
+    fun formatarParaWhatsApp(
+        demo: DemonstrativoHistoricoUi
+    ): String {
+
+        return formatarResumoWhatsAppUseCase(
+            demonstrativo = demo,
+            mes = _uiState.value.selectedMonth,
+            ano = _uiState.value.selectedYear
+        )
     }
 }
