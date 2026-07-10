@@ -2,26 +2,27 @@ package br.com.edificiopromenade.presentation.moradores
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import br.com.edificiopromenade.data.local.entity.MoradorEntity
-import br.com.edificiopromenade.domain.usecase.apartamento.ListarApartamentosComMoradoresUseCase
 import br.com.edificiopromenade.domain.usecase.morador.AlterarMoradorUseCase
 import br.com.edificiopromenade.domain.usecase.morador.CadastrarMoradorUseCase
-import br.com.edificiopromenade.domain.usecase.morador.ConsultarMoradorPorIdUseCase
+import br.com.edificiopromenade.domain.usecase.morador.ConsultarMoradorPorIdUiUseCase
 import br.com.edificiopromenade.domain.usecase.morador.EncerrarMoradorUseCase
+import br.com.edificiopromenade.domain.usecase.morador.ListarApartamentosComMoradoresUiUseCase
 import br.com.edificiopromenade.presentation.common.message.UiMessage
+import br.com.edificiopromenade.presentation.resident.mapper.toEntity
+import br.com.edificiopromenade.presentation.resident.model.MoradorUi
 import dagger.hilt.android.lifecycle.HiltViewModel
+import jakarta.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDate
-import jakarta.inject.Inject
 
 @HiltViewModel
 class MoradoresViewModel @Inject constructor(
     private val cadastrarMoradorUseCase: CadastrarMoradorUseCase,
-    private val consultarMoradorPorIdUseCase: ConsultarMoradorPorIdUseCase,
+    private val consultarMoradorPorIdUiUseCase: ConsultarMoradorPorIdUiUseCase,
     private val alterarMoradorUseCase: AlterarMoradorUseCase,
-    private val listarApartamentosComMoradoresUseCase: ListarApartamentosComMoradoresUseCase,
+    private val listarApartamentosComMoradoresUiUseCase: ListarApartamentosComMoradoresUiUseCase,
     private val encerrarMoradorUseCase : EncerrarMoradorUseCase
 ) : ViewModel() {
 
@@ -38,11 +39,14 @@ class MoradoresViewModel @Inject constructor(
 
     private fun carregarApartamentos() {
 
+        _uiState.value =
+            _uiState.value.copy(
+                isLoading = true
+            )
+
         viewModelScope.launch {
-
-            listarApartamentosComMoradoresUseCase()
+            listarApartamentosComMoradoresUiUseCase()
                 .collect { apartamentos ->
-
                     _uiState.value =
                         _uiState.value.copy(
                             apartamentos = apartamentos,
@@ -50,6 +54,11 @@ class MoradoresViewModel @Inject constructor(
                         )
                 }
         }
+
+        _uiState.value =
+            _uiState.value.copy(
+                isLoading = false
+            )
     }
 
     fun onNomeChanged(    valor: String
@@ -76,7 +85,7 @@ class MoradoresViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
 
-            val morador = consultarMoradorPorIdUseCase(id)
+            val morador = consultarMoradorPorIdUiUseCase(id)
 
             if (morador != null) {
 
@@ -85,48 +94,138 @@ class MoradoresViewModel @Inject constructor(
                         moradorSelecionadoId = morador.id,
                         apartamentoIdSelecionado = morador.apartamentoId,
                         nome = morador.nome,
-                        modoEdicao = true
+                        modoEdicao = true,
+                        mensagem = null
                     )
             }
         }
     }
 
     fun encerrarMorador() {
+        val id = uiState.value.moradorSelecionadoId
 
-        if (_uiState.value.moradorSelecionadoId == 0L)
+        if (id == 0L)
             return
 
         viewModelScope.launch {
+            encerrarMoradorUseCase(
+                id,
+                LocalDate.now()
+            )
+            carregarApartamentos()
+            cancelarEdicao()
 
-                encerrarMoradorUseCase (
-                    _uiState.value.moradorSelecionadoId,
-                    LocalDate.now()
-                )
-
-                _uiState.value =
-                    _uiState.value.copy(
-                        nome = "",
-                        apartamentoIdSelecionado = 0,
-                        moradorSelecionadoId = 0,
-                        modoEdicao = false,
-                        mensagem = UiMessage.Success(
-                            "Morador encerrado com sucesso."
-                        )
+            _uiState.value =
+                _uiState.value.copy(
+                    mensagem = UiMessage.Success(
+                        "Morador encerrado com sucesso."
                     )
+                )
         }
     }
 
     fun cancelarEdicao()
     {
+        limparFormulario()
+        _uiState.value =
+            _uiState.value.copy(
+                mensagem = UiMessage.Success(
+                    "Alterações descartadas."
+                )
+            )
+    }
+
+    private suspend fun cadastrarMorador() {
+        cadastrarMoradorUseCase(
+            MoradorUi(
+                apartamentoId = uiState.value.apartamentoIdSelecionado,
+                nome = uiState.value.nome,
+                dataInicio = LocalDate.now(),
+                ativo = true
+            ).toEntity()
+        )
+    }
+
+    private suspend fun atualizarMorador() {
+        val morador =
+            consultarMoradorPorIdUiUseCase(
+                uiState.value.moradorSelecionadoId
+            ) ?: return
+
+        alterarMoradorUseCase(
+            morador.copy(
+                nome = uiState.value.nome,
+                apartamentoId =
+                    uiState.value.apartamentoIdSelecionado
+            ).toEntity()
+        )
+    }
+
+    fun salvar() {
+        if (!validarFormulario())
+            return
+
+        viewModelScope.launch {
+            if (uiState.value.modoEdicao) {
+                atualizarMorador()
+                carregarApartamentos()
+            }
+            else {
+                cadastrarMorador()
+                carregarApartamentos()
+            }
+            finalizarOperacao()
+        }
+    }
+
+    private fun validarFormulario(): Boolean {
+
+        if (uiState.value.nome.isBlank()) {
+            _uiState.value =
+                _uiState.value.copy(
+                    mensagem =
+                        UiMessage.Error(
+                            "Informe o nome do morador."
+                        )
+                )
+            return false
+        }
+
+        if (uiState.value.apartamentoIdSelecionado == 0L) {
+            _uiState.value =
+                _uiState.value.copy(
+                    mensagem =
+                        UiMessage.Error(
+                            "Selecione um apartamento."
+                        )
+                )
+            return false
+        }
+        return true
+    }
+
+    private fun finalizarOperacao() {
+        limparFormulario()
+        _uiState.value =
+            _uiState.value.copy(
+                salvoComSucesso = true,
+                mensagem = UiMessage.Success(textoSucesso())
+            )
+    }
+
+    private fun textoSucesso() =
+        if (uiState.value.modoEdicao)
+            "Morador atualizado com sucesso."
+        else
+            "Morador cadastrado com sucesso."
+
+    private fun limparFormulario() {
         _uiState.value =
             _uiState.value.copy(
                 nome = "",
                 apartamentoIdSelecionado = 0,
                 moradorSelecionadoId = 0,
-                modoEdicao = false,
-                mensagem = UiMessage.Success(
-                    "Alterações descartadas."
-                )
+                modoEdicao = false
             )
     }
 
@@ -135,79 +234,5 @@ class MoradoresViewModel @Inject constructor(
             _uiState.value.copy(
                 mensagem = null
             )
-    }
-
-    fun salvar() {
-
-        if (_uiState.value.nome.isBlank()) {
-
-            _uiState.value =
-                _uiState.value.copy(
-                    mensagem = UiMessage.Error(
-                        "Informe o nome do morador."
-                    )
-                )
-            return
-        }
-
-        if (_uiState.value.apartamentoIdSelecionado == 0L) {
-
-            _uiState.value =
-                _uiState.value.copy(
-                    mensagem = UiMessage.Error(
-                        "Selecione um apartamento."
-                    )
-                )
-            return
-        }
-
-        viewModelScope.launch {
-
-            if (_uiState.value.modoEdicao) {
-
-                val morador = consultarMoradorPorIdUseCase(
-                        _uiState.value.moradorSelecionadoId
-                    )
-
-                if (morador != null) {
-
-                    alterarMoradorUseCase(
-                        morador.copy(
-                            nome = _uiState.value.nome,
-                            apartamentoId = _uiState.value.apartamentoIdSelecionado
-                        )
-                    )
-                }
-            } else {
-
-                cadastrarMoradorUseCase(
-                    MoradorEntity(
-                        apartamentoId = _uiState.value.apartamentoIdSelecionado,
-                        nome = _uiState.value.nome,
-                        dataInicio = LocalDate.now(),
-                        dataFim = null,
-                        ativo = true
-                    )
-                )
-            }
-
-            val mensagemSucesso =
-                if (_uiState.value.modoEdicao)
-                    "Morador atualizado com sucesso."
-                else
-                    "Morador cadastrado com sucesso."
-
-            _uiState.value =
-                _uiState.value.copy(
-                    nome = "",
-                    apartamentoIdSelecionado = 0,
-                    moradorSelecionadoId = 0,
-                    modoEdicao = false,
-                    salvoComSucesso = true,
-                    mensagem = UiMessage.Success(
-                        mensagemSucesso
-                    )
-                )
-        }
     }
 }

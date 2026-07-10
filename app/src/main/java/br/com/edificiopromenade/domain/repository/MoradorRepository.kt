@@ -9,6 +9,8 @@ interface MoradorRepository {
 
     fun findAllAtivos(): Flow<List<MoradorEntity>>
 
+    fun findAll(): Flow<List<MoradorEntity>>
+
     suspend fun findById(
         id: Long
     ): MoradorEntity?

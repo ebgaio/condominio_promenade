@@ -1,0 +1,19 @@
+package br.com.edificiopromenade.domain.usecase.historico
+
+import br.com.edificiopromenade.domain.repository.MoradorRepository
+import br.com.edificiopromenade.presentation.resident.mapper.toUi
+import br.com.edificiopromenade.presentation.resident.model.MoradorUi
+import jakarta.inject.Inject
+
+class ConsultarMoradorPorIdUiUseCase @Inject constructor(
+    private val repository: MoradorRepository
+) {
+    suspend operator fun invoke(
+        id: Long
+    ): MoradorUi? {
+
+        return repository
+            .findById(id)
+            ?.toUi()
+    }
+}

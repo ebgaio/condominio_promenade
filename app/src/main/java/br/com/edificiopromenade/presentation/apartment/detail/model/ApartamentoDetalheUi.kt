@@ -1,6 +1,6 @@
 package br.com.edificiopromenade.presentation.apartment.detail.model
 
-//import br.com.edificiopromenade.presentation.resident.model.MoradorUi
+import br.com.edificiopromenade.presentation.resident.model.MoradorUi
 
 data class ApartamentoDetalheUi(
 
@@ -14,5 +14,5 @@ data class ApartamentoDetalheUi(
 
     val ativo: Boolean = true,
 
-//    val moradores: List<MoradorUi> = emptyList()
+    val moradores: List<MoradorUi> = emptyList()
 )

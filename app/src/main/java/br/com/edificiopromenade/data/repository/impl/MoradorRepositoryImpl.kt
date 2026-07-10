@@ -3,8 +3,8 @@ package br.com.edificiopromenade.data.repository.impl
 import br.com.edificiopromenade.data.local.dao.MoradorDao
 import br.com.edificiopromenade.data.local.entity.MoradorEntity
 import br.com.edificiopromenade.domain.repository.MoradorRepository
-import java.time.LocalDate
 import jakarta.inject.Inject
+import java.time.LocalDate
 
 class MoradorRepositoryImpl @Inject constructor(
     private val dao: MoradorDao
@@ -12,6 +12,9 @@ class MoradorRepositoryImpl @Inject constructor(
 
     override fun findAllAtivos() =
         dao.findAllAtivos()
+
+    override fun findAll() =
+        dao.findAll()
 
     override suspend fun findById(
         id: Long

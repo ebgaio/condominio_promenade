@@ -31,7 +31,7 @@ data class MoradorEntity(
 
     val nome: String,
 
-    val dataInicio: LocalDate,
+    val dataInicio: LocalDate?,
 
     val dataFim: LocalDate?,
 

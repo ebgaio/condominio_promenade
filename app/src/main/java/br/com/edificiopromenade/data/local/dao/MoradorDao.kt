@@ -25,6 +25,14 @@ interface MoradorDao {
         WHERE ativo = 1
         ORDER BY nome
     """)
+    fun findAll(): Flow<List<MoradorEntity>>
+
+    @Query("""
+        SELECT *
+        FROM moradores
+        WHERE ativo = 1
+        ORDER BY nome
+    """)
     fun findAllAtivos(): Flow<List<MoradorEntity>>
 
     @Query("""

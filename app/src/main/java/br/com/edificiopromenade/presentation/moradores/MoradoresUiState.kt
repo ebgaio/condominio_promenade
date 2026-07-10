@@ -1,13 +1,13 @@
 package br.com.edificiopromenade.presentation.moradores
 
-import br.com.edificiopromenade.data.local.relation.ApartamentoComMorador
+import br.com.edificiopromenade.presentation.apartment.detail.model.ApartamentoComMoradorUi
 import br.com.edificiopromenade.presentation.common.message.UiMessage
 
 data class MoradoresUiState(
 
     val isLoading: Boolean = false,
 
-    val apartamentos: List<ApartamentoComMorador> = emptyList(),
+    val apartamentos: List<ApartamentoComMoradorUi> = emptyList(),
 
     val apartamentoIdSelecionado: Long = 0,
 
