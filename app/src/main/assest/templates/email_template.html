@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <style>
+
+        body{
+            font-family: Arial, Helvetica, sans-serif;
+            font-size:14px;
+            color:#222;
+        }
+
+        table{
+            border-collapse:collapse;
+            width:100%;
+        }
+
+        table,
+        th,
+        td{
+            border:1px solid #CCCCCC;
+        }
+
+        th,
+        td{
+            padding:8px;
+        }
+
+        th{
+            background:#F2F2F2;
+        }
+
+        .total{
+            font-weight:bold;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<h2>Condomínio Edifício Promenade</h2>
+
+<h3>Relatório de Despesas</h3>
+
+<p>
+
+    Competência:
+
+    <strong>
+
+        {{MES}}
+
+        /
+
+        {{ANO}}
+
+    </strong>
+
+</p>
+
+<h3>Despesas do Mês</h3>
+
+{{TABELA_DESPESAS}}
+
+<h3>Boletos</h3>
+
+{{LISTA_BOLETOS}}
+
+<p>
+
+    <strong>
+
+        Total Geral das Despesas:
+
+    </strong>
+
+    R$
+
+    {{TOTAL_DESPESAS}}
+
+</p>
+
+<p>
+
+    <strong>
+
+        Total Geral a Arrecadar:
+
+    </strong>
+
+    R$
+
+    {{TOTAL_ARRECADAR}}
+
+</p>
+
+</body>
+
+</html>

@@ -1,6 +1,7 @@
 package br.com.edificiopromenade.domain.usecase.historico
 
 import br.com.edificiopromenade.presentation.history.model.DemonstrativoHistoricoUi
+import br.com.edificiopromenade.presentation.util.formatarMoeda
 import jakarta.inject.Inject
 
 class FormatarTextoWhatsAppUseCase @Inject constructor() {
@@ -19,12 +20,12 @@ class FormatarTextoWhatsAppUseCase @Inject constructor() {
             • *Unidade:* ${demonstrativo.numeroApartamento}
             • *Inquilino:* ${demonstrativo.nomeMorador}
 
-            • Rateio Mensal: R$ ${String.format("%.2f", demonstrativo.rateioMensal)}
-            • Copasa (Água): R$ ${String.format("%.2f", demonstrativo.copasa)}
-            • Fundo de Reserva: R$ ${String.format("%.2f", demonstrativo.fundoReserva)}
-            • 13º/Férias: R$ ${String.format("%.2f", demonstrativo.decimoTerceiroFerias)}
+            • Rateio Mensal: R$ ${formatarMoeda(demonstrativo.rateioMensal)}
+            • Copasa (Água): R$ ${formatarMoeda(demonstrativo.copasa)}
+            • Fundo de Reserva: R$ ${formatarMoeda(demonstrativo.fundoReserva)}
+            • 13º/Férias: R$ ${formatarMoeda(demonstrativo.decimoTerceiroFerias)}
 
-            *Valor Total do Boleto: R$ ${String.format("%.2f", demonstrativo.total)}*
+            *Valor Total do Boleto: R$ ${formatarMoeda(demonstrativo.total)}*
         """.trimIndent()
     }
 }

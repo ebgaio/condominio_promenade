@@ -2,9 +2,13 @@ package br.com.edificiopromenade.domain.usecase.email
 
 import br.com.edificiopromenade.data.local.entity.DemonstrativoApartamentoEntity
 import br.com.edificiopromenade.data.local.entity.DespesaEntity
+import br.com.edificiopromenade.domain.email.EmailTemplateEngine
+import br.com.edificiopromenade.presentation.util.formatarMoeda
 import jakarta.inject.Inject
 
-class GerarCorpoEmailHtmlUseCase @Inject constructor() {
+class GerarCorpoEmailHtmlUseCase @Inject constructor(
+    private val templateEngine: EmailTemplateEngine
+) {
 
     operator fun invoke(
         mesNome: String,
@@ -14,55 +18,37 @@ class GerarCorpoEmailHtmlUseCase @Inject constructor() {
         demonstrativos: List<DemonstrativoApartamentoEntity>,
         totalGeralArrecadar: Double
     ): String {
-        val tabelaDespesasHtml = StringBuilder()
-        despesas.forEach { despesa ->
-            tabelaDespesasHtml.append("<tr><td>${despesa.descricaoLivre}</td><td>${String.format("%.2f", despesa.valor)}</td></tr>")
+
+        val tabelaDespesasHtml = buildString {
+            despesas.forEach { despesa ->
+                append("<tr><td>${despesa.descricaoLivre}</td><td>${formatarMoeda(despesa.valor)}</td></tr>")
+            }
         }
 
-        val listaDemonstrativosHtml = StringBuilder()
-        demonstrativos.forEach { demo ->
-            listaDemonstrativosHtml.append("<li><strong>AP ${demo.numeroApartamentoHistorico} - ${demo.nomeMoradorHistorico}:</strong> ")
-            listaDemonstrativosHtml.append("Rateio Mensal: R$ ${String.format("%.2f", demo.rateioMensal)} | ")
-            listaDemonstrativosHtml.append("Copasa: R$ ${String.format("%.2f", demo.copasa)} | ")
-            listaDemonstrativosHtml.append("Fundo Reserva: R$ ${String.format("%.2f", demo.fundoReserva)} | ")
-            listaDemonstrativosHtml.append("13º/FÉRIAS: R$ ${String.format("%.2f", demo.decimoTerceiroFerias)} | ")
-            listaDemonstrativosHtml.append("<strong>Total: R$ ${String.format("%.2f", demo.total)}</strong></li>")
+        val listaBoletosHtml = buildString {
+            demonstrativos.forEach { demo ->
+                append("<li><strong>AP ${demo.numeroApartamentoHistorico} - ${demo.nomeMoradorHistorico}:</strong> ")
+                append("Rateio Mensal: R$ ${formatarMoeda(demo.rateioMensal)} | ")
+                append("Copasa: R$ ${formatarMoeda(demo.copasa)} | ")
+                append("Fundo Reserva: R$ ${formatarMoeda(demo.fundoReserva)} | ")
+                append("13º/FÉRIAS: R$ ${formatarMoeda(demo.decimoTerceiroFerias)} | ")
+                append("<strong>Total: R$ ${formatarMoeda(demo.total)}</strong></li>")
+            }
         }
 
-        val totalRateioTotal = demonstrativos.sumOf { it.rateioMensal }
-        val totalCopasaTotal = demonstrativos.sumOf { it.copasa }
-        val totalFundoReservaTotal = demonstrativos.sumOf { it.fundoReserva }
-        val totalDecimoTotal = demonstrativos.sumOf { it.decimoTerceiroFerias }
+        val template = templateEngine.carregarTemplate()
 
-        return """
-            <h3>Relatório de Despesas - Condomínio Edifício Promenade - Referência: $mesNome/$ano</h3>
+        return templateEngine.render(
 
-            <table border="1" cellpadding="5" style="border-collapse: collapse;">
-              <thead>
-                <tr style="background-color: #f2f2f2;">
-                  <th>Item</th>
-                  <th>Valor (R$)</th>
-                </tr>
-              </thead>
-              <tbody>
-                $tabelaDespesasHtml
-                <tr style="font-weight: bold;"><td>TOTAL GERAL</td><td>${String.format("%.2f", totalGeralDespesas)}</td></tr>
-              </tbody>
-            </table>
-
-            <h3>Dados para Confecção dos Boletos</h3>
-            <p>Prezada Administradora, favor emitir os boletos com os seguintes desmembramentos:</p>
-
-            <ul>
-              $listaDemonstrativosHtml
-            </ul>
-
-            <p><strong>Resumo Geral dos Boletos (Conferência):</strong><br>
-            Rateio Mensal Total: R$ ${String.format("%.2f", totalRateioTotal)}<br>
-            Copasa Total: R$ ${String.format("%.2f", totalCopasaTotal)}<br>
-            Fundo de Reserva Total: R$ ${String.format("%.2f", totalFundoReservaTotal)}<br>
-            13º/Férias Total: R$ ${String.format("%.2f", totalDecimoTotal)}<br>
-            <strong>TOTAL GERAL A ARRECADAR: R$ ${String.format("%.2f", totalGeralArrecadar)}</strong></p>
-        """.trimIndent()
+            template,
+            mapOf(
+                "MES" to mesNome,
+                "ANO" to ano.toString(),
+                "TABELA_DESPESAS" to tabelaDespesasHtml.toString(),
+                "LISTA_BOLETOS" to listaBoletosHtml.toString(),
+                "TOTAL_DESPESAS" to formatarMoeda(totalGeralDespesas),
+                "TOTAL_ARRECADAR" to formatarMoeda(totalGeralArrecadar)
+            )
+        )
     }
 }

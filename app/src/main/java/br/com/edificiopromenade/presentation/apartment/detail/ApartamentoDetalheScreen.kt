@@ -31,7 +31,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import br.com.edificiopromenade.presentation.common.message.InlineMessageBanner
 import br.com.edificiopromenade.presentation.common.message.UiMessage
 import br.com.edificiopromenade.presentation.util.formatarData
-import br.com.edificiopromenade.presentation.util.formatarFracao
+import br.com.edificiopromenade.presentation.util.formatarMoeda
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -143,7 +143,7 @@ fun ApartamentoDetalheScreen(
 
                             Text(
                                 text =
-                                    "Percentual COPASA: ${formatarFracao(detalhe.apartamento.percentualCopasa)}"
+                                    "Percentual COPASA: ${formatarMoeda(detalhe.apartamento.percentualCopasa)}"
                             )
 
                             Text(
