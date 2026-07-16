@@ -55,26 +55,26 @@ class DemonstrativosViewModel @Inject constructor(
         }
     }
 
-    fun gerarCorpoEmail(onResult: (String) -> Unit) {
-        val fechamentoId = _uiState.value.fechamentoId ?: return
-        viewModelScope.launch {
-            val fechamento = fechamentoRepository.findById(fechamentoId) ?: return@launch
-            val despesas = despesaRepository.findListByFechamento(fechamentoId)
-            if (despesas.isEmpty())
-                return@launch
-            val mesNome = Month.of(fechamento.mes).getDisplayName(TextStyle.FULL, Locale("pt", "BR"))
-            
-            val html = gerarCorpoEmailHtmlUseCase(
-                mesNome = mesNome,
-                ano = fechamento.ano,
-                despesas = despesas,
-                totalGeralDespesas = despesas.sumOf { it.valor },
-                demonstrativos = _uiState.value.demonstrativos.map { it.toEntity() },
-                totalGeralArrecadar = _uiState.value.totalGeral
-            )
-            onResult(html)
-        }
-    }
+//    fun gerarCorpoEmail(onResult: (String) -> Unit) {
+//        val fechamentoId = _uiState.value.fechamentoId ?: return
+//        viewModelScope.launch {
+//            val fechamento = fechamentoRepository.findById(fechamentoId) ?: return@launch
+//            val despesas = despesaRepository.findListByFechamento(fechamentoId)
+//            if (despesas.isEmpty())
+//                return@launch
+//            val mesNome = Month.of(fechamento.mes).getDisplayName(TextStyle.FULL, Locale("pt", "BR"))
+//
+//            val html = gerarCorpoEmailHtmlUseCase(
+//                mesNome = mesNome,
+//                ano = fechamento.ano,
+//                despesas = despesas,
+//                totalGeralDespesas = despesas.sumOf { it.valor },
+//                demonstrativos = _uiState.value.demonstrativos.map { it.toEntity() },
+//                totalGeralArrecadar = _uiState.value.totalGeral
+//            )
+//            onResult(html)
+//        }
+//    }
 
     fun limparMensagem() {
         _uiState.value =
