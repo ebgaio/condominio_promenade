@@ -20,7 +20,7 @@ class FormatarResumoWhatsAppUseCase @Inject constructor(
             Month.of(mes)
                 .getDisplayName(
                     TextStyle.FULL,
-                    Locale("pt", "BR")
+                    Locale.forLanguageTag("pt_br")
                 )
 
         return formatarTextoWhatsAppUseCase(

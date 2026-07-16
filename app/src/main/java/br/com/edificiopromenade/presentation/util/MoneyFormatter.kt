@@ -11,7 +11,7 @@ object MoneyFormatter {
 
         val value = digits.toBigDecimal().divide(java.math.BigDecimal(100))
 
-        return NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
+        return NumberFormat.getCurrencyInstance(Locale.forLanguageTag("pt_br"))
             .apply {
                 minimumFractionDigits = 2
                 maximumFractionDigits = 2

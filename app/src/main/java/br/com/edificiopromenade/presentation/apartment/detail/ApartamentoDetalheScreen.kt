@@ -193,7 +193,7 @@ fun ApartamentoDetalheScreen(
 
                             Text(
                                 text =
-                                    "📅 Última Movimentação: ${formatarData(ultimaMovimentacao) ?: "-"}"
+                                    "📅 Última Movimentação: ${formatarData(ultimaMovimentacao)}"
                             )
 
                             Card {
@@ -349,7 +349,7 @@ fun ApartamentoDetalheScreen(
                             )
 
                             Text(
-                                text = "📅 Última Movimentação: ${formatarData(ultimaMovimentacao) ?: "-"}"
+                                text = "📅 Última Movimentação: ${formatarData(ultimaMovimentacao)}"
                             )
                         }
                     }

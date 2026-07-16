@@ -13,6 +13,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -94,7 +95,10 @@ fun NovoFechamentoScreen(
                     label = {
                         Text("Mês")
                     },
-                    modifier = Modifier.menuAnchor().fillMaxWidth()
+                    modifier = Modifier.menuAnchor(
+                        ExposedDropdownMenuAnchorType.PrimaryEditable,
+                        enabled = true
+                    ).fillMaxWidth()
                 )
 
                 ExposedDropdownMenu(
@@ -177,15 +181,15 @@ fun NovoFechamentoScreen(
                 items(state.fechamentos) {
                     Card (
                         modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 4.dp)
-                                .clickable {
-                                    navController.navigate(
-                                        AppDestinations.despesasRoute(
-                                            it.id
-                                        )
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp)
+                            .clickable {
+                                navController.navigate(
+                                    AppDestinations.despesasRoute(
+                                        it.id
                                     )
-                                }
+                                )
+                            }
                     ) {
                         Column(
                             modifier = Modifier.padding(12.dp)

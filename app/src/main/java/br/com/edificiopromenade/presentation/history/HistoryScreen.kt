@@ -4,11 +4,35 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.widget.Toast
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.PrimaryTabRow
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Tab
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -81,14 +105,14 @@ fun HistoryScreen(
                         onClick = { monthExpanded = true },
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        val mesNome = Month.of(state.selectedMonth).getDisplayName(TextStyle.FULL, Locale("pt", "BR"))
+                        val mesNome = Month.of(state.selectedMonth).getDisplayName(TextStyle.FULL, Locale.forLanguageTag("pt_br"))
                         Text("Mês: $mesNome")
                     }
                     DropdownMenu(expanded = monthExpanded, onDismissRequest = { monthExpanded = false }) {
                         (1..12).forEach { month ->
                             DropdownMenuItem(
                                 text = {
-                                    val name = Month.of(month).getDisplayName(TextStyle.FULL, Locale("pt", "BR"))
+                                    val name = Month.of(month).getDisplayName(TextStyle.FULL, Locale.forLanguageTag("pt_br"))
                                     Text(name)
                                 },
                                 onClick = {
@@ -102,7 +126,7 @@ fun HistoryScreen(
             }
 
             // Tabs ou Toggle para Modo de Busca
-            TabRow(selectedTabIndex = if (state.searchByMonth) 0 else 1) {
+            PrimaryTabRow(selectedTabIndex = if (state.searchByMonth) 0 else 1) {
                 Tab(
                     selected = state.searchByMonth,
                     onClick = { viewModel.toggleSearchMode(true) },
