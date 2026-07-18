@@ -311,7 +311,6 @@ fun DespesaScreen(
                                 )
                             }
                         },
-                        modifier = Modifier.fillMaxWidth(),
                     )
                     {
                         Text("Finalizar Fechamento")

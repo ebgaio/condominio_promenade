@@ -18,7 +18,6 @@ import br.com.edificiopromenade.presentation.history.HistoryScreen
 import br.com.edificiopromenade.presentation.home.HomeScreen
 import br.com.edificiopromenade.presentation.initialization.InitializationFlowScreen
 import br.com.edificiopromenade.presentation.moradores.MoradoresScreen
-import br.com.edificiopromenade.presentation.splah.SplashScreen
 
 @Composable
 fun AppNavHost(
@@ -29,55 +28,9 @@ fun AppNavHost(
 
     NavHost(
         navController = navController,
-        startDestination = AppDestinations.SPLASH,
+        startDestination = AppDestinations.INITIALIZATION,
         modifier = modifier
     ) {
-
-        composable(
-            AppDestinations.SPLASH
-        ) {
-            SplashScreen(
-                onReady = {
-                    navController.navigate(
-                        AppDestinations.HOME
-                    ) {
-                        popUpTo(AppDestinations.SPLASH) {
-                            inclusive = true
-                        }
-                    }
-                },
-
-                onNeedCondominio = {
-                    navController.navigate(
-                        AppDestinations.CONDOMINIO
-                    ) {
-                        popUpTo(AppDestinations.SPLASH) {
-                            inclusive = true
-                        }
-                    }
-                },
-
-                onNeedApartamento = {
-                    navController.navigate(
-                        AppDestinations.APARTAMENTOS
-                    ) {
-                        popUpTo(AppDestinations.SPLASH) {
-                            inclusive = true
-                        }
-                    }
-                },
-
-                onNeedMorador = {
-                    navController.navigate(
-                        AppDestinations.MORADORES
-                    ) {
-                        popUpTo(AppDestinations.SPLASH) {
-                            inclusive = true
-                        }
-                    }
-                }
-            )
-        }
 
         composable(
             AppDestinations.INITIALIZATION
@@ -175,26 +128,44 @@ fun AppNavHost(
         composable(
             AppDestinations.MORADORES
         ) {
-            MoradoresScreen()
+            MoradoresScreen(    modoInicializacao = true,
+                onAnterior = {
+                    navController.popBackStack()
+                },
+                onProximo = {
+                    navController.navigate(
+                        AppDestinations.HOME
+                    ) {
+                        popUpTo(AppDestinations.INITIALIZATION)
+                    }
+                },
+                onSair = {
+                    navController.navigate(
+                        AppDestinations.HOME
+                    ) {
+                        popUpTo(AppDestinations.INITIALIZATION)
+                    }
+                }
+            )
         }
-
-//        composable(
-//            AppDestinations.CONDOMINIO
-//        ) {
-//            CondominioScreen()
-//        }
 
         composable(
             AppDestinations.CONDOMINIO
         ) {
             CondominioScreen(
-                onConcluido = {
+                modoInicializacao = true,
+                onProximo = {
                     navController.navigate(
                         AppDestinations.APARTAMENTOS
                     ) {
-                        popUpTo(AppDestinations.CONDOMINIO) {
-                            inclusive = true
-                        }
+                        popUpTo(AppDestinations.CONDOMINIO)
+                    }
+                },
+                onSair = {
+                    navController.navigate(
+                        AppDestinations.HOME
+                    ) {
+                        popUpTo(AppDestinations.INITIALIZATION)
                     }
                 }
             )
@@ -204,7 +175,23 @@ fun AppNavHost(
             AppDestinations.APARTAMENTOS
         ) {
             ApartamentoScreen(
-                navController = navController
+                navController = navController,
+                modoInicializacao = true,
+                onAnterior = {
+                    navController.popBackStack()
+                },
+                onProximo = {
+                    navController.navigate(
+                        AppDestinations.MORADORES
+                    )
+                },
+                onSair = {
+                    navController.navigate(
+                        AppDestinations.HOME
+                    ) {
+                        popUpTo(AppDestinations.INITIALIZATION)
+                    }
+                }
             )
         }
 

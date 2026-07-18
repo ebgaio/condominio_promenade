@@ -36,6 +36,10 @@ import br.com.edificiopromenade.presentation.util.formatarMoeda
 @Composable
 fun ApartamentoScreen(
     navController: NavController,
+    modoInicializacao: Boolean = false,
+    onAnterior: () -> Unit = {},
+    onProximo: () -> Unit = {},
+    onSair: () -> Unit = {},
     viewModel: ApartamentoViewModel = hiltViewModel()
 ) {
 
@@ -175,6 +179,35 @@ fun ApartamentoScreen(
                                     "Percentual: ${formatarMoeda(apartamento.percentualCopasa)}"
                             )
                         }
+                    }
+                }
+            }
+
+            if (modoInicializacao) {
+
+                HorizontalDivider()
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+
+                    Button(
+                        onClick = onAnterior
+                    ) {
+                        Text("Anterior")
+                    }
+
+                    Button(
+                        onClick = onProximo
+                    ) {
+                        Text("Próximo")
+                    }
+
+                    Button(
+                        onClick = onSair
+                    ) {
+                        Text("Sair")
                     }
                 }
             }

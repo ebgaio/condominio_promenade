@@ -1,6 +1,8 @@
 package br.com.edificiopromenade.presentation.moradores
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -42,6 +44,10 @@ import java.time.LocalDate
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MoradoresScreen(
+    modoInicializacao: Boolean = false,
+    onAnterior: (() -> Unit),
+    onProximo: () -> Unit = {},
+    onSair: () -> Unit = {},
     viewModel: MoradoresViewModel = hiltViewModel()
 ) {
 
@@ -85,7 +91,7 @@ fun MoradoresScreen(
 
             state.mensagem?.let { mensagem ->
 
-                InlineMessageBanner (
+                InlineMessageBanner(
                     message = when (mensagem) {
                         is UiMessage.Success -> mensagem.text
                         is UiMessage.Error -> mensagem.text
@@ -148,10 +154,12 @@ fun MoradoresScreen(
                             )
                     },
 
-                    modifier = Modifier.menuAnchor(
-                        ExposedDropdownMenuAnchorType.PrimaryEditable,
-                        enabled = true
-                    ).fillMaxWidth()
+                    modifier = Modifier
+                        .menuAnchor(
+                            ExposedDropdownMenuAnchorType.PrimaryEditable,
+                            enabled = true
+                        )
+                        .fillMaxWidth()
                 )
 
                 ExposedDropdownMenu(
@@ -361,12 +369,49 @@ fun MoradoresScreen(
                                     )
 
                                     Text(
-                                        text = "Encerrado em: ${ formatarData(morador.dataFim)}",
+                                        text = "Encerrado em: ${formatarData(morador.dataFim)}",
                                         style = MaterialTheme.typography.bodySmall
                                     )
                                 }
                             }
                         }
+                    }
+                }
+            }
+
+            Spacer(
+                modifier = Modifier.height(8.dp)
+            )
+
+            if (modoInicializacao) {
+
+                HorizontalDivider()
+
+                Spacer(
+                    modifier = Modifier.height(12.dp)
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+
+                    Button(
+                        onClick = onAnterior
+                    ) {
+                        Text("Anterior")
+                    }
+
+                    Button(
+                        onClick = onProximo
+                    ) {
+                        Text("Próximo")
+                    }
+
+                    Button(
+                        onClick = onSair
+                    ) {
+                        Text("Sair")
                     }
                 }
             }
