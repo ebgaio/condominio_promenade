@@ -50,4 +50,10 @@ class MoradorRepositoryImpl @Inject constructor(
 
     override suspend fun findAllAtivosList() =
         dao.findAllAtivosList()
+
+    override fun existeMoradorAtivo(
+        id: Long
+    ): Boolean {
+        TODO("Not yet implemented")
+    }
 }

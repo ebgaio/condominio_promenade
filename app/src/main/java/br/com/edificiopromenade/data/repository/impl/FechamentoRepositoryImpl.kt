@@ -36,4 +36,10 @@ class FechamentoRepositoryImpl @Inject constructor(
     override suspend fun update(
         fechamento: FechamentoMensalEntity
     ) = dao.update(fechamento)
+
+    override fun existeFechamentoAberto(
+        id: Long
+    ): Boolean {
+        TODO("Not yet implemented")
+    }
 }

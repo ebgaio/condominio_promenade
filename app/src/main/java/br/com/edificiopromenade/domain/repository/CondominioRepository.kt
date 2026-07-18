@@ -25,4 +25,8 @@ interface CondominioRepository {
     suspend fun update(
         condominio: CondominioEntity
     )
+
+    fun existeCondominio(
+        id: Long
+    ): Boolean
 }

@@ -9,9 +9,17 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import br.com.edificiopromenade.presentation.common.message.InlineMessageBanner
+import br.com.edificiopromenade.presentation.common.message.UiMessage
 
 @Composable
 fun HomeScreen(
@@ -19,8 +27,31 @@ fun HomeScreen(
     onCondominioClick: () -> Unit,
     onApartamentosClick: () -> Unit,
     onNovoFechamentoClick: () -> Unit,
-    onHistoricoClick: () -> Unit
+    onHistoricoClick: () -> Unit,
+    viewModel: HomeViewModel = hiltViewModel()
 ) {
+
+    val state by viewModel.uiState.collectAsState()
+
+    val focusManager = LocalFocusManager.current
+
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    LaunchedEffect(Unit) {
+        viewModel.carregar()
+    }
+
+    state.mensagem?.let { mensagem ->
+        InlineMessageBanner(
+            message = when(mensagem){
+                is UiMessage.Success -> mensagem.text
+                is UiMessage.Error -> mensagem.text
+            },
+            onDismiss = {
+                viewModel.limparMensagem()
+            }
+        )
+    }
 
     Scaffold { padding ->
 
@@ -41,7 +72,15 @@ fun HomeScreen(
             )
 
             Button(
-                onClick = onNovoFechamentoClick
+                onClick = {
+                    if (viewModel.podeAbrirNovoFechamento()) {
+                        onNovoFechamentoClick()
+                    } else {
+                        viewModel.mostrarMensagem(
+                        viewModel.mensagemNovoFechamento()
+                        )
+                    }
+                }
             ) {
                 Text("Novo Fechamento")
             }
@@ -53,7 +92,15 @@ fun HomeScreen(
             }
 
             Button(
-                onClick = onMoradoresClick
+                onClick = {
+                    if (viewModel.podeAbrirMoradores()) {
+                        onMoradoresClick()
+                    } else {
+                        viewModel.mostrarMensagem(
+                            viewModel.mensagemMoradores()
+                        )
+                    }
+                }
             ) {
                 Text("Moradores")
             }
@@ -65,7 +112,15 @@ fun HomeScreen(
             }
 
             Button(
-                onClick = onApartamentosClick
+                onClick = {
+                    if (viewModel.podeAbrirApartamentos()) {
+                        onApartamentosClick()
+                    } else {
+                        viewModel.mostrarMensagem(
+                        viewModel.mensagemApartamentos()
+                        )
+                    }
+                }
             ) {
                 Text("Apartamentos")
             }

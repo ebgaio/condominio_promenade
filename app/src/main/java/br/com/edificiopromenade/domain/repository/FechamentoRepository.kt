@@ -34,4 +34,8 @@ interface FechamentoRepository {
     suspend fun update(
         fechamento: FechamentoMensalEntity
     )
+
+    fun existeFechamentoAberto(
+        id: Long
+    ): Boolean
 }
