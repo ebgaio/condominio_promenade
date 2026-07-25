@@ -41,7 +41,7 @@ class MoradoresViewModel @Inject constructor(
 
         _uiState.value =
             _uiState.value.copy(
-                isLoading = true
+                carregando = true
             )
 
         viewModelScope.launch {
@@ -50,14 +50,14 @@ class MoradoresViewModel @Inject constructor(
                     _uiState.value =
                         _uiState.value.copy(
                             apartamentos = apartamentos,
-                            isLoading = false
+                            carregando = false
                         )
                 }
         }
 
         _uiState.value =
             _uiState.value.copy(
-                isLoading = false
+                carregando = false
             )
     }
 
@@ -161,7 +161,9 @@ class MoradoresViewModel @Inject constructor(
         )
     }
 
-    fun salvar() {
+    fun salvar(
+        onSucesso: () -> Unit = {}
+    ) {
         if (!validarFormulario())
             return
 
@@ -175,6 +177,7 @@ class MoradoresViewModel @Inject constructor(
                 carregarApartamentos()
             }
             finalizarOperacao()
+            onSucesso()
         }
     }
 

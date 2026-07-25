@@ -10,6 +10,6 @@ data class HistoryUiState(
     val demonstrativos: List<DemonstrativoHistoricoUi> = emptyList(),
     val apartments: List<Pair<Long, String>> = emptyList(),
     val totalGeral: Double = 0.0,
-    val isLoading: Boolean = false,
+    val carregando: Boolean = false,
     val errorMessage: String? = null
 )

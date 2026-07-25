@@ -164,7 +164,7 @@ fun HistoryScreen(
                 }
             }
 
-            if (state.isLoading) {
+            if (state.carregando) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
             } else if (state.errorMessage != null) {
                 Text(

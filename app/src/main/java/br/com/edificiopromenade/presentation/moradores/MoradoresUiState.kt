@@ -5,7 +5,7 @@ import br.com.edificiopromenade.presentation.common.message.UiMessage
 
 data class MoradoresUiState(
 
-    val isLoading: Boolean = false,
+    val carregando: Boolean = false,
 
     val apartamentos: List<ApartamentoComMoradorUi> = emptyList(),
 

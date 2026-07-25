@@ -66,7 +66,7 @@ class HistoryViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update {
                 it.copy(
-                    isLoading = true,
+                    carregando = true,
                     errorMessage = null)
             }
 
@@ -83,7 +83,7 @@ class HistoryViewModel @Inject constructor(
                     it.copy(
                         demonstrativos = demos,
                         totalGeral = demos.sumOf { d -> d.total },
-                        isLoading = false
+                        carregando = false
                     )
                 }
             } else {
@@ -91,7 +91,7 @@ class HistoryViewModel @Inject constructor(
                     it.copy(
                         demonstrativos = emptyList(),
                         totalGeral = 0.0,
-                        isLoading = false,
+                        carregando = false,
                         errorMessage = "Nenhum fechamento encontrado para este período."
                     )
                 }
@@ -106,7 +106,7 @@ class HistoryViewModel @Inject constructor(
 
         viewModelScope.launch {
             _uiState.update { it.copy(
-                isLoading = true,
+                carregando = true,
                 errorMessage = null)
             }
 
@@ -115,7 +115,7 @@ class HistoryViewModel @Inject constructor(
             _uiState.update { it.copy(
                 demonstrativos = demos,
                 totalGeral = demos.sumOf { d -> d.total },
-                isLoading = false
+                carregando = false
             ) }
         }
     }
