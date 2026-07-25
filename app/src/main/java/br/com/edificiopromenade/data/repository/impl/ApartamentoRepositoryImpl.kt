@@ -43,4 +43,9 @@ class ApartamentoRepositoryImpl @Inject constructor(
             numero
         ) > 0
     }
+
+    override suspend fun existeAlgumApartamento(
+    ): Boolean {
+        return dao.existeAlgumApartamento()
+    }
 }

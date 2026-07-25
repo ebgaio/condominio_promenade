@@ -39,7 +39,7 @@ interface MoradorRepository {
     suspend fun findAllAtivosList():
             List<ApartamentoEntity>
 
-    fun existeMoradorAtivo(
-        id: Long
+    suspend fun existeMoradorAtivo(
+        ativo: Boolean
     ): Boolean
 }

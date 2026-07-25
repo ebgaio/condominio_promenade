@@ -92,4 +92,13 @@ interface ApartamentoDao {
     suspend fun countByDescricao(
         numero: String
     ): Int
+
+    @Query("""
+        SELECT EXISTS(
+        SELECT 1
+        FROM apartamentos
+        LIMIT 1)
+    """)
+    suspend fun existeAlgumApartamento(
+    ): Boolean
 }

@@ -84,4 +84,13 @@ interface MoradorDao {
     """)
     suspend fun findAllAtivosList():
             List<ApartamentoEntity>
+
+    @Query("""
+        SELECT COUNT(*)
+        FROM apartamentos
+        WHERE ativo = :ativo
+    """)
+    suspend fun countByDescricao(
+        ativo: Boolean
+    ): Int
 }

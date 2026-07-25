@@ -2,8 +2,7 @@ package br.com.edificiopromenade.presentation.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import br.com.edificiopromenade.domain.navigation.EstadoSistema
-import br.com.edificiopromenade.domain.usecase.navgacao.ValidarEstadoSistemaUseCase
+import br.com.edificiopromenade.domain.usecase.navegacao.ValidarEstadoSistemaUseCase
 import br.com.edificiopromenade.presentation.common.message.UiMessage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
@@ -20,16 +19,64 @@ class HomeViewModel @Inject constructor(
 
     val uiState = _uiState.asStateFlow()
 
-    private var estadoSistema: EstadoSistema? = null
-
     init {
         carregar()
     }
 
     fun carregar() {
         viewModelScope.launch {
-            estadoSistema = validarEstadoSistemaUseCase()
+            _uiState.value =
+                _uiState.value.copy(
+                    carregando = true
+                )
+
+            try {
+                val estado = validarEstadoSistemaUseCase()
+
+                println("DEBUG HOME -> $estado")
+
+            _uiState.value =
+                _uiState.value.copy(
+                    estadoSistema = estado,
+                    carregando = false
+                )
+            } catch (e: Exception) {
+                _uiState.value =
+                    _uiState.value.copy(
+                        mensagem = UiMessage.Error(
+                            "Não foi possível verificar o estado do sistema."
+                        )
+                    )
+
+            } finally {
+
+                _uiState.value =
+                    _uiState.value.copy(
+                        carregando = false
+                    )
+            }
         }
+    }
+
+    fun podeAbrirApartamentos(): Boolean {
+        return _uiState.value
+            .estadoSistema
+            ?.possuiCondominio == true
+    }
+
+    fun podeAbrirMoradores(): Boolean {
+        return _uiState.value
+            .estadoSistema
+            ?.possuiApartamento == true
+    }
+
+    fun podeAbrirNovoFechamento(): Boolean {
+        val estado = _uiState.value
+            .estadoSistema
+            ?: return false
+        return estado.possuiCondominio &&
+                estado.possuiApartamento &&
+                estado.possuiMorador
     }
 
     fun mostrarMensagem(texto: String) {
@@ -46,24 +93,12 @@ class HomeViewModel @Inject constructor(
             )
     }
 
-    fun podeAbrirApartamentos(): Boolean {
-        return estadoSistema?.possuiCondominio == true
-    }
-
-    fun podeAbrirMoradores(): Boolean {
-        return estadoSistema?.possuiApartamento == true
-    }
-
-    fun podeAbrirNovoFechamento(): Boolean {
-        return estadoSistema?.possuiMorador == true
-    }
-
     fun mensagemMoradores(): String {
-        return "Cadastre um condomínio antes de cadastrar apartamentos."
+        return "Cadastre pelo menos um apartamento antes de cadastrar moradores."
     }
 
     fun mensagemApartamentos(): String {
-        return "Cadastre pelo menos um apartamento antes de cadastrar moradores."
+        return "Cadastre um condomínio antes de cadastrar apartamentos."
     }
 
     fun mensagemNovoFechamento(): String {

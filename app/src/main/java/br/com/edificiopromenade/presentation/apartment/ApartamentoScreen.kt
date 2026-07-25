@@ -40,6 +40,7 @@ fun ApartamentoScreen(
     onAnterior: () -> Unit = {},
     onProximo: () -> Unit = {},
     onSair: () -> Unit = {},
+//    onConcluido: () -> Unit = {},
     viewModel: ApartamentoViewModel = hiltViewModel()
 ) {
 
@@ -199,7 +200,8 @@ fun ApartamentoScreen(
                     }
 
                     Button(
-                        onClick = onProximo
+                        onClick = onProximo,
+                        enabled = state.apartamentos.isNotEmpty()
                     ) {
                         Text("Próximo")
                     }

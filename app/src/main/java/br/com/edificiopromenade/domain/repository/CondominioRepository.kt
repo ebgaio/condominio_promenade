@@ -26,7 +26,6 @@ interface CondominioRepository {
         condominio: CondominioEntity
     )
 
-    fun existeCondominio(
-        id: Long
+    suspend fun existeCondominioAtivo(
     ): Boolean
 }

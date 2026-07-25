@@ -95,10 +95,10 @@ class CondominioViewModel @Inject constructor(
             )
     }
 
-    fun salvar() {
-
+    fun salvar(
+        onSucesso: () -> Unit
+    ) {
         viewModelScope.launch {
-
             val somenteNumeros =
                 _uiState.value.condominio.cnpj.filter {
                     it.isDigit()
@@ -109,15 +109,15 @@ class CondominioViewModel @Inject constructor(
                     _uiState.value.copy(
                         mensagem = UiMessage.Error(
                             "CNPJ inválido."
-                        ),
+                        )
                     )
                 return@launch
             }
 
-            val novoId = cadastrarCondominioUseCase(
-            _uiState.value
-                .condominio
-                .toEntity()
+            cadastrarCondominioUseCase(
+                _uiState.value
+                    .condominio
+                    .toEntity()
             )
 
             _uiState.value =
@@ -126,6 +126,7 @@ class CondominioViewModel @Inject constructor(
                         "Condomínio salvo com sucesso."
                     )
                 )
+            onSucesso()
         }
     }
 

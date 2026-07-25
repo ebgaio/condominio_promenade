@@ -37,19 +37,6 @@ fun SplashScreen(
         }
     }
 
-//    val navController = rememberNavController()
-
-//    LaunchedEffect(state.initializationResult) {
-//
-//        navController.navigate(
-//    AppDestinations.INITIALIZATION
-//        ) {
-//            popUpTo(AppDestinations.SPLASH) {
-//                inclusive = true
-//            }
-//        }
-//    }
-
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center

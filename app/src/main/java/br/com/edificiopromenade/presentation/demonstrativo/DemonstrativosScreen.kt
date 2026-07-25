@@ -148,21 +148,6 @@ fun DemonstrativosScreen(
                 ) {
                     Text("Voltar")
                 }
-
-//                onEnviarEmail(fechamentoId)
-
-//                Button(
-//                    modifier = Modifier.weight(1f),
-//                    onClick = {
-//                        viewModel.gerarCorpoEmail { html ->
-//                            // TODO: Integrar com Gmail API ou disparar Intent de e-mail
-//                            // Por enquanto, mostra que gerou
-//                            android.util.Log.d("EmailHTML", html)
-//                        }
-//                    }
-//                ) {
-//                    Text("Enviar E-mail")
-//                }
             }
         }
     }

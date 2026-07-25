@@ -37,4 +37,7 @@ interface ApartamentoRepository {
     suspend fun existeApartamento(
         numero: String
     ): Boolean
+
+    suspend fun existeAlgumApartamento(
+    ): Boolean
 }

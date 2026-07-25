@@ -1,4 +1,4 @@
-package br.com.edificiopromenade.domain.usecase.navgacao
+package br.com.edificiopromenade.domain.usecase.navegacao
 
 import br.com.edificiopromenade.domain.navigation.EstadoSistema
 import br.com.edificiopromenade.domain.repository.ApartamentoRepository
@@ -15,13 +15,13 @@ class ValidarEstadoSistemaUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(): EstadoSistema {
 
-        val possuiCondominio = condominioRepository.existeCondominio(1)
+        val possuiCondominio = condominioRepository.existeCondominioAtivo()
 
-        val possuiApartamento = apartamentoRepository.existeApartamento("1")
+        val possuiApartamento = apartamentoRepository.existeAlgumApartamento()
 
-        val possuiMorador = moradorRepository.existeMoradorAtivo(1)
+        val possuiMorador = moradorRepository.existeMoradorAtivo(true)
 
-        val possuiFechamentoAberto = fechamentoRepository.existeFechamentoAberto(1)
+        val possuiFechamentoAberto = fechamentoRepository.existeFechamentoAberto(true)
 
         return EstadoSistema(
             possuiCondominio,

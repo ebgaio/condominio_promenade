@@ -95,47 +95,6 @@ class EmailViewModel @Inject constructor(
                     fechamentoId = fechamentoId,
                     email = email
                 )
-
-//
-//            _uiState.value =
-//                _uiState.value.copy(
-//                    fechamentoFinalizado =
-//                        fechamento?.finalizado ?: false
-//                )
-//        }
-//
-//        viewModelScope.launch {
-//            consultarDespesasPorFechamentoUseCase(
-//                fechamentoId
-//            ).collect { lista ->
-//
-//                _uiState.value =
-//                    _uiState.value.copy(
-//                        despesas = lista.map {
-//                            it.toUi()
-//                        }
-//                    )
-//            }
-//        }
-//
-//        viewModelScope.launch {
-//            consultarTiposDespesaUiUseCase()
-//                .collect { listaUi ->
-//
-//                    _uiState.value =
-//                        _uiState.value.copy(
-//                            tiposDespesa = listaUi,
-//                            tipoSelecionado = _uiState.value.tipoSelecionado
-//                                ?: listaUi.firstOrNull()
-//                        )
-//                }
-//        }
-
-
-
-
-
-
     }
 
     fun gerarEmail(
@@ -152,49 +111,5 @@ class EmailViewModel @Inject constructor(
                     )
             )
     }
-
-//        viewModelScope.launch {
-//
-//            val fechamento = fechamentoRepository.findById(fechamentoId)
-//                ?: return@launch
-//
-//            val demonstrativos = consultarDemonstrativos(fechamentoId)
-//
-//            val mesNome = Month.of(fechamento.mes)
-//                .getDisplayName(
-//                    TextStyle.FULL,
-//                    Locale("pt","BR")
-//                )
-//
-//            val html = gerarCorpoEmailHtmlUseCase(
-//                mesNome = mesNome,
-//                ano = fechamento.ano,
-//                despesas = despesas,
-//                totalGeralDespesas =
-//                    despesas.sumOf {
-//                        it.valor
-//                    },
-//                demonstrativos = demonstrativos,
-//                totalGeralArrecadar =
-//                    demonstrativos.sumOf {
-//                        it.total
-//                    }
-//            )
-//
-//            val email = EmailUi(
-//                assunto = "Rateio Condomínio - $mesNome/${fechamento.ano}",
-//                html = html,
-//                destinatario = "",
-//                competencia = "$mesNome/${fechamento.ano}"
-//                )
-//
-//            _uiState.update {
-//                it.copy(
-//                    fechamentoId = fechamentoId,
-//                    email = email,
-//                    carregando = false
-//                )
-//            }
-//        }
     }
 }

@@ -52,19 +52,6 @@ fun DespesaItemScreen(
             it.valor
         }
 
-    state.mensagem?.let { mensagem ->
-        InlineMessageBanner(
-            message = when(mensagem){
-                is UiMessage.Success -> mensagem.text
-                is UiMessage.Error -> mensagem.text
-            },
-
-            onDismiss = {
-                viewModel.limparMensagem()
-            }
-        )
-    }
-
     Scaffold { padding ->
         Column(
             modifier = Modifier
@@ -79,6 +66,19 @@ fun DespesaItemScreen(
                     "Itens da Despesa",
                     style = MaterialTheme.typography.headlineSmall
                 )
+
+                state.mensagem?.let { mensagem ->
+                    InlineMessageBanner(
+                        message = when(mensagem){
+                            is UiMessage.Success -> mensagem.text
+                            is UiMessage.Error -> mensagem.text
+                        },
+
+                        onDismiss = {
+                            viewModel.limparMensagem()
+                        }
+                    )
+                }
 
                 Button(
                     onClick = onVoltar

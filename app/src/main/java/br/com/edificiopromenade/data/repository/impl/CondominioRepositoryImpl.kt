@@ -33,9 +33,8 @@ class CondominioRepositoryImpl @Inject constructor(
         condominio: CondominioEntity
     ) = dao.update(condominio)
 
-    override fun existeCondominio(
-        id: Long
+    override suspend fun existeCondominioAtivo(
     ): Boolean {
-        TODO("Not yet implemented")
+        return dao.countByAtivo()
     }
 }

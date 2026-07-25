@@ -63,7 +63,9 @@ class ApartamentoViewModel @Inject constructor(
             )
     }
 
-    fun salvar() {
+    fun salvar(
+        onSucesso: () -> Unit = {}
+    ) {
 
         viewModelScope.launch(Dispatchers.IO) {
 
@@ -155,6 +157,7 @@ class ApartamentoViewModel @Inject constructor(
                     mensagem = UiMessage.Success
                         (mensagemSucesso )
                 )
+            onSucesso()
         }
     }
 

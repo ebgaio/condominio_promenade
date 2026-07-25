@@ -128,7 +128,8 @@ fun AppNavHost(
         composable(
             AppDestinations.MORADORES
         ) {
-            MoradoresScreen(    modoInicializacao = true,
+            MoradoresScreen(
+                modoInicializacao = true,
                 onAnterior = {
                     navController.popBackStack()
                 },
@@ -136,14 +137,22 @@ fun AppNavHost(
                     navController.navigate(
                         AppDestinations.HOME
                     ) {
-                        popUpTo(AppDestinations.INITIALIZATION)
+                        popUpTo(
+                            AppDestinations.INITIALIZATION
+                        ) {
+                            inclusive = true
+                        }
                     }
                 },
                 onSair = {
                     navController.navigate(
                         AppDestinations.HOME
                     ) {
-                        popUpTo(AppDestinations.INITIALIZATION)
+                        popUpTo(
+                            AppDestinations.INITIALIZATION
+                        ) {
+                            inclusive = true
+                        }
                     }
                 }
             )
@@ -154,6 +163,15 @@ fun AppNavHost(
         ) {
             CondominioScreen(
                 modoInicializacao = true,
+                onConcluido = {
+                    navController.navigate(
+                        AppDestinations.APARTAMENTOS
+                    ) {
+                        popUpTo(AppDestinations.CONDOMINIO) {
+                            inclusive = true
+                        }
+                    }
+                },
                 onProximo = {
                     navController.navigate(
                         AppDestinations.APARTAMENTOS
@@ -189,7 +207,11 @@ fun AppNavHost(
                     navController.navigate(
                         AppDestinations.HOME
                     ) {
-                        popUpTo(AppDestinations.INITIALIZATION)
+                        popUpTo(
+                            AppDestinations.INITIALIZATION
+                        ) {
+                            inclusive = true
+                        }
                     }
                 }
             )

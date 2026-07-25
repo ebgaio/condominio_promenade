@@ -54,4 +54,13 @@ interface CondominioDao {
     """)
     fun findHistorico():
             Flow<List<CondominioEntity>>
+
+    @Query("""
+        SELECT EXISTS(
+        SELECT 1
+        FROM condominios
+        WHERE ativo = 1)
+    """)
+    suspend fun countByAtivo(
+    ): Boolean
 }

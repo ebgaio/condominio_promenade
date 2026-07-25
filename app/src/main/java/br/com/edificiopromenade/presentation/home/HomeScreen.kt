@@ -9,15 +9,16 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import br.com.edificiopromenade.presentation.common.message.InlineMessageBanner
 import br.com.edificiopromenade.presentation.common.message.UiMessage
 
@@ -33,24 +34,25 @@ fun HomeScreen(
 
     val state by viewModel.uiState.collectAsState()
 
-    val focusManager = LocalFocusManager.current
+    val lifecycleOwner = LocalLifecycleOwner.current
 
-    val keyboardController = LocalSoftwareKeyboardController.current
-
-    LaunchedEffect(Unit) {
-        viewModel.carregar()
-    }
-
-    state.mensagem?.let { mensagem ->
-        InlineMessageBanner(
-            message = when(mensagem){
-                is UiMessage.Success -> mensagem.text
-                is UiMessage.Error -> mensagem.text
-            },
-            onDismiss = {
-                viewModel.limparMensagem()
+    DisposableEffect(
+        lifecycleOwner
+    ) {
+        val observer =
+            LifecycleEventObserver { _, event ->
+                if (
+                    event == Lifecycle.Event.ON_RESUME
+                    ) {
+                    viewModel.carregar()
+                }
             }
-        )
+
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
     }
 
     Scaffold { padding ->
@@ -62,7 +64,6 @@ fun HomeScreen(
                 .padding(24.dp),
 
             verticalArrangement = Arrangement.spacedBy(16.dp),
-
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
@@ -70,6 +71,18 @@ fun HomeScreen(
                 text = "Sistema Edifício Promenade",
                 style = MaterialTheme.typography.headlineMedium
             )
+
+            state.mensagem?.let { mensagem ->
+                InlineMessageBanner(
+                    message = when(mensagem){
+                        is UiMessage.Success -> mensagem.text
+                        is UiMessage.Error -> mensagem.text
+                    },
+                    onDismiss = {
+                        viewModel.limparMensagem()
+                    }
+                )
+            }
 
             Button(
                 onClick = {
@@ -80,7 +93,8 @@ fun HomeScreen(
                         viewModel.mensagemNovoFechamento()
                         )
                     }
-                }
+                },
+                enabled = !state.carregando
             ) {
                 Text("Novo Fechamento")
             }
@@ -100,7 +114,8 @@ fun HomeScreen(
                             viewModel.mensagemMoradores()
                         )
                     }
-                }
+                },
+                enabled = !state.carregando
             ) {
                 Text("Moradores")
             }
@@ -120,7 +135,8 @@ fun HomeScreen(
                         viewModel.mensagemApartamentos()
                         )
                     }
-                }
+                },
+                enabled = !state.carregando
             ) {
                 Text("Apartamentos")
             }
@@ -128,7 +144,6 @@ fun HomeScreen(
             Button(onClick = {}) {
                 Text("Configurações")
             }
-
             Text("Versão 1.0")
         }
     }

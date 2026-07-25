@@ -67,4 +67,13 @@ interface FechamentoMensalDao {
     suspend fun findById(
         id: Long
     ): FechamentoMensalEntity?
+
+    @Query("""
+        SELECT COUNT(*)
+        FROM fechamentos_mensais
+        WHERE finalizado = :finalizado
+    """)
+    suspend fun countByDescricao(
+        finalizado: Boolean
+    ): Int
 }

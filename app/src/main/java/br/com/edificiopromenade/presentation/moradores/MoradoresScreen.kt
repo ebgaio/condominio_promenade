@@ -45,7 +45,7 @@ import java.time.LocalDate
 @Composable
 fun MoradoresScreen(
     modoInicializacao: Boolean = false,
-    onAnterior: (() -> Unit),
+    onAnterior: () -> Unit = {},
     onProximo: () -> Unit = {},
     onSair: () -> Unit = {},
     viewModel: MoradoresViewModel = hiltViewModel()
@@ -403,7 +403,12 @@ fun MoradoresScreen(
                     }
 
                     Button(
-                        onClick = onProximo
+                        onClick = onProximo,
+                        enabled = state.apartamentos.any { item ->
+                            item.moradores.any { morador ->
+                                morador.ativo
+                            }
+                        }
                     ) {
                         Text("Próximo")
                     }

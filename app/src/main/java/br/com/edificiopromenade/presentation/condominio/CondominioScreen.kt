@@ -34,7 +34,7 @@ fun CondominioScreen(
     modoInicializacao: Boolean = false,
     onProximo: () -> Unit = {},
     onSair: () -> Unit = {},
-    onConcluido: (() -> Unit)? = null,
+    onConcluido: () -> Unit = {},
     viewModel: CondominioViewModel = hiltViewModel()
 ) {
 
@@ -146,8 +146,9 @@ fun CondominioScreen(
                 onClick = {
                     focusManager.clearFocus()
                     keyboardController?.hide()
-                    viewModel.salvar()
-                    onConcluido?.invoke()
+                    viewModel.salvar(
+                        onSucesso = onConcluido
+                    )
                 }
             ) {
                 Text("Salvar")
@@ -167,7 +168,7 @@ fun CondominioScreen(
                 ) {
 
                     Button(
-                        onClick = onProximo
+                        onClick = onProximo,
                     ) {
                         Text("Próximo")
                     }

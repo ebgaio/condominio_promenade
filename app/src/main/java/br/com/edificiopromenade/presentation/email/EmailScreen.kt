@@ -67,11 +67,6 @@ fun EmailScreen(
                             state.email!!.destinatario
                 )
 
-//                Text(
-//                    "Itens da Despesa",
-//                    style = MaterialTheme.typography.headlineSmall
-//                )
-
                 Button(
                     onClick = onVoltar
                 ) {
@@ -83,21 +78,6 @@ fun EmailScreen(
                 ) {
                     TODO("Integração Gmail API")
                 }
-
-//                OutlinedTextField(
-//                    value = state.valor,
-//                    onValueChange = viewModel::onValorChanged,
-//
-//                    label = {
-//                        Text("Valor")
-//                    },
-//
-//                    keyboardOptions = KeyboardOptions(
-//                        keyboardType = KeyboardType.Number
-//                    ),
-//
-//                    modifier = Modifier.fillMaxWidth()
-//                )
             }
         }
     }
