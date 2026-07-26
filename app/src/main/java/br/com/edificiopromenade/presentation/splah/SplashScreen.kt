@@ -10,9 +10,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.navigation.compose.rememberNavController
 import br.com.edificiopromenade.domain.model.AppInitializationResult
-import br.com.edificiopromenade.presentation.navigation.AppDestinations
 
 @Composable
 fun SplashScreen(

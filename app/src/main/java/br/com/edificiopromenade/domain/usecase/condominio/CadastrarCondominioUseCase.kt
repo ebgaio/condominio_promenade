@@ -2,7 +2,6 @@ package br.com.edificiopromenade.domain.usecase.condominio
 
 import br.com.edificiopromenade.data.local.entity.CondominioEntity
 import br.com.edificiopromenade.domain.repository.CondominioRepository
-import java.time.LocalDateTime
 import jakarta.inject.Inject
 
 class CadastrarCondominioUseCase @Inject constructor(
@@ -15,21 +14,25 @@ class CadastrarCondominioUseCase @Inject constructor(
 
         val atual = repository.findAtivo()
 
-        atual?.let {
+        return if (atual != null) {
 
-            repository.update(
+            val atualizado = condominio.copy(
+                id = atual.id,
+                ativo = true,
+                dataCriacao = atual.dataCriacao,
+                dataInativacao = null
+            )
 
-                it.copy(
-                    ativo = false,
-                    dataInativacao = LocalDateTime.now()
+            repository.update(atualizado)
+
+            atual.id
+        } else {
+
+            repository.insert(
+                condominio.copy(
+                    ativo = true
                 )
             )
         }
-
-        return repository.insert(
-            condominio.copy(
-                ativo = true
-            )
-        )
     }
 }

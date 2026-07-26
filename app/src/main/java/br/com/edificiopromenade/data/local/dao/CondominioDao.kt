@@ -61,6 +61,6 @@ interface CondominioDao {
         FROM condominios
         WHERE ativo = 1)
     """)
-    suspend fun countByAtivo(
+    suspend fun existeCondominioAtivo(
     ): Boolean
 }

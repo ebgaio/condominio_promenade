@@ -35,6 +35,6 @@ class CondominioRepositoryImpl @Inject constructor(
 
     override suspend fun existeCondominioAtivo(
     ): Boolean {
-        return dao.countByAtivo()
+        return dao.existeCondominioAtivo()
     }
 }
