@@ -32,46 +32,71 @@ fun AppNavHost(
         modifier = modifier
     ) {
 
+        /*
+         * ============================================================
+         * FLUXO DE INSTALAÇÃO INICIAL
+         * ============================================================
+         */
+
         composable(
-            AppDestinations.INITIALIZATION
+            route = AppDestinations.INITIALIZATION
         ) {
 
             InitializationFlowScreen(
+
                 onCondominio = {
+
                     navController.navigate(
-                        AppDestinations.CONDOMINIO
+                        AppDestinations.condominioRoute(
+                            modoInicializacao = true
+                        )
                     ) {
-                        popUpTo(AppDestinations.INITIALIZATION) {
+                        popUpTo(
+                            AppDestinations.INITIALIZATION
+                        ) {
                             inclusive = true
                         }
                     }
                 },
 
                 onApartamentos = {
+
                     navController.navigate(
-                        AppDestinations.APARTAMENTOS
+                        AppDestinations.apartamentosRoute(
+                            modoInicializacao = true
+                        )
                     ) {
-                        popUpTo(AppDestinations.INITIALIZATION) {
+                        popUpTo(
+                            AppDestinations.INITIALIZATION
+                        ) {
                             inclusive = true
                         }
                     }
                 },
 
                 onMoradores = {
+
                     navController.navigate(
-                        AppDestinations.MORADORES
+                        AppDestinations.moradoresRoute(
+                            modoInicializacao = true
+                        )
                     ) {
-                        popUpTo(AppDestinations.INITIALIZATION) {
+                        popUpTo(
+                            AppDestinations.INITIALIZATION
+                        ) {
                             inclusive = true
                         }
                     }
                 },
 
                 onHome = {
+
                     navController.navigate(
                         AppDestinations.HOME
                     ) {
-                        popUpTo(AppDestinations.INITIALIZATION) {
+                        popUpTo(
+                            AppDestinations.INITIALIZATION
+                        ) {
                             inclusive = true
                         }
                     }
@@ -79,35 +104,61 @@ fun AppNavHost(
             )
         }
 
+
+        /*
+         * ============================================================
+         * HOME
+         * ============================================================
+         *
+         * Todas as telas abertas diretamente pela Home entram
+         * em modo manutenção.
+         *
+         * modoInicializacao = false
+         * ============================================================
+         */
+
         composable(
-            AppDestinations.HOME
+            route = AppDestinations.HOME
         ) {
+
             HomeScreen(
+
                 onMoradoresClick = {
+
                     navController.navigate(
-                        AppDestinations.MORADORES
+                        AppDestinations.moradoresRoute(
+                            modoInicializacao = false
+                        )
                     )
                 },
 
                 onCondominioClick = {
+
                     navController.navigate(
-                        AppDestinations.CONDOMINIO
+                        AppDestinations.condominioRoute(
+                            modoInicializacao = false
+                        )
                     )
                 },
 
                 onApartamentosClick = {
+
                     navController.navigate(
-                        AppDestinations.APARTAMENTOS
+                        AppDestinations.apartamentosRoute(
+                            modoInicializacao = false
+                        )
                     )
                 },
 
                 onNovoFechamentoClick = {
+
                     navController.navigate(
                         AppDestinations.NOVO_FECHAMENTO
                     )
                 },
 
                 onHistoricoClick = {
+
                     navController.navigate(
                         AppDestinations.HISTORICO
                     )
@@ -115,9 +166,17 @@ fun AppNavHost(
             )
         }
 
+
+        /*
+         * ============================================================
+         * HISTÓRICO
+         * ============================================================
+         */
+
         composable(
-            AppDestinations.HISTORICO
+            route = AppDestinations.HISTORICO
         ) {
+
             HistoryScreen(
                 onVoltar = {
                     navController.popBackStack()
@@ -125,123 +184,272 @@ fun AppNavHost(
             )
         }
 
-        composable(
-            AppDestinations.MORADORES
-        ) {
-            MoradoresScreen(
-                modoInicializacao = true,
-                onAnterior = {
-                    navController.popBackStack()
-                },
-                onProximo = {
-                    navController.navigate(
-                        AppDestinations.HOME
-                    ) {
-                        popUpTo(
-                            AppDestinations.INITIALIZATION
-                        ) {
-                            inclusive = true
-                        }
-                    }
-                },
-                onSair = {
-                    navController.navigate(
-                        AppDestinations.HOME
-                    ) {
-                        popUpTo(
-                            AppDestinations.INITIALIZATION
-                        ) {
-                            inclusive = true
-                        }
-                    }
-                }
-            )
-        }
+
+        /*
+         * ============================================================
+         * CONDOMÍNIO
+         * ============================================================
+         *
+         * A rota pode ser aberta:
+         *
+         * 1. Pela instalação inicial
+         * 2. Pela Home
+         *
+         * O comportamento é definido por modoInicializacao.
+         * ============================================================
+         */
 
         composable(
-            AppDestinations.CONDOMINIO
-        ) {
+            route = AppDestinations.CONDOMINIO,
+            arguments = listOf(
+
+                navArgument(
+                    "modoInicializacao"
+                ) {
+                    type = NavType.BoolType
+                    defaultValue = false
+                }
+            )
+        ) { backStackEntry ->
+
+            val modoInicializacao =
+                backStackEntry
+                    .arguments
+                    ?.getBoolean(
+                        "modoInicializacao"
+                    )
+                    ?: false
+
             CondominioScreen(
-                modoInicializacao = true,
-                onConcluido = {
-                    navController.navigate(
-                        AppDestinations.APARTAMENTOS
-                    ) {
-                        popUpTo(AppDestinations.CONDOMINIO) {
-                            inclusive = true
-                        }
-                    }
-                },
-                onProximo = {
-                    navController.navigate(
-                        AppDestinations.APARTAMENTOS
-                    ) {
-                        popUpTo(AppDestinations.CONDOMINIO)
-                    }
-                },
-                onSair = {
-                    navController.navigate(
-                        AppDestinations.HOME
-                    ) {
-                        popUpTo(AppDestinations.INITIALIZATION)
-                    }
-                }
-            )
-        }
 
-        composable(
-            AppDestinations.APARTAMENTOS
-        ) {
-            ApartamentoScreen(
-                navController = navController,
-                modoInicializacao = true,
-                onAnterior = {
-                    navController.popBackStack()
-                },
+                modoInicializacao = modoInicializacao,
+
                 onProximo = {
+
                     navController.navigate(
-                        AppDestinations.MORADORES
+                        AppDestinations.apartamentosRoute(
+                            modoInicializacao = modoInicializacao
+                        )
                     )
                 },
+
                 onSair = {
+
                     navController.navigate(
                         AppDestinations.HOME
                     ) {
+
                         popUpTo(
-                            AppDestinations.INITIALIZATION
+                            AppDestinations.HOME
                         ) {
-                            inclusive = true
+                            inclusive = false
                         }
+
+                        launchSingleTop = true
                     }
                 }
             )
         }
+
+
+        /*
+         * ============================================================
+         * APARTAMENTOS
+         * ============================================================
+         */
+
+        composable(
+            route = AppDestinations.APARTAMENTOS,
+            arguments = listOf(
+
+                navArgument(
+                    "modoInicializacao"
+                ) {
+                    type = NavType.BoolType
+                    defaultValue = false
+                }
+            )
+        ) { backStackEntry ->
+
+            val modoInicializacao =
+                backStackEntry
+                    .arguments
+                    ?.getBoolean(
+                        "modoInicializacao"
+                    )
+                    ?: false
+
+            ApartamentoScreen(
+
+                navController = navController,
+
+                modoInicializacao = modoInicializacao,
+
+                onAnterior = {
+
+                    navController.popBackStack()
+                },
+
+                onProximo = {
+
+                    navController.navigate(
+                        AppDestinations.moradoresRoute(
+                            modoInicializacao = modoInicializacao
+                        )
+                    )
+                },
+
+                onSair = {
+
+                    navController.navigate(
+                        AppDestinations.HOME
+                    ) {
+
+                        popUpTo(
+                            AppDestinations.HOME
+                        ) {
+                            inclusive = false
+                        }
+
+                        launchSingleTop = true
+                    }
+                }
+            )
+        }
+
+
+        /*
+         * ============================================================
+         * MORADORES
+         * ============================================================
+         *
+         * Na instalação inicial:
+         *
+         * Moradores → Concluído → Home
+         *
+         * Em manutenção:
+         *
+         * A navegação será ajustada na Etapa 1.7.
+         * ============================================================
+         */
+
+        composable(
+            route = AppDestinations.MORADORES,
+            arguments = listOf(
+
+                navArgument(
+                    "modoInicializacao"
+                ) {
+                    type = NavType.BoolType
+                    defaultValue = false
+                }
+            )
+        ) { backStackEntry ->
+
+            val modoInicializacao =
+                backStackEntry
+                    .arguments
+                    ?.getBoolean(
+                        "modoInicializacao"
+                    )
+                    ?: false
+
+            MoradoresScreen(
+
+                modoInicializacao = modoInicializacao,
+
+                onAnterior = {
+
+                    navController.popBackStack()
+                },
+
+                onProximo = {
+
+                    navController.navigate(
+                        AppDestinations.HOME
+                    ) {
+
+                        popUpTo(
+                            AppDestinations.HOME
+                        ) {
+                            inclusive = false
+                        }
+
+                        launchSingleTop = true
+                    }
+                },
+
+                onSair = {
+
+                    navController.navigate(
+                        AppDestinations.HOME
+                    ) {
+
+                        popUpTo(
+                            AppDestinations.HOME
+                        ) {
+                            inclusive = false
+                        }
+
+                        launchSingleTop = true
+                    }
+                }
+            )
+        }
+
+
+        /*
+         * ============================================================
+         * DETALHE DO APARTAMENTO
+         * ============================================================
+         */
 
         composable(
             route = AppDestinations.APARTAMENTO_DETALHE
         ) { backStackEntry ->
 
-            val id = backStackEntry
+            val id =
+                backStackEntry
                     .arguments
-                    ?.getString("id")
+                    ?.getString(
+                        "id"
+                    )
                     ?.toLongOrNull()
                     ?: 0L
 
             ApartamentoDetalheScreen(
+
                 apartamentoId = id,
+
                 onVoltar = {
                     navController.popBackStack()
                 }
             )
         }
 
+
+        /*
+         * ============================================================
+         * NOVO FECHAMENTO
+         * ============================================================
+         */
+
         composable(
-            AppDestinations.NOVO_FECHAMENTO
+            route = AppDestinations.NOVO_FECHAMENTO
         ) {
+
             NovoFechamentoScreen(
-                navController = navController
+                navController =
+                    navController
             )
         }
+
+
+        /*
+         * ============================================================
+         * DESPESAS
+         * ============================================================
+         */
 
         composable(
             route = AppDestinations.DESPESAS
@@ -250,65 +458,116 @@ fun AppNavHost(
             val fechamentoId =
                 backStackEntry
                     .arguments
-                    ?.getString("fechamentoId")
+                    ?.getString(
+                        "fechamentoId"
+                    )
                     ?.toLongOrNull()
                     ?: 0L
 
             DespesaScreen(
-                fechamentoId = fechamentoId,
+
+                fechamentoId =
+                    fechamentoId,
+
                 onVoltar = {
-                    navController.popBackStack()
+
+                    navController
+                        .popBackStack()
                 },
 
                 onAbrirDemonstrativos = { id ->
+
                     navController.navigate(
-                        AppDestinations.demonstrativosRoute(id)
+                        AppDestinations
+                            .demonstrativosRoute(id)
                     )
                 },
 
-                onAbrirItensDespesa = { despesaId ->
+                onAbrirItensDespesa = {
+                        despesaId ->
+
                     navController.navigate(
-                        AppDestinations.despesaItemRoute(despesaId
-                        )
+                        AppDestinations
+                            .despesaItemRoute(
+                                despesaId
+                            )
                     )
                 }
             )
         }
 
+
+        /*
+         * ============================================================
+         * ITENS DA DESPESA
+         * ============================================================
+         */
+
         composable(
-            route = AppDestinations.DESPESA_ITEM,
+            route =
+                AppDestinations.DESPESA_ITEM,
+
             arguments = listOf(
-                navArgument("despesaId") {
-                    type = NavType.LongType
+
+                navArgument(
+                    "despesaId"
+                ) {
+                    type =
+                        NavType.LongType
                 }
             )
-
         ) { backStackEntry ->
-            val despesaId = backStackEntry.arguments!!
-                    .getLong("despesaId")
+
+            val despesaId =
+                backStackEntry
+                    .arguments!!
+                    .getLong(
+                        "despesaId"
+                    )
 
             DespesaItemScreen(
-                despesaId = despesaId,
+
+                despesaId =
+                    despesaId,
+
                 onVoltar = {
-                    navController.popBackStack()
+
+                    navController
+                        .popBackStack()
                 }
             )
         }
 
+
+        /*
+         * ============================================================
+         * DEMONSTRATIVOS
+         * ============================================================
+         */
+
         composable(
-            route = AppDestinations.DEMONSTRATIVOS
+            route =
+                AppDestinations.DEMONSTRATIVOS
         ) { backStackEntry ->
 
-            val fechamentoId = backStackEntry
+            val fechamentoId =
+                backStackEntry
                     .arguments
-                    ?.getString("fechamentoId")
+                    ?.getString(
+                        "fechamentoId"
+                    )
                     ?.toLongOrNull()
                     ?: 0L
 
             DemonstrativosScreen(
-                fechamentoId = fechamentoId,
+
+                fechamentoId =
+                    fechamentoId,
+
                 onVoltar = {
-                    navController.popBackStack()
+
+                    navController
+                        .popBackStack()
                 }
             )
         }

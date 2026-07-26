@@ -44,7 +44,7 @@ fun CondominioScreen(
 
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    Scaffold (
+    Scaffold(
     ) {
         Column(
             modifier = Modifier
@@ -158,26 +158,23 @@ fun CondominioScreen(
                 modifier = Modifier.weight(1f)
             ) {}
 
-            if (modoInicializacao) {
+            HorizontalDivider()
 
-                HorizontalDivider()
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                Button(
+                    onClick = onProximo,
                 ) {
+                    Text("Próximo")
+                }
 
-                    Button(
-                        onClick = onProximo,
-                    ) {
-                        Text("Próximo")
-                    }
-
-                    Button(
-                        onClick = onSair
-                    ) {
-                        Text("Sair")
-                    }
+                Button(
+                    onClick = onSair
+                ) {
+                    Text("Sair")
                 }
             }
         }

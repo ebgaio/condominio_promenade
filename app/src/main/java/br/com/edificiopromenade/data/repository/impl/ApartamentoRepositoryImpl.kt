@@ -39,7 +39,7 @@ class ApartamentoRepositoryImpl @Inject constructor(
     override suspend fun existeApartamento(
         numero: String
     ): Boolean {
-        return dao.countByDescricao(
+        return dao.countByNumeroAtivo(
             numero
         ) > 0
     }

@@ -40,7 +40,6 @@ fun ApartamentoScreen(
     onAnterior: () -> Unit = {},
     onProximo: () -> Unit = {},
     onSair: () -> Unit = {},
-//    onConcluido: () -> Unit = {},
     viewModel: ApartamentoViewModel = hiltViewModel()
 ) {
 
@@ -184,33 +183,30 @@ fun ApartamentoScreen(
                 }
             }
 
-            if (modoInicializacao) {
+            HorizontalDivider()
 
-                HorizontalDivider()
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                Button(
+                    onClick = onAnterior
                 ) {
+                    Text("Anterior")
+                }
 
-                    Button(
-                        onClick = onAnterior
-                    ) {
-                        Text("Anterior")
-                    }
+                Button(
+                    onClick = onProximo,
+                    enabled = state.apartamentos.isNotEmpty()
+                ) {
+                    Text("Próximo")
+                }
 
-                    Button(
-                        onClick = onProximo,
-                        enabled = state.apartamentos.isNotEmpty()
-                    ) {
-                        Text("Próximo")
-                    }
-
-                    Button(
-                        onClick = onSair
-                    ) {
-                        Text("Sair")
-                    }
+                Button(
+                    onClick = onSair
+                ) {
+                    Text("Sair")
                 }
             }
         }

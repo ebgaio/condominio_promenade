@@ -68,13 +68,6 @@ fun MoradoresScreen(
             }
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text("Moradores")
-                }
-            )
-        }
     ) { padding ->
 
         Column(
@@ -202,51 +195,65 @@ fun MoradoresScreen(
                 modifier = Modifier.height(8.dp)
             )
 
-            Button(
-                onClick = {
-                    focusManager.clearFocus()
-                    keyboardController?.hide()
-                    viewModel.salvar()
-                }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(
-                    if (state.modoEdicao)
-                        "Atualizar"
-                    else
-                        "Salvar"
-                )
-            }
-
-            if (state.modoEdicao) {
-
-                Spacer(
-                    modifier = Modifier.height(8.dp)
-                )
 
                 Button(
                     onClick = {
-                        viewModel.encerrarMorador()
+                        focusManager.clearFocus()
+                        keyboardController?.hide()
+                        viewModel.salvar()
                     }
                 ) {
                     Text(
-                        "Encerrar Morador"
+                        if (state.modoEdicao)
+                            "Atualizar"
+                        else
+                            "Salvar"
                     )
                 }
 
-                Spacer(
-                    modifier = Modifier.height(8.dp)
-                )
+                if (state.modoEdicao) {
 
-                Button(
-                    onClick = {
-                        viewModel.cancelarEdicao()
+                    Spacer(
+                        modifier = Modifier.height(8.dp)
+                    )
+
+                    Button(
+                        onClick = {
+                            viewModel.encerrarMorador()
+                        }
+                    ) {
+                        Text(
+                            "Encerrar Morador"
+                        )
                     }
-                ) {
-                    Text("Voltar")
+
+                    Spacer(
+                        modifier = Modifier.height(8.dp)
+                    )
+
+                    Button(
+                        onClick = {
+                            viewModel.cancelarEdicao()
+                        }
+                    ) {
+                        Text("Voltar")
+                    }
                 }
             }
 
+            Spacer(
+                modifier = Modifier.height(8.dp)
+            )
+
             HorizontalDivider()
+
+            Spacer(
+                modifier = Modifier.height(8.dp)
+            )
 
             LazyColumn(
                 modifier = Modifier.weight(1f)
@@ -383,8 +390,6 @@ fun MoradoresScreen(
                 modifier = Modifier.height(8.dp)
             )
 
-            if (modoInicializacao) {
-
                 HorizontalDivider()
 
                 Spacer(
@@ -410,7 +415,7 @@ fun MoradoresScreen(
                             }
                         }
                     ) {
-                        Text("Próximo")
+                        Text("Concluído")
                     }
 
                     Button(
@@ -419,7 +424,6 @@ fun MoradoresScreen(
                         Text("Sair")
                     }
                 }
-            }
         }
     }
 }

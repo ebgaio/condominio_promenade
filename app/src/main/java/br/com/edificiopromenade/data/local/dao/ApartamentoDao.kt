@@ -88,8 +88,9 @@ interface ApartamentoDao {
         SELECT COUNT(*)
         FROM apartamentos
         WHERE numero = :numero
+        AND ativo = 1
     """)
-    suspend fun countByDescricao(
+    suspend fun countByNumeroAtivo(
         numero: String
     ): Int
 

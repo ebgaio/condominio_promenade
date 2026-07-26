@@ -288,13 +288,8 @@ fun DespesaScreen(
                 HorizontalDivider()
 
                 Text(
-                    text = "Total",
-                    style = MaterialTheme.typography.titleMedium
-                )
-
-                Text(
-                    text = formatarMoeda(total),
-                    style = MaterialTheme.typography.titleLarge
+                    text = "Total: ${formatarMoeda(total)}",
+                    style = MaterialTheme.typography.headlineSmall,
                 )
 
                 Row(
