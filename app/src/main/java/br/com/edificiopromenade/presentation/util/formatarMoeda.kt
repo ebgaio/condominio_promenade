@@ -9,7 +9,7 @@ fun formatarMoeda(
 
     return NumberFormat
         .getCurrencyInstance(
-            Locale.forLanguageTag("pt_br")
+            Locale("pt", "BR")
         )
         .format(valor)
 }
