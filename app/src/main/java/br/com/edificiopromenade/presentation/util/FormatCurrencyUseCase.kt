@@ -13,7 +13,7 @@ import javax.inject.Inject
  */
 class FormatCurrencyUseCase @Inject constructor() {
 
-    private val brLocale = Locale.forLanguageTag("pt-br")
+    private val brLocale = Locale.forLanguageTag("pt-BR")
     private val currencyFormatter = NumberFormat.getCurrencyInstance(brLocale)
     private val numberFormatter = NumberFormat.getNumberInstance(brLocale)
 

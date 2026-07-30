@@ -62,7 +62,7 @@ class EmailViewModel @Inject constructor(
                 Month.of(fechamento.mes)
                     .getDisplayName(
                         TextStyle.FULL,
-                        Locale.forLanguageTag("pt-br")
+                        Locale.forLanguageTag("pt-BR")
                     )
 
             val html =

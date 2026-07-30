@@ -102,14 +102,14 @@ fun HistoryScreen(
                         onClick = { monthExpanded = true },
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        val mesNome = Month.of(state.selectedMonth).getDisplayName(TextStyle.FULL, Locale.forLanguageTag("pt-br"))
+                        val mesNome = Month.of(state.selectedMonth).getDisplayName(TextStyle.FULL, Locale.forLanguageTag("pt-BR"))
                         Text("Mês: $mesNome")
                     }
                     DropdownMenu(expanded = monthExpanded, onDismissRequest = { monthExpanded = false }) {
                         (1..12).forEach { month ->
                             DropdownMenuItem(
                                 text = {
-                                    val name = Month.of(month).getDisplayName(TextStyle.FULL, Locale.forLanguageTag("pt-br"))
+                                    val name = Month.of(month).getDisplayName(TextStyle.FULL, Locale.forLanguageTag("pt-BR"))
                                     Text(name)
                                 },
                                 onClick = {
