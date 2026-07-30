@@ -1,4 +1,4 @@
-package com.appcar.domain.usecase
+package br.com.edificiopromenade.presentation.util
 
 import java.text.NumberFormat
 import java.util.Locale
@@ -13,7 +13,7 @@ import javax.inject.Inject
  */
 class FormatCurrencyUseCase @Inject constructor() {
 
-    private val brLocale = Locale("pt", "BR")
+    private val brLocale = Locale.forLanguageTag("pt-br")
     private val currencyFormatter = NumberFormat.getCurrencyInstance(brLocale)
     private val numberFormatter = NumberFormat.getNumberInstance(brLocale)
 
