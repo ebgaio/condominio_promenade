@@ -30,6 +30,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
+import br.com.edificiopromenade.presentation.common.component.MoneyOutlinedTextField
 import br.com.edificiopromenade.presentation.common.message.InlineMessageBanner
 import br.com.edificiopromenade.presentation.common.message.UiMessage
 import br.com.edificiopromenade.presentation.navigation.AppDestinations
@@ -131,30 +132,20 @@ fun NovoFechamentoScreen(
                     )
             )
 
-            OutlinedTextField(
+            MoneyOutlinedTextField(
                 value = state.fundoReserva,
                 onValueChange = viewModel::onFundoReservaChanged,
-                label = {
-                    Text("Fundo de Reserva")
-                },
-                placeholder = { Text("0,00") },
-                keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number
-                    )
+                label = "Fundo de Reserva",
+                modifier = Modifier.fillMaxWidth()
             )
 
-            OutlinedTextField(
+            MoneyOutlinedTextField(
                 value = state.decimoTerceiroFerias,
                 onValueChange = viewModel::onDecimoTerceiroChanged,
-
-                label = {
-                    Text("13º / Férias")
-                },
-                placeholder = { Text("0,00") },
-                keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number
-                    )
+                label = "13º / Férias",
+                modifier = Modifier.fillMaxWidth()
             )
+
             val formularioValido = state.mes.isNotBlank()
                     && state.ano.length == 4
 

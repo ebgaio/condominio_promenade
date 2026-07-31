@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import jakarta.inject.Inject
+import java.time.LocalDateTime
 
 @HiltViewModel
 class NovoFechamentoViewModel @Inject constructor(
@@ -54,24 +55,18 @@ class NovoFechamentoViewModel @Inject constructor(
     fun onFundoReservaChanged(
         valor: String
     ) {
-        val cleanValor = valor.filter { it.isDigit() }
-        if (cleanValor.length > 12) return // Limite de 12 dígitos
-
         _uiState.value =
             _uiState.value.copy(
-                fundoReserva = MoneyFormatter.format(cleanValor)
+                fundoReserva = valor
             )
     }
 
     fun onDecimoTerceiroChanged(
         valor: String
     ) {
-        val cleanValor = valor.filter { it.isDigit() }
-        if (cleanValor.length > 12) return // Limite de 12 dígitos
-
         _uiState.value =
             _uiState.value.copy(
-                decimoTerceiroFerias = MoneyFormatter.format(cleanValor)
+                decimoTerceiroFerias = valor
             )
     }
 
@@ -166,20 +161,20 @@ class NovoFechamentoViewModel @Inject constructor(
                     mes = mes,
                     ano = ano,
 
-                    dataCriacao = java.time.LocalDateTime.now(),
+                    dataCriacao = LocalDateTime.now(),
 
                     valorFundoReserva =
-                        _uiState.value.fundoReserva
-                            .replace(".", "")
-                            .replace(",", ".")
-                            .toDoubleOrNull()
+                        MoneyFormatter.parse(
+                            _uiState.value.fundoReserva
+                            )
+                            ?.toDouble()
                             ?: 0.0,
 
                     valorDecimoTerceiroFerias =
-                        _uiState.value.decimoTerceiroFerias
-                            .replace(".", "")
-                            .replace(",", ".")
-                            .toDoubleOrNull()
+                        MoneyFormatter.parse(
+                            _uiState.value.decimoTerceiroFerias
+                            )
+                            ?.toDouble()
                             ?: 0.0
                 )
             )
