@@ -33,4 +33,16 @@ interface TipoDespesaDao {
     suspend fun findById(
         id: Long
     ): TipoDespesaEntity?
+
+    @Query("""
+    SELECT EXISTS(
+        SELECT 1
+        FROM tipos_despesa
+        WHERE LOWER(TRIM(descricao)) = LOWER(TRIM(:descricao))
+        AND ativo = 1
+        )
+    """)
+    suspend fun existeAtivoComDescricao(
+        descricao: String
+    ): Boolean
 }

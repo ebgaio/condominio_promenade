@@ -23,4 +23,8 @@ class TipoDespesaRepositoryImpl @Inject constructor(
     override suspend fun update(
         tipo: TipoDespesaEntity
     ) = dao.update(tipo)
+
+    override suspend fun existeAtivoComDescricao(
+        descricao: String
+    ) = dao.existeAtivoComDescricao(descricao)
 }

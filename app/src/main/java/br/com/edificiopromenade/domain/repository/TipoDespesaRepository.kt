@@ -19,4 +19,8 @@ interface TipoDespesaRepository {
     suspend fun update(
         tipo: TipoDespesaEntity
     )
+
+    suspend fun existeAtivoComDescricao(
+        descricao: String
+    ): Boolean
 }

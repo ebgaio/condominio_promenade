@@ -10,8 +10,43 @@ class CadastrarTipoDespesaUseCase @Inject constructor(
 
     suspend operator fun invoke(
         tipo: TipoDespesaEntity
-    ): Long {
+    ): ResultadoCadastroTipoDespesa {
 
-        return repository.insert(tipo)
+        val descricao = tipo.descricao.trim()
+
+        if (descricao.isBlank()) {
+            return ResultadoCadastroTipoDespesa.DescricaoInvalida
+        }
+
+        val existe = repository.existeAtivoComDescricao(
+            descricao
+        )
+
+        if (existe) {
+            return ResultadoCadastroTipoDespesa.Duplicado
+        }
+
+        val tipoNormalizado = tipo.copy(
+            descricao = descricao
+        )
+
+        val id = repository.insert(
+            tipoNormalizado
+        )
+
+        return ResultadoCadastroTipoDespesa.Sucesso(
+            id = id
+        )
     }
+}
+
+sealed interface ResultadoCadastroTipoDespesa {
+
+    data class Sucesso(
+        val id: Long
+    ) : ResultadoCadastroTipoDespesa
+
+    data object DescricaoInvalida : ResultadoCadastroTipoDespesa
+
+    data object Duplicado : ResultadoCadastroTipoDespesa
 }
