@@ -15,5 +15,13 @@ data class DespesaItemUiState(
 
     val itemSelecionadoParaExclusao: DespesaItemUi? = null,
 
-    val itemEmEdicao: DespesaItemUi? = null
+    val itemEmEdicao: DespesaItemUi? = null,
+
+    /*
+     * true:
+     * a tela permanece disponível somente
+     * para consulta.
+     */
+    val fechamentoFinalizado: Boolean = false
+
 )

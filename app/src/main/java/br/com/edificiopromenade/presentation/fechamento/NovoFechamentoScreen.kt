@@ -3,9 +3,11 @@ package br.com.edificiopromenade.presentation.fechamento
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
@@ -29,7 +31,6 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.navigation.NavController
 import br.com.edificiopromenade.presentation.common.component.MoneyOutlinedTextField
 import br.com.edificiopromenade.presentation.common.message.InlineMessageBanner
 import br.com.edificiopromenade.presentation.common.message.UiMessage
@@ -38,7 +39,8 @@ import br.com.edificiopromenade.presentation.navigation.AppDestinations
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NovoFechamentoScreen(
-    navController: NavController,
+    onAbrirDespesas: (Long) -> Unit,
+    onSair: () -> Unit = {},
     viewModel: NovoFechamentoViewModel = hiltViewModel()
 ) {
 
@@ -175,10 +177,8 @@ fun NovoFechamentoScreen(
                             .fillMaxWidth()
                             .padding(vertical = 4.dp)
                             .clickable {
-                                navController.navigate(
-                                    AppDestinations.despesasRoute(
-                                        it.id
-                                    )
+                                onAbrirDespesas(
+                                    it.id
                                 )
                             }
                     ) {
@@ -199,6 +199,21 @@ fun NovoFechamentoScreen(
                             )
                         }
                     }
+                }
+            }
+
+            HorizontalDivider()
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+
+                Button(
+                    modifier = Modifier.width(80.dp),
+                    onClick = onSair
+                ) {
+                    Text("Sair")
                 }
             }
         }

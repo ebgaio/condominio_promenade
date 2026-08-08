@@ -10,6 +10,8 @@ data class DespesaUiState(
 
     val descricaoLivre: String = "",
 
+    val competencia: String = "",
+
     val despesas: List<DespesaUi> = emptyList(),
 
     val tiposDespesa: List<TipoDespesaUi> = emptyList(),

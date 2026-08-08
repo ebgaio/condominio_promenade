@@ -27,4 +27,8 @@ class TipoDespesaRepositoryImpl @Inject constructor(
     override suspend fun existeAtivoComDescricao(
         descricao: String
     ) = dao.existeAtivoComDescricao(descricao)
+
+    override suspend fun findAtivoByDescricao(
+        descricao: String
+    ) = dao.findAtivoByDescricao(descricao)
 }

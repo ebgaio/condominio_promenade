@@ -32,6 +32,8 @@ import br.com.edificiopromenade.presentation.common.message.InlineMessageBanner
 import br.com.edificiopromenade.presentation.common.message.UiMessage
 import br.com.edificiopromenade.presentation.util.formatarData
 import br.com.edificiopromenade.presentation.util.formatarMoeda
+import java.time.temporal.ChronoUnit
+import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -87,10 +89,10 @@ fun ApartamentoDetalheScreen(
         val diasOcupacaoAtual = moradorAtual
                 ?.dataInicio
                 ?.let {
-                    java.time.temporal.ChronoUnit.DAYS
+                    ChronoUnit.DAYS
                         .between(
                             it,
-                            java.time.LocalDate.now()
+                            LocalDate.now()
                         )
                 }
                 ?: 0

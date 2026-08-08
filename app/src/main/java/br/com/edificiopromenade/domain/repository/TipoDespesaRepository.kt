@@ -23,4 +23,8 @@ interface TipoDespesaRepository {
     suspend fun existeAtivoComDescricao(
         descricao: String
     ): Boolean
+
+    suspend fun findAtivoByDescricao(
+        descricao: String
+    ): TipoDespesaEntity?
 }

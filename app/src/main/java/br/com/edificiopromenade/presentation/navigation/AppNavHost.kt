@@ -13,6 +13,7 @@ import br.com.edificiopromenade.presentation.condominio.CondominioScreen
 import br.com.edificiopromenade.presentation.demonstrativo.DemonstrativosScreen
 import br.com.edificiopromenade.presentation.despesa.DespesaScreen
 import br.com.edificiopromenade.presentation.despesaitem.DespesaItemScreen
+import br.com.edificiopromenade.presentation.despesatemporaria.DespesaTemporariaScreen
 import br.com.edificiopromenade.presentation.fechamento.NovoFechamentoScreen
 import br.com.edificiopromenade.presentation.history.HistoryScreen
 import br.com.edificiopromenade.presentation.home.HomeScreen
@@ -37,7 +38,6 @@ fun AppNavHost(
          * FLUXO DE INSTALAÇÃO INICIAL
          * ============================================================
          */
-
         composable(
             route = AppDestinations.INITIALIZATION
         ) {
@@ -45,7 +45,6 @@ fun AppNavHost(
             InitializationFlowScreen(
 
                 onCondominio = {
-
                     navController.navigate(
                         AppDestinations.condominioRoute(
                             modoInicializacao = true
@@ -60,7 +59,6 @@ fun AppNavHost(
                 },
 
                 onApartamentos = {
-
                     navController.navigate(
                         AppDestinations.apartamentosRoute(
                             modoInicializacao = true
@@ -75,7 +73,6 @@ fun AppNavHost(
                 },
 
                 onMoradores = {
-
                     navController.navigate(
                         AppDestinations.moradoresRoute(
                             modoInicializacao = true
@@ -90,7 +87,6 @@ fun AppNavHost(
                 },
 
                 onHome = {
-
                     navController.navigate(
                         AppDestinations.HOME
                     ) {
@@ -104,7 +100,6 @@ fun AppNavHost(
             )
         }
 
-
         /*
          * ============================================================
          * HOME
@@ -116,7 +111,6 @@ fun AppNavHost(
          * modoInicializacao = false
          * ============================================================
          */
-
         composable(
             route = AppDestinations.HOME
         ) {
@@ -124,7 +118,6 @@ fun AppNavHost(
             HomeScreen(
 
                 onMoradoresClick = {
-
                     navController.navigate(
                         AppDestinations.moradoresRoute(
                             modoInicializacao = false
@@ -133,7 +126,6 @@ fun AppNavHost(
                 },
 
                 onCondominioClick = {
-
                     navController.navigate(
                         AppDestinations.condominioRoute(
                             modoInicializacao = false
@@ -142,7 +134,6 @@ fun AppNavHost(
                 },
 
                 onApartamentosClick = {
-
                     navController.navigate(
                         AppDestinations.apartamentosRoute(
                             modoInicializacao = false
@@ -151,14 +142,12 @@ fun AppNavHost(
                 },
 
                 onNovoFechamentoClick = {
-
                     navController.navigate(
                         AppDestinations.NOVO_FECHAMENTO
                     )
                 },
 
                 onHistoricoClick = {
-
                     navController.navigate(
                         AppDestinations.HISTORICO
                     )
@@ -166,13 +155,11 @@ fun AppNavHost(
             )
         }
 
-
         /*
          * ============================================================
          * HISTÓRICO
          * ============================================================
          */
-
         composable(
             route = AppDestinations.HISTORICO
         ) {
@@ -183,7 +170,6 @@ fun AppNavHost(
                 }
             )
         }
-
 
         /*
          * ============================================================
@@ -198,7 +184,6 @@ fun AppNavHost(
          * O comportamento é definido por modoInicializacao.
          * ============================================================
          */
-
         composable(
             route = AppDestinations.CONDOMINIO,
             arguments = listOf(
@@ -212,8 +197,7 @@ fun AppNavHost(
             )
         ) { backStackEntry ->
 
-            val modoInicializacao =
-                backStackEntry
+            val modoInicializacao = backStackEntry
                     .arguments
                     ?.getBoolean(
                         "modoInicializacao"
@@ -223,9 +207,7 @@ fun AppNavHost(
             CondominioScreen(
 
                 modoInicializacao = modoInicializacao,
-
                 onProximo = {
-
                     navController.navigate(
                         AppDestinations.apartamentosRoute(
                             modoInicializacao = modoInicializacao
@@ -238,26 +220,22 @@ fun AppNavHost(
                     navController.navigate(
                         AppDestinations.HOME
                     ) {
-
                         popUpTo(
                             AppDestinations.HOME
                         ) {
                             inclusive = false
                         }
-
                         launchSingleTop = true
                     }
                 }
             )
         }
 
-
         /*
          * ============================================================
          * APARTAMENTOS
          * ============================================================
          */
-
         composable(
             route = AppDestinations.APARTAMENTOS,
             arguments = listOf(
@@ -271,8 +249,7 @@ fun AppNavHost(
             )
         ) { backStackEntry ->
 
-            val modoInicializacao =
-                backStackEntry
+            val modoInicializacao = backStackEntry
                     .arguments
                     ?.getBoolean(
                         "modoInicializacao"
@@ -282,16 +259,11 @@ fun AppNavHost(
             ApartamentoScreen(
 
                 navController = navController,
-
                 modoInicializacao = modoInicializacao,
-
                 onAnterior = {
-
                     navController.popBackStack()
                 },
-
                 onProximo = {
-
                     navController.navigate(
                         AppDestinations.moradoresRoute(
                             modoInicializacao = modoInicializacao
@@ -304,19 +276,16 @@ fun AppNavHost(
                     navController.navigate(
                         AppDestinations.HOME
                     ) {
-
                         popUpTo(
                             AppDestinations.HOME
                         ) {
                             inclusive = false
                         }
-
                         launchSingleTop = true
                     }
                 }
             )
         }
-
 
         /*
          * ============================================================
@@ -332,7 +301,6 @@ fun AppNavHost(
          * A navegação será ajustada na Etapa 1.7.
          * ============================================================
          */
-
         composable(
             route = AppDestinations.MORADORES,
             arguments = listOf(
@@ -346,8 +314,7 @@ fun AppNavHost(
             )
         ) { backStackEntry ->
 
-            val modoInicializacao =
-                backStackEntry
+            val modoInicializacao = backStackEntry
                     .arguments
                     ?.getBoolean(
                         "modoInicializacao"
@@ -357,18 +324,14 @@ fun AppNavHost(
             MoradoresScreen(
 
                 modoInicializacao = modoInicializacao,
-
                 onAnterior = {
-
                     navController.popBackStack()
                 },
 
                 onProximo = {
-
                     navController.navigate(
                         AppDestinations.HOME
                     ) {
-
                         popUpTo(
                             AppDestinations.HOME
                         ) {
@@ -384,26 +347,22 @@ fun AppNavHost(
                     navController.navigate(
                         AppDestinations.HOME
                     ) {
-
                         popUpTo(
                             AppDestinations.HOME
                         ) {
                             inclusive = false
                         }
-
                         launchSingleTop = true
                     }
                 }
             )
         }
 
-
         /*
          * ============================================================
          * DETALHE DO APARTAMENTO
          * ============================================================
          */
-
         composable(
             route = AppDestinations.APARTAMENTO_DETALHE
         ) { backStackEntry ->
@@ -420,43 +379,55 @@ fun AppNavHost(
             ApartamentoDetalheScreen(
 
                 apartamentoId = id,
-
                 onVoltar = {
                     navController.popBackStack()
                 }
             )
         }
 
-
         /*
          * ============================================================
          * NOVO FECHAMENTO
          * ============================================================
          */
-
         composable(
             route = AppDestinations.NOVO_FECHAMENTO
         ) {
 
             NovoFechamentoScreen(
-                navController =
-                    navController
+                onAbrirDespesas = { fechamentoId ->
+                    navController.navigate(
+                        AppDestinations.despesasRoute(
+                            fechamentoId
+                        )
+                    )
+                },
+
+                onSair = {
+                    navController.navigate(
+                        AppDestinations.HOME
+                    ) {
+                        popUpTo(
+                            AppDestinations.HOME
+                        ) {
+                            inclusive = false
+                        }
+                        launchSingleTop = true
+                    }
+                }
             )
         }
-
 
         /*
          * ============================================================
          * DESPESAS
          * ============================================================
          */
-
         composable(
             route = AppDestinations.DESPESAS
         ) { backStackEntry ->
 
-            val fechamentoId =
-                backStackEntry
+            val fechamentoId = backStackEntry
                     .arguments
                     ?.getString(
                         "fechamentoId"
@@ -465,55 +436,45 @@ fun AppNavHost(
                     ?: 0L
 
             DespesaScreen(
-
-                fechamentoId =
-                    fechamentoId,
-
+                fechamentoId = fechamentoId,
                 onVoltar = {
-
-                    navController
-                        .popBackStack()
+                    navController.popBackStack()
                 },
-
                 onAbrirDemonstrativos = { id ->
-
                     navController.navigate(
                         AppDestinations
                             .demonstrativosRoute(id)
                     )
                 },
-
-                onAbrirItensDespesa = {
-                        despesaId ->
-
+                onAbrirItensDespesa = { despesaId ->
                     navController.navigate(
-                        AppDestinations
-                            .despesaItemRoute(
-                                despesaId
-                            )
+                        AppDestinations.despesaItemRoute(
+                            despesaId
+                        )
+                    )
+                },
+                onAdicionarDespesaAvulsa = { id ->
+                    navController.navigate(
+                        AppDestinations.despesaTemporariaRoute(
+                            id
+                        )
                     )
                 }
             )
         }
-
 
         /*
          * ============================================================
          * ITENS DA DESPESA
          * ============================================================
          */
-
         composable(
-            route =
-                AppDestinations.DESPESA_ITEM,
-
+            route = AppDestinations.DESPESA_ITEM,
             arguments = listOf(
-
                 navArgument(
                     "despesaId"
                 ) {
-                    type =
-                        NavType.LongType
+                    type = NavType.LongType
                 }
             )
         ) { backStackEntry ->
@@ -526,32 +487,23 @@ fun AppNavHost(
                     )
 
             DespesaItemScreen(
-
-                despesaId =
-                    despesaId,
-
+                despesaId = despesaId,
                 onVoltar = {
-
-                    navController
-                        .popBackStack()
+                    navController.popBackStack()
                 }
             )
         }
-
 
         /*
          * ============================================================
          * DEMONSTRATIVOS
          * ============================================================
          */
-
         composable(
-            route =
-                AppDestinations.DEMONSTRATIVOS
+            route = AppDestinations.DEMONSTRATIVOS
         ) { backStackEntry ->
 
-            val fechamentoId =
-                backStackEntry
+            val fechamentoId = backStackEntry
                     .arguments
                     ?.getString(
                         "fechamentoId"
@@ -561,13 +513,35 @@ fun AppNavHost(
 
             DemonstrativosScreen(
 
-                fechamentoId =
-                    fechamentoId,
-
+                fechamentoId = fechamentoId,
                 onVoltar = {
+                    navController.popBackStack()
+                }
+            )
+        }
 
-                    navController
-                        .popBackStack()
+        /*
+         * ============================================================
+         * DESPESA TEMPORARIA
+         * ============================================================
+         */
+        composable(
+            route = AppDestinations.DESPESA_TEMPORARIA,
+            arguments = listOf(
+                navArgument("fechamentoId") {
+                    type = NavType.LongType
+                }
+            )
+        ) { backStackEntry ->
+
+            val fechamentoId = backStackEntry.arguments
+                    ?.getLong("fechamentoId")
+                    ?: 0L
+
+            DespesaTemporariaScreen(
+                fechamentoId = fechamentoId,
+                onVoltar = {
+                    navController.popBackStack()
                 }
             )
         }

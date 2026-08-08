@@ -35,6 +35,9 @@ object AppDestinations {
 
     const val INITIALIZATION = "initialization"
 
+    const val DESPESA_TEMPORARIA =
+        "despesa_temporaria/{fechamentoId}"
+
 
     /*
      * ============================================================
@@ -95,6 +98,12 @@ object AppDestinations {
         return "despesa_item/$despesaId"
     }
 
+
+    fun despesaTemporariaRoute(
+        fechamentoId: Long
+    ): String {
+        return "despesa_temporaria/$fechamentoId"
+    }
 
     /*
      * ============================================================

@@ -21,6 +21,7 @@ interface TipoDespesaDao {
         SELECT *
         FROM tipos_despesa
         WHERE ativo = 1
+        AND LOWER(TRIM(descricao)) <> 'despesa avulsa'
         ORDER BY descricao
     """)
     fun findAllAtivos(): Flow<List<TipoDespesaEntity>>
@@ -45,4 +46,15 @@ interface TipoDespesaDao {
     suspend fun existeAtivoComDescricao(
         descricao: String
     ): Boolean
+
+    @Query("""
+        SELECT *
+        FROM tipos_despesa
+        WHERE LOWER(TRIM(descricao)) = LOWER(TRIM(:descricao))
+          AND ativo = 1
+        LIMIT 1
+    """)
+    suspend fun findAtivoByDescricao(
+        descricao: String
+    ): TipoDespesaEntity?
 }

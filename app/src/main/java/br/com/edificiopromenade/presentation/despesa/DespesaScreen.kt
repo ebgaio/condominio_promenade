@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
@@ -28,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -46,6 +48,7 @@ fun DespesaScreen(
     onVoltar: () -> Unit,
     onAbrirDemonstrativos: (Long) -> Unit,
     onAbrirItensDespesa: (Long) -> Unit,
+    onAdicionarDespesaAvulsa: (Long) -> Unit,
     viewModel: DespesaViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
@@ -77,14 +80,6 @@ fun DespesaScreen(
                         }
                     ) {
                         Text("Sim")
-                    }
-
-                    Button(
-                        onClick = {
-                            onAbrirItensDespesa(despesa.id)
-                        }
-                    ) {
-                        Text("Itens")
                     }
                 },
 
@@ -125,10 +120,22 @@ fun DespesaScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
 
-                Text(
-                    text = "Despesas do Fechamento",
-                    style = MaterialTheme.typography.headlineSmall
-                )
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Despesas do Fechamento",
+                        style = MaterialTheme.typography.headlineSmall
+                    )
+
+                    if (state.competencia.isNotBlank()) {
+                        Text(
+                            text = "• ${state.competencia}",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                    }
+                }
 
                 if (state.fechamentoFinalizado) {
                     Text(
@@ -167,10 +174,12 @@ fun DespesaScreen(
                             Text("Tipo de Despesa")
                         },
 
-                        modifier = Modifier.menuAnchor(
-                            ExposedDropdownMenuAnchorType.PrimaryEditable,
-                            enabled = true
-                    ).fillMaxWidth()
+                        modifier = Modifier
+                            .menuAnchor(
+                                ExposedDropdownMenuAnchorType.PrimaryEditable,
+                                enabled = !state.fechamentoFinalizado
+                            )
+                            .fillMaxWidth()
                     )
 
                     ExposedDropdownMenu(
@@ -211,15 +220,36 @@ fun DespesaScreen(
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                Button(
-                    enabled = !state.fechamentoFinalizado,
-                    onClick = {
-                        focusManager.clearFocus()
-                        keyboardController?.hide()
-                        viewModel.salvar()
-                    }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Text("Adicionar")
+                    Button(
+                        enabled = !state.fechamentoFinalizado,
+                        onClick = {
+                            focusManager.clearFocus()
+                            keyboardController?.hide()
+                            viewModel.salvar()
+                        },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text("Adicionar")
+                    }
+
+                    Button(
+                        enabled = !state.fechamentoFinalizado,
+                        onClick = {
+                            focusManager.clearFocus()
+                            keyboardController?.hide()
+
+                            onAdicionarDespesaAvulsa(
+                                fechamentoId
+                            )
+                        },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text("Adicionar Avulsa")
+                    }
                 }
 
                 HorizontalDivider()
@@ -293,25 +323,39 @@ fun DespesaScreen(
                 )
 
                 Row(
-                    horizontalArrangement =
-                        Arrangement.spacedBy(8.dp)
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Button(
-                        onClick = {
-                            focusManager.clearFocus()
-                            keyboardController?.hide()
-                            viewModel.finalizarFechamento {
+                    if (!state.fechamentoFinalizado) {
+                        Button(
+                            modifier = Modifier.width(250.dp),
+                            onClick = {
+                                focusManager.clearFocus()
+                                keyboardController?.hide()
+                                viewModel.finalizarFechamento {
+                                    onAbrirDemonstrativos(
+                                        fechamentoId
+                                    )
+                                }
+                            }
+                        ) {
+                            Text("Finalizar Fechamento")
+                        }
+                    } else {
+                        Button(
+                            modifier = Modifier.width(250.dp),
+                            onClick = {
                                 onAbrirDemonstrativos(
                                     fechamentoId
                                 )
                             }
-                        },
-                    )
-                    {
-                        Text("Finalizar Fechamento")
+                        ) {
+                            Text("Ver Demonstrativos")
+                        }
                     }
 
                     Button(
+                        modifier = Modifier.weight(1f),
                         onClick = onVoltar
                     ) {
                         Text("Voltar")

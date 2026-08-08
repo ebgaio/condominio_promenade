@@ -9,6 +9,8 @@ import br.com.edificiopromenade.data.local.dao.CondominioDao
 import br.com.edificiopromenade.data.local.dao.DemonstrativoApartamentoDao
 import br.com.edificiopromenade.data.local.dao.DespesaDao
 import br.com.edificiopromenade.data.local.dao.DespesaItemDao
+import br.com.edificiopromenade.data.local.dao.DespesaTemporariaDao
+import br.com.edificiopromenade.data.local.dao.DespesaTemporariaParcelaDao
 import br.com.edificiopromenade.data.local.dao.FechamentoMensalDao
 import br.com.edificiopromenade.data.local.dao.MoradorDao
 import br.com.edificiopromenade.data.local.dao.TipoDespesaDao
@@ -19,6 +21,8 @@ import br.com.edificiopromenade.data.local.entity.DemonstrativoApartamentoEntity
 import br.com.edificiopromenade.data.local.entity.DespesaEntity
 import br.com.edificiopromenade.data.local.entity.DespesaFechamentoEntity
 import br.com.edificiopromenade.data.local.entity.DespesaItemEntity
+import br.com.edificiopromenade.data.local.entity.DespesaTemporariaEntity
+import br.com.edificiopromenade.data.local.entity.DespesaTemporariaParcelaEntity
 import br.com.edificiopromenade.data.local.entity.FechamentoMensalEntity
 import br.com.edificiopromenade.data.local.entity.HistoricoEnvioEmailEntity
 import br.com.edificiopromenade.data.local.entity.MoradorEntity
@@ -35,10 +39,14 @@ import br.com.edificiopromenade.data.local.entity.TipoDespesaEntity
         TipoDespesaEntity::class,
         DespesaFechamentoEntity::class,
         DemonstrativoApartamentoEntity::class,
+
         ConfiguracaoEmailEntity::class,
-        HistoricoEnvioEmailEntity::class
+        HistoricoEnvioEmailEntity::class,
+
+        DespesaTemporariaEntity::class,
+        DespesaTemporariaParcelaEntity::class,
                 ],
-    version = 9,
+    version = 11,
     exportSchema = true
 )
 @TypeConverters(
@@ -61,4 +69,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun demonstrativoDao(): DemonstrativoApartamentoDao
 
     abstract fun despesaItemDao(): DespesaItemDao
+
+    abstract fun despesaTemporariaDao(): DespesaTemporariaDao
+
+    abstract fun despesaTemporariaParcelaDao(): DespesaTemporariaParcelaDao
 }

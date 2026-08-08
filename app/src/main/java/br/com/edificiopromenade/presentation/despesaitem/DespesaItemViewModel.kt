@@ -2,6 +2,8 @@ package br.com.edificiopromenade.presentation.despesaitem
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import br.com.edificiopromenade.domain.repository.DespesaRepository
+import br.com.edificiopromenade.domain.repository.FechamentoRepository
 import br.com.edificiopromenade.domain.usecase.despesa.AtualizarTotalDespesaUseCase
 import br.com.edificiopromenade.domain.usecase.despesaitem.AtualizarDespesaItemUseCase
 import br.com.edificiopromenade.domain.usecase.despesaitem.CadastrarDespesaItemUseCase
@@ -23,7 +25,9 @@ class DespesaItemViewModel @Inject constructor(
     private val cadastrarDespesaItemUseCase: CadastrarDespesaItemUseCase,
     private val atualizarTotalDespesaUseCase: AtualizarTotalDespesaUseCase,
     private val excluirItemDespesaUseCase: ExcluirItemDespesaUseCase,
-    private val atualizarDespesaItemUseCase: AtualizarDespesaItemUseCase
+    private val atualizarDespesaItemUseCase: AtualizarDespesaItemUseCase,
+    private val despesaRepository: DespesaRepository,
+    private val fechamentoRepository: FechamentoRepository
 ) : ViewModel() {
 
     private val _uiState =
@@ -40,6 +44,33 @@ class DespesaItemViewModel @Inject constructor(
     ) {
         this.despesaId = despesaId
 
+        /*
+         * Descobre se a despesa pertence
+         * a um fechamento já finalizado.
+         */
+        viewModelScope.launch {
+            val despesa =
+                despesaRepository.findById(
+                    despesaId
+                )
+
+            val fechamento =
+                despesa?.let {
+                    fechamentoRepository.findById(
+                        it.fechamentoId
+                    )
+                }
+
+            _uiState.value =
+                _uiState.value.copy(
+                    fechamentoFinalizado = fechamento?.finalizado ?: false
+                )
+        }
+
+        /*
+         * Continua carregando normalmente
+         * os itens da despesa.
+         */
         viewModelScope.launch {
             consultarItensDespesaUiUseCase(
                 despesaId
@@ -53,6 +84,18 @@ class DespesaItemViewModel @Inject constructor(
     }
 
     fun salvar() {
+
+        if (_uiState.value.fechamentoFinalizado) {
+            _uiState.value =
+                _uiState.value.copy(
+                    mensagem = UiMessage.Error(
+                        "Este fechamento já foi finalizado e não pode ser alterado."
+                    )
+                )
+
+            return
+        }
+
         viewModelScope.launch {
 
             val valorItem = stateToDouble()
@@ -121,6 +164,11 @@ class DespesaItemViewModel @Inject constructor(
     }
 
     fun excluir() {
+
+        if (_uiState.value.fechamentoFinalizado) {
+            return
+        }
+
         val item = _uiState.value.itemSelecionadoParaExclusao
                 ?: return
 
@@ -144,6 +192,10 @@ class DespesaItemViewModel @Inject constructor(
     fun editar(
         item: DespesaItemUi
     ) {
+        if (_uiState.value.fechamentoFinalizado) {
+            return
+        }
+
         _uiState.value =
             _uiState.value.copy(
                 itemEmEdicao = item,

@@ -54,8 +54,11 @@ class DespesaViewModel @Inject constructor(
 
             _uiState.value =
                 _uiState.value.copy(
-                    fechamentoFinalizado =
-                        fechamento?.finalizado ?: false
+                    fechamentoFinalizado = fechamento?.finalizado ?: false,
+                    competencia =
+                        fechamento?.let {
+                            "${it.mes.toString().padStart(2, '0')}/${it.ano}"
+                        } ?: ""
                 )
         }
 

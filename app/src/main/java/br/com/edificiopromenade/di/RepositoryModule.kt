@@ -5,16 +5,20 @@ import br.com.edificiopromenade.data.repository.impl.CondominioRepositoryImpl
 import br.com.edificiopromenade.data.repository.impl.DemonstrativoRepositoryImpl
 import br.com.edificiopromenade.data.repository.impl.DespesaItemRepositoryImpl
 import br.com.edificiopromenade.data.repository.impl.DespesaRepositoryImpl
+import br.com.edificiopromenade.data.repository.impl.DespesaTemporariaParcelaRepositoryImpl
+import br.com.edificiopromenade.data.repository.impl.DespesaTemporariaRepositoryImpl
 import br.com.edificiopromenade.data.repository.impl.FechamentoRepositoryImpl
 import br.com.edificiopromenade.data.repository.impl.MoradorRepositoryImpl
+import br.com.edificiopromenade.data.repository.impl.TipoDespesaRepositoryImpl
 import br.com.edificiopromenade.domain.repository.ApartamentoRepository
 import br.com.edificiopromenade.domain.repository.CondominioRepository
-import br.com.edificiopromenade.domain.repository.DespesaRepository
-import br.com.edificiopromenade.domain.repository.FechamentoRepository
-import br.com.edificiopromenade.domain.repository.MoradorRepository
-import br.com.edificiopromenade.data.repository.impl.TipoDespesaRepositoryImpl
 import br.com.edificiopromenade.domain.repository.DemonstrativoRepository
 import br.com.edificiopromenade.domain.repository.DespesaItemRepository
+import br.com.edificiopromenade.domain.repository.DespesaRepository
+import br.com.edificiopromenade.domain.repository.DespesaTemporariaParcelaRepository
+import br.com.edificiopromenade.domain.repository.DespesaTemporariaRepository
+import br.com.edificiopromenade.domain.repository.FechamentoRepository
+import br.com.edificiopromenade.domain.repository.MoradorRepository
 import br.com.edificiopromenade.domain.repository.TipoDespesaRepository
 import dagger.Binds
 import dagger.Module
@@ -73,4 +77,16 @@ abstract class RepositoryModule {
     abstract fun bindDemonstrativoRepository(
         impl: DemonstrativoRepositoryImpl
     ): DemonstrativoRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindDespesaTemporariaRepository(
+        impl: DespesaTemporariaRepositoryImpl
+    ): DespesaTemporariaRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindDespesaTemporariaParcelaRepository(
+        impl: DespesaTemporariaParcelaRepositoryImpl
+    ): DespesaTemporariaParcelaRepository
 }

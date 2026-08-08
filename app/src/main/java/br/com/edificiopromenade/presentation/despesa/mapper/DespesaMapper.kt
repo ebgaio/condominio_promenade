@@ -9,7 +9,10 @@ fun DespesaComTipoEntity.toUi() =
 
         id = despesa.id,
 
-        descricao = tipo.descricao,
+        descricao =
+            despesa.descricaoLivre.ifBlank {
+                tipo.descricao
+            },
 
         valor = despesa.valor
     )

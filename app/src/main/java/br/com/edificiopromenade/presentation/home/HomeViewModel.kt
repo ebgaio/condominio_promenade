@@ -33,8 +33,6 @@ class HomeViewModel @Inject constructor(
             try {
                 val estado = validarEstadoSistemaUseCase()
 
-                println("DEBUG HOME -> $estado")
-
             _uiState.value =
                 _uiState.value.copy(
                     estadoSistema = estado,

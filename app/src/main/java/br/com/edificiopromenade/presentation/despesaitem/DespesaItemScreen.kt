@@ -2,6 +2,7 @@ package br.com.edificiopromenade.presentation.despesaitem
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -67,9 +68,18 @@ fun DespesaItemScreen(
                     style = MaterialTheme.typography.headlineSmall
                 )
 
+                if (state.fechamentoFinalizado) {
+
+                    Text(
+                        text = "FECHAMENTO FINALIZADO — SOMENTE LEITURA",
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                }
+
                 state.mensagem?.let { mensagem ->
                     InlineMessageBanner(
-                        message = when(mensagem){
+                        message = when (mensagem) {
                             is UiMessage.Success -> mensagem.text
                             is UiMessage.Error -> mensagem.text
                         },
@@ -80,49 +90,49 @@ fun DespesaItemScreen(
                     )
                 }
 
-                Button(
-                    onClick = onVoltar
-                ) {
-                    Text("Voltar")
-                }
+                if (!state.fechamentoFinalizado) {
+                    OutlinedTextField(
+                        value = state.descricao,
+                        onValueChange = viewModel::onDescricaoChanged,
 
-                OutlinedTextField(
-                    value = state.descricao,
-                    onValueChange = viewModel::onDescricaoChanged,
+                        label = {
+                            Text("Descrição")
+                        },
 
-                    label = {
-                        Text("Descrição")
-                    },
+                        modifier = Modifier.fillMaxWidth()
+                    )
 
-                    modifier = Modifier.fillMaxWidth()
-                )
+                    OutlinedTextField(
+                        value = state.valor,
+                        onValueChange = viewModel::onValorChanged,
 
-                OutlinedTextField(
-                    value = state.valor,
-                    onValueChange = viewModel::onValorChanged,
+                        label = {
+                            Text("Valor")
+                        },
 
-                    label = {
-                        Text("Valor")
-                    },
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Number
+                        ),
 
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number
-                    ),
+                        modifier = Modifier.fillMaxWidth()
+                    )
 
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Button(
-                    onClick = {
-                        focusManager.clearFocus()
-                        keyboardController?.hide()
-                        viewModel.salvar()
+                    Button(
+                        onClick = {
+                            focusManager.clearFocus()
+                            keyboardController?.hide()
+                            viewModel.salvar()
+                        }
+                    ) {
+                        Text(
+                            if (state.itemEmEdicao == null)
+                                "Adicionar"
+                            else
+                                "Atualizar"
+                        )
                     }
-                ) {
-                    Text("Adicionar")
+                    HorizontalDivider()
                 }
-
-                HorizontalDivider()
 
                 LazyColumn(
                     modifier = Modifier.weight(1f)
@@ -132,7 +142,9 @@ fun DespesaItemScreen(
                         key = { it.id }
                     ) { item ->
                         Card(
-                            modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp)
                         ) {
                             Column(
                                 modifier = Modifier.padding(12.dp)
@@ -141,25 +153,31 @@ fun DespesaItemScreen(
                                 Text(formatarMoeda(item.valor)
                                 )
 
-                                Button(
-                                    onClick = {
-                                        focusManager.clearFocus()
-                                        keyboardController?.hide()
-                                        viewModel.solicitarExclusao(item)
-                                        viewModel.excluir()
-                                    }
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
-                                    Text("Excluir")
-                                }
+                                    if (!state.fechamentoFinalizado) {
+                                        Button(
+                                            onClick = {
+                                                focusManager.clearFocus()
+                                                keyboardController?.hide()
+                                                viewModel.solicitarExclusao(item)
+                                                viewModel.excluir()
+                                            }
+                                        ) {
+                                            Text("Excluir")
+                                        }
 
-                                Button(
-                                    onClick = {
-                                        focusManager.clearFocus()
-                                        keyboardController?.hide()
-                                        viewModel.editar(item)
+                                        Button(
+                                            onClick = {
+                                                focusManager.clearFocus()
+                                                keyboardController?.hide()
+                                                viewModel.editar(item)
+                                            }
+                                        ) {
+                                            Text("Editar")
+                                        }
                                     }
-                                ) {
-                                    Text("Editar")
                                 }
                             }
                         }

@@ -296,8 +296,7 @@ fun MoradoresScreen(
 
                             val moradoresAtivos = item.moradores.filter { it.ativo }
 
-                            val moradoresHistorico =
-                                item.moradores
+                            val moradoresHistorico = item.moradores
                                     .filter { !it.ativo }
                                     .sortedByDescending {
                                         it.dataFim ?: LocalDate.MIN

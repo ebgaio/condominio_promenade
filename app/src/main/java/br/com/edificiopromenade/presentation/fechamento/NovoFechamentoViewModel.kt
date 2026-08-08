@@ -8,6 +8,7 @@ import br.com.edificiopromenade.domain.usecase.fechamento.CriarFechamentoMensalU
 import br.com.edificiopromenade.domain.usecase.fechamento.ConsultarFechamentoPorMesAnoUseCase
 import br.com.edificiopromenade.domain.usecase.tipodespesa.PopularTiposDespesaUseCase
 import br.com.edificiopromenade.presentation.common.message.UiMessage
+import br.com.edificiopromenade.presentation.fechamento.mapper.toUi
 import br.com.edificiopromenade.presentation.util.MoneyFormatter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,6 +16,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import jakarta.inject.Inject
 import java.time.LocalDateTime
+import java.time.YearMonth
 
 @HiltViewModel
 class NovoFechamentoViewModel @Inject constructor(
@@ -46,7 +48,10 @@ class NovoFechamentoViewModel @Inject constructor(
 
                     _uiState.value =
                         _uiState.value.copy(
-                            fechamentos = lista
+                            fechamentos =
+                                lista.map {
+                                    it.toUi()
+                                }
                         )
                 }
         }
@@ -132,10 +137,50 @@ class NovoFechamentoViewModel @Inject constructor(
 
             _uiState.value =
                 _uiState.value.copy(
-                    mensagem = UiMessage.Success(
+                    mensagem = UiMessage.Error(
                         "Mês deve estar entre 1 e 12"
                     )
                 )
+            return
+        }
+
+        val competenciaInformada =
+            YearMonth.of(
+                ano,
+                mes
+            )
+
+        val competenciaAtual = YearMonth.now()
+
+        val competenciaLimite = competenciaAtual.plusMonths(12)
+
+        if (
+            competenciaInformada.isBefore(
+                competenciaAtual
+            )
+        ) {
+            _uiState.value =
+                _uiState.value.copy(
+                    mensagem = UiMessage.Error(
+                        "Não é permitido criar fechamento de competência anterior ao mês atual."
+                    )
+                )
+
+            return
+        }
+
+        if (
+            competenciaInformada.isAfter(
+                competenciaLimite
+            )
+        ) {
+            _uiState.value =
+                _uiState.value.copy(
+                    mensagem = UiMessage.Error(
+                        "O fechamento pode ser criado no máximo até 12 meses após a competência atual."
+                    )
+                )
+
             return
         }
 
@@ -148,7 +193,7 @@ class NovoFechamentoViewModel @Inject constructor(
             if (fechamentoExistente != null) {
                 _uiState.value =
                     _uiState.value.copy(
-                        mensagem = UiMessage.Success(
+                        mensagem = UiMessage.Error(
                             "Já existe fechamento para esta competência."
                         )
                     )
