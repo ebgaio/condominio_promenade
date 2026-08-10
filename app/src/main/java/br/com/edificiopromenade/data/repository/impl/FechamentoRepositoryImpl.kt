@@ -44,4 +44,20 @@ class FechamentoRepositoryImpl @Inject constructor(
             finalizado
         ) == 0
     }
+
+    override suspend fun findAnterior(
+        mes: Int,
+        ano: Int
+    ) = dao.findAnterior(
+        mes = mes,
+        ano = ano
+    )
+
+    override suspend fun findProximo(
+        mes: Int,
+        ano: Int
+    ) = dao.findProximo(
+        mes = mes,
+        ano = ano
+    )
 }

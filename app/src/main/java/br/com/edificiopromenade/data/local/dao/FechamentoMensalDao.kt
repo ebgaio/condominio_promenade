@@ -76,4 +76,30 @@ interface FechamentoMensalDao {
     suspend fun countByDescricao(
         finalizado: Boolean
     ): Int
+
+    @Query("""
+        SELECT *
+        FROM fechamentos_mensais
+        WHERE ano < :ano
+           OR (ano = :ano AND mes < :mes)
+        ORDER BY ano DESC, mes DESC
+        LIMIT 1
+    """)
+    suspend fun findAnterior(
+        mes: Int,
+        ano: Int
+    ): FechamentoMensalEntity?
+
+    @Query("""
+        SELECT *
+        FROM fechamentos_mensais
+        WHERE ano > :ano
+           OR (ano = :ano AND mes > :mes)
+        ORDER BY ano ASC, mes ASC
+        LIMIT 1
+    """)
+    suspend fun findProximo(
+        mes: Int,
+        ano: Int
+    ): FechamentoMensalEntity?
 }

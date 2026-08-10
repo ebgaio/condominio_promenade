@@ -1,5 +1,6 @@
 package br.com.edificiopromenade.presentation.despesa
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,6 +30,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
@@ -40,7 +44,6 @@ import br.com.edificiopromenade.presentation.common.message.InlineMessageBanner
 import br.com.edificiopromenade.presentation.common.message.UiMessage
 import br.com.edificiopromenade.presentation.util.formatarMoeda
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DespesaScreen(
@@ -49,6 +52,7 @@ fun DespesaScreen(
     onAbrirDemonstrativos: (Long) -> Unit,
     onAbrirItensDespesa: (Long) -> Unit,
     onAdicionarDespesaAvulsa: (Long) -> Unit,
+    onAbrirFechamento: (Long) -> Unit,
     viewModel: DespesaViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
@@ -56,6 +60,61 @@ fun DespesaScreen(
     val focusManager = LocalFocusManager.current
 
     val keyboardController = LocalSoftwareKeyboardController.current
+
+    var confirmarFinalizacao by remember {
+        mutableStateOf(
+            false
+        )
+    }
+
+    if (confirmarFinalizacao) {
+        AlertDialog(
+            onDismissRequest = {
+                confirmarFinalizacao = false
+            },
+
+            title = {
+                Text("Finalizar fechamento")
+            },
+
+            text = {
+                Text(
+                    "Deseja realmente finalizar o fechamento " +
+                    "${state.competencia}? " +
+                    "Após a finalização, as despesas e seus itens " +
+                    "ficarão disponíveis somente para consulta."
+                )
+            },
+
+            confirmButton = {
+                Button(
+                    onClick = {
+                        confirmarFinalizacao = false
+                        focusManager.clearFocus()
+                        keyboardController?.hide()
+
+                        viewModel.finalizarFechamento {
+                            onAbrirDemonstrativos(
+                                fechamentoId
+                            )
+                        }
+                    }
+                ) {
+                    Text("Finalizar")
+                }
+            },
+
+            dismissButton = {
+                Button(
+                    onClick = {
+                        confirmarFinalizacao = false
+                    }
+                ) {
+                    Text("Cancelar")
+                }
+            }
+        )
+    }
 
     state.despesaSelecionadaParaExclusao
         ?.let { despesa ->
@@ -121,6 +180,40 @@ fun DespesaScreen(
             ) {
 
                 Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+
+                    Button(
+                        enabled = state.fechamentoAnteriorId != null,
+                        onClick = {
+                            viewModel.abrirFechamentoAnterior(
+                                onAbrir = onAbrirFechamento
+                            )
+                        }
+                    ) {
+                        Text("<")
+                    }
+
+                    Text(
+                        text = state.competencia,
+                        style = MaterialTheme.typography.titleMedium
+                    )
+
+                    Button(
+                        enabled = state.fechamentoProximoId != null,
+                        onClick = {
+                            viewModel.abrirFechamentoProximo(
+                                onAbrir = onAbrirFechamento
+                            )
+                        }
+                    ) {
+                        Text(">")
+                    }
+                }
+
+                Row(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -157,108 +250,168 @@ fun DespesaScreen(
                     )
                 }
 
-                ExposedDropdownMenuBox(
-                    expanded = state.expandirTipos,
+                if (!state.fechamentoFinalizado) {
 
-                    onExpandedChange = {
-                        viewModel.alterarExpandido(it)
-                    }
-                ) {
-                    OutlinedTextField(
-                        enabled = !state.fechamentoFinalizado,
-                        value = state.tipoSelecionado?.descricao ?: "",
-                        onValueChange = {},
-                        readOnly = true,
+                    if (state.despesaEmEdicao == null) {
 
-                        label = {
-                            Text("Tipo de Despesa")
-                        },
+                        ExposedDropdownMenuBox(
+                            expanded = state.expandirTipos,
 
-                        modifier = Modifier
-                            .menuAnchor(
-                                ExposedDropdownMenuAnchorType.PrimaryEditable,
-                                enabled = !state.fechamentoFinalizado
-                            )
-                            .fillMaxWidth()
-                    )
+                            onExpandedChange = {
+                                viewModel.alterarExpandido(it)
+                            }
+                        ) {
+                            OutlinedTextField(
+                                enabled = !state.fechamentoFinalizado &&
+                                        state.despesaEmEdicao == null,
+                                value = state.tipoSelecionado?.descricao ?: "",
+                                onValueChange = {},
+                                readOnly = true,
 
-                    ExposedDropdownMenu(
-                        expanded = state.expandirTipos,
-
-                        onDismissRequest = {
-                            viewModel.alterarExpandido(false)
-                        }
-                    ) {
-                        state.tiposDespesa.forEach { tipo ->
-
-                            DropdownMenuItem(
-                                text = {
-                                    Text(tipo.descricao)
+                                label = {
+                                    Text("Tipo de Despesa")
                                 },
 
-                                onClick = {
-                                    viewModel.selecionarTipo(tipo)
+                                modifier = Modifier
+                                    .menuAnchor(
+                                        ExposedDropdownMenuAnchorType.PrimaryEditable,
+                                        enabled = !state.fechamentoFinalizado &&
+                                                state.despesaEmEdicao == null
+                                    )
+                                    .fillMaxWidth()
+                            )
+
+                            ExposedDropdownMenu(
+                                expanded = state.expandirTipos,
+
+                                onDismissRequest = {
+                                    viewModel.alterarExpandido(false)
                                 }
+                            ) {
+                                state.tiposDespesa.forEach { tipo ->
+
+                                    DropdownMenuItem(
+                                        text = {
+                                            Text(tipo.descricao)
+                                        },
+
+                                        onClick = {
+                                            viewModel.selecionarTipo(tipo)
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    state.despesaEmEdicao?.let { despesa ->
+                        Text(
+                            text = "Editando: ${despesa.descricao}",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+
+                        if (despesa.avulsa) {
+
+                            OutlinedTextField(
+                                value = state.descricaoLivre,
+                                onValueChange = viewModel::onDescricaoChanged,
+                                label = {
+                                    Text("Nome da Despesa Avulsa")
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                                singleLine = true
                             )
                         }
                     }
-                }
 
-                OutlinedTextField(
-                    enabled = !state.fechamentoFinalizado,
-                    value = state.valor,
-                    onValueChange = viewModel::onValorChanged,
-
-                    label = {
-                        Text("Valor")
-                    },
-                    placeholder = { Text("0,00") },
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number
-                    ),
-
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Button(
+                    OutlinedTextField(
                         enabled = !state.fechamentoFinalizado,
-                        onClick = {
-                            focusManager.clearFocus()
-                            keyboardController?.hide()
-                            viewModel.salvar()
-                        },
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        Text("Adicionar")
-                    }
+                        value = state.valor,
+                        onValueChange = viewModel::onValorChanged,
 
-                    Button(
-                        enabled = !state.fechamentoFinalizado,
-                        onClick = {
-                            focusManager.clearFocus()
-                            keyboardController?.hide()
-
-                            onAdicionarDespesaAvulsa(
-                                fechamentoId
-                            )
+                        label = {
+                            Text("Valor")
                         },
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        Text("Adicionar Avulsa")
+                        placeholder = { Text("0,00") },
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Number
+                        ),
+
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    if (state.despesaEmEdicao == null) {
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Button(
+                                modifier = Modifier.weight(1f),
+                                enabled = !state.fechamentoFinalizado,
+                                onClick = {
+                                    focusManager.clearFocus()
+                                    keyboardController?.hide()
+                                    viewModel.salvar()
+                                }
+                            ) {
+                                Text("Adicionar")
+                            }
+
+                            Button(
+                                modifier = Modifier.weight(1f),
+                                enabled = !state.fechamentoFinalizado,
+                                onClick = {
+                                    onAdicionarDespesaAvulsa(
+                                        fechamentoId
+                                    )
+                                }
+                            ) {
+                                Text("Adicionar Avulsa")
+                            }
+                        }
+                    } else {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Button(
+                                modifier = Modifier.weight(1f),
+                                onClick = {
+                                    focusManager.clearFocus()
+                                    keyboardController?.hide()
+                                    viewModel.salvar()
+                                }
+                            ) {
+                                Text("Salvar Alteração")
+                            }
+
+                            Button(
+                                modifier = Modifier.weight(1f),
+                                onClick = {
+                                    viewModel.cancelarEdicao()
+                                }
+                            ) {
+                                Text("Cancelar")
+                            }
+                        }
                     }
                 }
 
                 HorizontalDivider()
 
-                Text(
-                    text = "Despesas",
-                    style = MaterialTheme.typography
-                        .titleMedium
-                )
+                if (!state.fechamentoFinalizado) {
+
+                    Text(
+                        text = "Clique nas despesas para editar.",
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                } else {
+                    Text(
+                        text = "Despesas.",
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                }
 
                 LazyColumn(
                     modifier = Modifier.weight(1f)
@@ -271,6 +424,13 @@ fun DespesaScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(vertical = 4.dp)
+                                .clickable(
+                                    enabled = !state.fechamentoFinalizado
+                                ) {
+                                    viewModel.editarDespesa(
+                                        despesa
+                                    )
+                                }
                         ) {
                             Column(
                                 modifier = Modifier.padding(12.dp)
@@ -280,34 +440,53 @@ fun DespesaScreen(
                                     text = despesa.descricao
                                 )
 
-                                Text(
-                                    text = formatarMoeda(despesa.valor)
-                                )
-
                                 Spacer(
                                     modifier = Modifier.height(8.dp)
                                 )
 
                                 Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
-                                    Button(
-                                        onClick = {
-                                            onAbrirItensDespesa(despesa.id)
-                                        }
+
+                                    Text(
+                                        text = formatarMoeda(despesa.valor),
+                                        modifier = Modifier.padding(
+                                            top = 4.dp
+                                        )
+                                    )
+
+                                    Spacer(modifier = Modifier.weight(1f))
+
+                                    if (
+                                        !state.fechamentoFinalizado ||
+                                        despesa.possuiItens
                                     ) {
-                                        Text("Itens")
+                                        Button(
+                                            onClick = {
+                                                onAbrirItensDespesa(despesa.id)
+                                            }
+                                        ) {
+                                            Text("Itens")
+                                        }
                                     }
 
-                                    Button(
-                                        enabled = !state.fechamentoFinalizado,
-                                        onClick = {
-                                            focusManager.clearFocus()
-                                            keyboardController?.hide()
-                                            viewModel.solicitarExclusao(despesa)
+                                    if (!state.fechamentoFinalizado) {
+
+                                        Button(
+                                            enabled = !state.fechamentoFinalizado,
+                                            onClick = {
+                                                focusManager.clearFocus()
+                                                keyboardController?.hide()
+
+                                                viewModel.solicitarExclusao(
+                                                    despesa
+                                                )
+                                            }
+                                        ) {
+                                            Text("Excluir")
                                         }
-                                    ) {
-                                        Text("Excluir")
                                     }
                                 }
                             }
@@ -330,13 +509,7 @@ fun DespesaScreen(
                         Button(
                             modifier = Modifier.width(250.dp),
                             onClick = {
-                                focusManager.clearFocus()
-                                keyboardController?.hide()
-                                viewModel.finalizarFechamento {
-                                    onAbrirDemonstrativos(
-                                        fechamentoId
-                                    )
-                                }
+                                confirmarFinalizacao = true
                             }
                         ) {
                             Text("Finalizar Fechamento")

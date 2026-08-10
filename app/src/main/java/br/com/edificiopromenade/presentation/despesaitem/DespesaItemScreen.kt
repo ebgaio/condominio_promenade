@@ -3,6 +3,7 @@ package br.com.edificiopromenade.presentation.despesaitem
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -21,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -63,10 +65,32 @@ fun DespesaItemScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Column {
-                Text(
-                    "Itens da Despesa",
-                    style = MaterialTheme.typography.headlineSmall
-                )
+
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        "Itens da Despesa",
+                        style = MaterialTheme.typography.headlineSmall
+                    )
+
+                    if (state.competencia.isNotBlank()) {
+
+                        Text(
+                            text = "• ${state.competencia}",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                    }
+                }
+
+                if (state.nomeDespesa.isNotBlank()) {
+
+                    Text(
+                        text = state.nomeDespesa,
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                }
 
                 if (state.fechamentoFinalizado) {
 
@@ -186,18 +210,27 @@ fun DespesaItemScreen(
 
                 HorizontalDivider()
 
-                Text("Total",
-                    style = MaterialTheme.typography.titleMedium
-                )
-
-                Text(formatarMoeda(total),
-                    style = MaterialTheme.typography.titleLarge
-                )
-
-                Button(
-                    onClick = onVoltar
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(20.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("Voltar")
+
+                    Text(
+                        "Total",
+                        style = MaterialTheme.typography.headlineSmall
+                    )
+
+                    Text(
+                        formatarMoeda(total),
+                        style = MaterialTheme.typography.headlineSmall
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                    Button(
+                        onClick = onVoltar
+                    ) {
+                        Text("Voltar")
+                    }
                 }
             }
         }

@@ -9,6 +9,14 @@ data class DespesaItemUiState(
 
     val valor: String = "",
 
+    val competencia: String = "",
+
+    /*
+     * Nome da despesa cujos itens
+     * estão sendo apresentados/editados.
+     */
+    val nomeDespesa: String = "",
+
     val itens: List<DespesaItemUi> = emptyList(),
 
     val mensagem: UiMessage? = null,

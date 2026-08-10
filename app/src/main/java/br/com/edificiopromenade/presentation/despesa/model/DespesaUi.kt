@@ -6,5 +6,9 @@ data class DespesaUi(
 
     val descricao: String,
 
-    val valor: Double
+    val valor: Double,
+
+    val possuiItens: Boolean = false,
+
+    val avulsa: Boolean = false
 )

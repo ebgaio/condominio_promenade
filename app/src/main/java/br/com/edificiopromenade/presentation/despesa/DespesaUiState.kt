@@ -12,6 +12,12 @@ data class DespesaUiState(
 
     val competencia: String = "",
 
+    val fechamentoAtualId: Long = 0,
+
+    val fechamentoAnteriorId: Long? = null,
+
+    val fechamentoProximoId: Long? = null,
+
     val despesas: List<DespesaUi> = emptyList(),
 
     val tiposDespesa: List<TipoDespesaUi> = emptyList(),
@@ -23,6 +29,8 @@ data class DespesaUiState(
     val mensagem: UiMessage? = null,
 
     val despesaSelecionadaParaExclusao: DespesaUi? = null,
+
+    val despesaEmEdicao: DespesaUi? = null,
 
     val fechamentoFinalizado: Boolean = false
 )

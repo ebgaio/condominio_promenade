@@ -25,6 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -34,7 +35,6 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import br.com.edificiopromenade.presentation.common.component.MoneyOutlinedTextField
 import br.com.edificiopromenade.presentation.common.message.InlineMessageBanner
 import br.com.edificiopromenade.presentation.common.message.UiMessage
-import br.com.edificiopromenade.presentation.navigation.AppDestinations
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -62,11 +62,28 @@ fun NovoFechamentoScreen(
         ) {
             Text(
                 "Novo Fechamento",
-                style =
-                    MaterialTheme
-                        .typography
-                        .headlineSmall
+                style = MaterialTheme.typography.headlineSmall
             )
+
+//            if (state.modoEdicao) {
+
+                Text(
+                    text =
+                        if (state.fechamentoSelecionadoFinalizado)
+                            "Fechamento finalizado — somente consulta"
+                        else
+                            "Editando fechamento",
+                    style = MaterialTheme.typography.titleMedium
+                )
+//            }
+
+            if (state.modoEdicao) {
+
+                Text(
+                    text = "Competência ${state.mes}/${state.ano}",
+                    style = MaterialTheme.typography.titleMedium
+                )
+            }
 
             state.mensagem?.let { mensagem ->
 
@@ -98,10 +115,12 @@ fun NovoFechamentoScreen(
                     label = {
                         Text("Mês")
                     },
-                    modifier = Modifier.menuAnchor(
-                        ExposedDropdownMenuAnchorType.PrimaryEditable,
-                        enabled = true
-                    ).fillMaxWidth()
+                    modifier = Modifier
+                        .menuAnchor(
+                            ExposedDropdownMenuAnchorType.PrimaryEditable,
+                            enabled = !state.modoEdicao
+                        )
+                        .fillMaxWidth()
                 )
 
                 ExposedDropdownMenu(
@@ -151,15 +170,51 @@ fun NovoFechamentoScreen(
             val formularioValido = state.mes.isNotBlank()
                     && state.ano.length == 4
 
-            Button (
-                enabled = formularioValido,
-                onClick = {
-                    focusManager.clearFocus()
-                    keyboardController?.hide()
-                    viewModel.salvar()
+            if (state.modoEdicao) {
+
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+
+                    Button(
+                        onClick = {
+                            focusManager.clearFocus()
+                            keyboardController?.hide()
+
+                            viewModel.salvar()
+                        },
+                        enabled = formularioValido &&
+                                  !state.fechamentoSelecionadoFinalizado
+                    ) {
+                        Text("Salvar Alterações")
+                    }
+
+                    Button(
+                        onClick = {
+                            focusManager.clearFocus()
+                            keyboardController?.hide()
+
+                            viewModel.cancelarEdicao()
+                        }
+                    ) {
+                        Text("Cancelar")
+                    }
                 }
-            ) {
-                Text("Criar")
+
+            } else {
+
+                Button(
+                    enabled = formularioValido,
+
+                    onClick = {
+                        focusManager.clearFocus()
+                        keyboardController?.hide()
+
+                        viewModel.salvar()
+                    }
+                ) {
+                    Text("Criar")
+                }
             }
 
             HorizontalDivider()
@@ -177,25 +232,51 @@ fun NovoFechamentoScreen(
                             .fillMaxWidth()
                             .padding(vertical = 4.dp)
                             .clickable {
-                                onAbrirDespesas(
-                                    it.id
-                                )
+                                onAbrirDespesas(it.id)
                             }
                     ) {
                         Column(
-                            modifier = Modifier.padding(12.dp)
+                            modifier = Modifier.fillMaxWidth().padding(12.dp)
                         ) {
-                            Text(
-                                "Competência  ${it.mes.toString()
-                                    .padStart(2, '0')
-                                }/${it.ano}"
-                            )
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    "Competência  ${
+                                        it.mes.toString()
+                                            .padStart(2, '0')
+                                    }/${it.ano}",
+                                    modifier = Modifier.weight(1f)
+                                )
+
+                                if (!it.finalizado) {
+                                    Button(
+                                        onClick = {
+                                            viewModel.editarFechamento(
+                                                it.id
+                                            )
+                                        }
+                                    ) {
+                                        Text("Editar")
+                                    }
+                                }
+                            }
 
                             Text(
-                                if (it.finalizado)
-                                    "Finalizado"
-                                else
-                                    "Aberto"
+                                text =
+                                    if (it.finalizado)
+                                        "Finalizado"
+                                    else
+                                        "Aberto",
+
+                                style = MaterialTheme.typography.bodyMedium,
+
+                                color =
+                                    if (it.finalizado)
+                                        MaterialTheme.colorScheme.error
+                                    else
+                                        MaterialTheme.colorScheme.primary
                             )
                         }
                     }

@@ -14,5 +14,11 @@ fun DespesaComTipoEntity.toUi() =
                 tipo.descricao
             },
 
-        valor = despesa.valor
+        valor = despesa.valor,
+
+        avulsa =
+            tipo.descricao.equals(
+                "Despesa Avulsa",
+                ignoreCase = true
+            )
     )

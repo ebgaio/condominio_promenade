@@ -38,4 +38,14 @@ interface FechamentoRepository {
     suspend fun existeFechamentoAberto(
         finalizado: Boolean
     ): Boolean
+
+    suspend fun findAnterior(
+        mes: Int,
+        ano: Int
+    ): FechamentoMensalEntity?
+
+    suspend fun findProximo(
+        mes: Int,
+        ano: Int
+    ): FechamentoMensalEntity?
 }

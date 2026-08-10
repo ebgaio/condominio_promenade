@@ -1,6 +1,5 @@
 package br.com.edificiopromenade.presentation.fechamento
 
-import br.com.edificiopromenade.data.local.entity.FechamentoMensalEntity
 import br.com.edificiopromenade.presentation.common.message.UiMessage
 import br.com.edificiopromenade.presentation.fechamento.model.FechamentoMensalUi
 
@@ -19,6 +18,12 @@ data class NovoFechamentoUiState(
     val mensagem: UiMessage? = null,
 
     val fechamentos: List<FechamentoMensalUi> = emptyList(),
+
+    val modoEdicao: Boolean = false,
+
+    val fechamentoSelecionadoId: Long = 0,
+
+    val fechamentoSelecionadoFinalizado: Boolean = false,
 
     val meses: List<String> = listOf(
         "01",

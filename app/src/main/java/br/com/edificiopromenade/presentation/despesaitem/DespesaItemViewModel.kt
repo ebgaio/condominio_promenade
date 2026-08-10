@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.edificiopromenade.domain.repository.DespesaRepository
 import br.com.edificiopromenade.domain.repository.FechamentoRepository
+import br.com.edificiopromenade.domain.repository.TipoDespesaRepository
 import br.com.edificiopromenade.domain.usecase.despesa.AtualizarTotalDespesaUseCase
 import br.com.edificiopromenade.domain.usecase.despesaitem.AtualizarDespesaItemUseCase
 import br.com.edificiopromenade.domain.usecase.despesaitem.CadastrarDespesaItemUseCase
@@ -27,7 +28,8 @@ class DespesaItemViewModel @Inject constructor(
     private val excluirItemDespesaUseCase: ExcluirItemDespesaUseCase,
     private val atualizarDespesaItemUseCase: AtualizarDespesaItemUseCase,
     private val despesaRepository: DespesaRepository,
-    private val fechamentoRepository: FechamentoRepository
+    private val fechamentoRepository: FechamentoRepository,
+    private val tipoDespesaRepository: TipoDespesaRepository
 ) : ViewModel() {
 
     private val _uiState =
@@ -45,25 +47,47 @@ class DespesaItemViewModel @Inject constructor(
         this.despesaId = despesaId
 
         /*
-         * Descobre se a despesa pertence
-         * a um fechamento já finalizado.
+         * Localiza a despesa e, através dela,
+         * descobre o fechamento ao qual pertence.
+         *
+         * Aqui carregamos:
+         *
+         * - situação do fechamento;
+         * - competência.
          */
         viewModelScope.launch {
             val despesa =
                 despesaRepository.findById(
                     despesaId
                 )
+                    ?: return@launch
 
             val fechamento =
-                despesa?.let {
                     fechamentoRepository.findById(
-                        it.fechamentoId
+                        despesa.fechamentoId
                     )
-                }
+                        ?: return@launch
+
+            val tipoDespesa =
+                tipoDespesaRepository.findById(
+                    despesa.tipoDespesaId
+                )
+
+            val nomeDespesa =
+                despesa.descricaoLivre
+                    .takeIf {
+                        it.isNotBlank()
+                    }
+                    ?: tipoDespesa?.descricao
+                    ?: "Despesa"
 
             _uiState.value =
                 _uiState.value.copy(
-                    fechamentoFinalizado = fechamento?.finalizado ?: false
+                    fechamentoFinalizado = fechamento.finalizado,
+                    competencia = "${fechamento.mes
+                                .toString()
+                                .padStart(2, '0')}/${fechamento.ano}",
+                    nomeDespesa = nomeDespesa
                 )
         }
 

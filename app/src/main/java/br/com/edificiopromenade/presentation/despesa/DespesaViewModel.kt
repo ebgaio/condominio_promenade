@@ -4,6 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.edificiopromenade.domain.model.CadastrarDespesaCommand
 import br.com.edificiopromenade.domain.model.ExcluirDespesaCommand
+import br.com.edificiopromenade.domain.repository.DespesaRepository
+import br.com.edificiopromenade.domain.repository.DespesaTemporariaParcelaRepository
+import br.com.edificiopromenade.domain.repository.DespesaTemporariaRepository
 import br.com.edificiopromenade.domain.repository.FechamentoRepository
 import br.com.edificiopromenade.domain.usecase.despesa.CadastrarDespesaUseCase
 import br.com.edificiopromenade.domain.usecase.despesa.ConsultarDespesasPorFechamentoUseCase
@@ -30,7 +33,10 @@ class DespesaViewModel @Inject constructor(
     private val consultarTiposDespesaUiUseCase: ConsultarTiposDespesaUiUseCase,
     private val finalizarFechamentoUseCase: FinalizarFechamentoUseCase,
     private val verificarDespesaExistenteUseCase: VerificarDespesaExistenteUseCase,
-    private val fechamentoRepository: FechamentoRepository
+    private val fechamentoRepository: FechamentoRepository,
+    private val despesaRepository: DespesaRepository,
+    private val despesaTemporariaParcelaRepository: DespesaTemporariaParcelaRepository,
+    private val despesaTemporariaRepository: DespesaTemporariaRepository
 ) : ViewModel() {
 
     private val _uiState =
@@ -51,14 +57,31 @@ class DespesaViewModel @Inject constructor(
             val fechamento = fechamentoRepository.findById(
                     fechamentoId
                 )
+                ?: return@launch
+
+            val fechamentoAnterior =
+                fechamentoRepository.findAnterior(
+                    mes = fechamento.mes,
+                    ano = fechamento.ano
+                )
+
+            val fechamentoProximo =
+                fechamentoRepository.findProximo(
+                    mes = fechamento.mes,
+                    ano = fechamento.ano
+                )
 
             _uiState.value =
                 _uiState.value.copy(
-                    fechamentoFinalizado = fechamento?.finalizado ?: false,
-                    competencia =
-                        fechamento?.let {
-                            "${it.mes.toString().padStart(2, '0')}/${it.ano}"
-                        } ?: ""
+
+                    fechamentoAtualId = fechamento.id,
+                    fechamentoFinalizado = fechamento.finalizado,
+
+                    competencia = "${fechamento.mes.toString().padStart(
+                                2, '0')}/${fechamento.ano}",
+
+                    fechamentoAnteriorId = fechamentoAnterior?.id,
+                    fechamentoProximoId = fechamentoProximo?.id
                 )
         }
 
@@ -67,12 +90,34 @@ class DespesaViewModel @Inject constructor(
                 fechamentoId
             ).collect { lista ->
 
+                val despesasComItens = despesaRepository
+                        .findComItensListByFechamento(
+                            fechamentoId
+                        )
+
+                val idsComItens = despesasComItens
+                        .filter { it.itens.isNotEmpty()}
+                        .map {it.despesa.id}
+                        .toSet()
+
                 _uiState.value =
                     _uiState.value.copy(
-                        despesas = lista.map {
-                            it.toUi()
-                        }
+
+                        despesas = lista.map { despesaComTipo ->
+                                despesaComTipo
+                                    .toUi()
+                                    .copy(
+                                        possuiItens = despesaComTipo.despesa.id in idsComItens
+                                    )
+                            }
                     )
+
+//                _uiState.value =
+//                    _uiState.value.copy(
+//                        despesas = lista.map {
+//                            it.toUi()
+//                        }
+//                    )
             }
         }
 
@@ -88,6 +133,99 @@ class DespesaViewModel @Inject constructor(
                         )
                 }
         }
+    }
+
+    fun editarDespesa(
+        despesa: DespesaUi
+    ) {
+
+        if (_uiState.value.fechamentoFinalizado) {
+            return
+        }
+
+        viewModelScope.launch {
+
+            val despesaComItens = despesaRepository.findComItens(
+                    despesa.id
+                )
+
+            if (
+                despesaComItens != null &&
+                despesaComItens.itens.isNotEmpty()
+            ) {
+
+                _uiState.value =
+                    _uiState.value.copy(
+                        mensagem = UiMessage.Error(
+                            "Esta despesa possui itens. Altere os valores pela tela Itens."
+                        )
+                    )
+                return@launch
+            }
+
+            var descricaoParaEdicao = ""
+
+            if (despesa.avulsa) {
+
+                val parcela =
+                    despesaTemporariaParcelaRepository
+                        .findByDespesaId(
+                            despesa.id
+                        )
+
+                if (parcela != null) {
+
+                    val despesaTemporaria =
+                        despesaTemporariaRepository.findById(
+                            parcela.despesaTemporariaId
+                        )
+
+                    descricaoParaEdicao =
+                        despesaTemporaria?.descricao
+                            ?: despesa.descricao
+                }
+            }
+
+            _uiState.value =
+                _uiState.value.copy(
+                    despesaEmEdicao = despesa,
+                    descricaoLivre = descricaoParaEdicao,
+                    valor = MoneyFormatter.format(
+                            (despesa.valor * 100)
+                                .toLong()
+                                .toString()
+                        ),
+                    mensagem = null,
+                    expandirTipos = false
+                )
+        }
+    }
+
+    fun cancelarEdicao() {
+
+        _uiState.value =
+            _uiState.value.copy(
+                despesaEmEdicao = null,
+                valor = "",
+                descricaoLivre = "",
+                mensagem = null
+            )
+    }
+
+    fun abrirFechamentoAnterior(
+        onAbrir: (Long) -> Unit
+    ) {
+        val id = _uiState.value.fechamentoAnteriorId
+                ?: return
+        onAbrir(id)
+    }
+
+    fun abrirFechamentoProximo(
+        onAbrir: (Long) -> Unit
+    ) {
+        val id = _uiState.value.fechamentoProximoId
+                ?: return
+        onAbrir(id)
     }
 
     fun onValorChanged(
@@ -126,6 +264,118 @@ class DespesaViewModel @Inject constructor(
                         )
                     )
                 return@launch
+            }
+
+            val despesaEmEdicao = _uiState.value.despesaEmEdicao
+
+            if (despesaEmEdicao != null) {
+
+                if (
+                    despesaEmEdicao.avulsa &&
+                    _uiState.value.descricaoLivre.isBlank()
+                ) {
+                    _uiState.value =
+                        _uiState.value.copy(
+                            mensagem = UiMessage.Error(
+                                "Informe o nome da despesa avulsa."
+                            )
+                        )
+                    return@launch
+                }
+
+                val entidade =
+                    despesaRepository.findById(
+                        despesaEmEdicao.id
+                    )
+                        ?: return@launch
+
+                var novaDescricaoLivre = entidade.descricaoLivre
+
+                if (despesaEmEdicao.avulsa) {
+
+                    val parcela =
+                        despesaTemporariaParcelaRepository
+                            .findByDespesaId(
+                                entidade.id
+                            )
+
+                    if (parcela != null) {
+
+                        val despesaTemporaria =
+                            despesaTemporariaRepository.findById(
+                                parcela.despesaTemporariaId
+                            )
+
+                        if (despesaTemporaria != null) {
+
+                            val novoNome =
+                                _uiState.value
+                                    .descricaoLivre
+                                    .trim()
+
+                            despesaTemporariaRepository.update(
+                                despesaTemporaria.copy(
+                                    descricao = novoNome
+                                )
+                            )
+
+                            novaDescricaoLivre =
+                                if (
+                                    despesaTemporaria.quantidadeParcelas > 1
+                                ) {
+                                    "$novoNome - Parcela " +
+                                            "${parcela.numeroParcela}/" +
+                                            "${despesaTemporaria.quantidadeParcelas}"
+                                } else {
+                                    novoNome
+                                }
+                        }
+                    }
+                }
+
+                despesaRepository.update(
+                    entidade.copy(
+                        descricaoLivre =
+                            novaDescricaoLivre,
+                        valor =
+                            valorDespesa
+                    )
+                )
+
+                despesaTemporariaParcelaRepository
+                    .atualizarValorPorDespesaId(
+                        despesaId = entidade.id,
+                        valor = valorDespesa
+                    )
+
+//                if (despesaEmEdicao != null) {
+//                    val entidade = despesaRepository.findById(
+//                        despesaEmEdicao.id
+//                    )
+//                        ?: return@launch
+//
+//                    despesaRepository.update(
+//                        entidade.copy(
+//                            valor = valorDespesa
+//                        )
+//                    )
+//
+//                    despesaTemporariaParcelaRepository
+//                        .atualizarValorPorDespesaId(
+//                            despesaId = entidade.id,
+//                            valor = valorDespesa
+//                        )
+//
+//                    _uiState.value =
+//                        _uiState.value.copy(
+//                            despesaEmEdicao = null,
+//                            valor = "",
+//                            mensagem = UiMessage.Success(
+//                                "Despesa atualizada com sucesso."
+//                            )
+//                        )
+//                    return@launch
+//                }
             }
 
             val descricao = _uiState.value.descricaoLivre.trim()
@@ -228,6 +478,9 @@ class DespesaViewModel @Inject constructor(
     fun alterarExpandido(
         expandido: Boolean
     ) {
+        if (_uiState.value.despesaEmEdicao != null) {
+            return
+        }
         _uiState.value =
             _uiState.value.copy(
                 expandirTipos = expandido

@@ -3,6 +3,7 @@ package br.com.edificiopromenade.presentation.fechamento
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.edificiopromenade.data.local.entity.FechamentoMensalEntity
+import br.com.edificiopromenade.domain.repository.FechamentoRepository
 import br.com.edificiopromenade.domain.usecase.fechamento.ConsultarFechamentosUseCase
 import br.com.edificiopromenade.domain.usecase.fechamento.CriarFechamentoMensalUseCase
 import br.com.edificiopromenade.domain.usecase.fechamento.ConsultarFechamentoPorMesAnoUseCase
@@ -23,7 +24,8 @@ class NovoFechamentoViewModel @Inject constructor(
     private val criarFechamentoMensalUseCase: CriarFechamentoMensalUseCase,
     private val consultarFechamentoPorMesAnoUseCase: ConsultarFechamentoPorMesAnoUseCase,
     private val consultarFechamentosUseCase: ConsultarFechamentosUseCase,
-    private val popularTiposDespesaUseCase: PopularTiposDespesaUseCase
+    private val popularTiposDespesaUseCase: PopularTiposDespesaUseCase,
+    private val fechamentoRepository: FechamentoRepository
 ) : ViewModel() {
 
     private val _uiState =
@@ -144,47 +146,109 @@ class NovoFechamentoViewModel @Inject constructor(
             return
         }
 
-        val competenciaInformada =
-            YearMonth.of(
-                ano,
-                mes
-            )
+        if (!_uiState.value.modoEdicao) {
 
-        val competenciaAtual = YearMonth.now()
-
-        val competenciaLimite = competenciaAtual.plusMonths(12)
-
-        if (
-            competenciaInformada.isBefore(
-                competenciaAtual
-            )
-        ) {
-            _uiState.value =
-                _uiState.value.copy(
-                    mensagem = UiMessage.Error(
-                        "Não é permitido criar fechamento de competência anterior ao mês atual."
-                    )
+            val competenciaInformada =
+                YearMonth.of(
+                    ano,
+                    mes
                 )
 
-            return
-        }
+            val competenciaAtual = YearMonth.now()
 
-        if (
-            competenciaInformada.isAfter(
-                competenciaLimite
-            )
-        ) {
-            _uiState.value =
-                _uiState.value.copy(
-                    mensagem = UiMessage.Error(
-                        "O fechamento pode ser criado no máximo até 12 meses após a competência atual."
-                    )
+            val competenciaLimite = competenciaAtual.plusMonths(12)
+
+            if (
+                competenciaInformada.isBefore(
+                    competenciaAtual
                 )
+            ) {
+                _uiState.value =
+                    _uiState.value.copy(
+                        mensagem = UiMessage.Error(
+                            "Não é permitido criar fechamento de competência anterior ao mês atual."
+                        )
+                    )
 
-            return
+                return
+            }
+
+            if (
+                competenciaInformada.isAfter(
+                    competenciaLimite
+                )
+            ) {
+                _uiState.value =
+                    _uiState.value.copy(
+                        mensagem = UiMessage.Error(
+                            "O fechamento pode ser criado no máximo até 12 meses após a competência atual."
+                        )
+                    )
+
+                return
+            }
         }
 
         viewModelScope.launch {
+
+            if (_uiState.value.modoEdicao) {
+
+                val fechamentoAtual =
+                    fechamentoRepository.findById(
+                        _uiState.value.fechamentoSelecionadoId
+                    )
+                        ?: return@launch
+
+                if (fechamentoAtual.finalizado) {
+
+                    _uiState.value =
+                        _uiState.value.copy(
+                            mensagem = UiMessage.Error(
+                                "Este fechamento já foi finalizado e não pode ser alterado."
+                            )
+                        )
+
+                    return@launch
+                }
+
+                fechamentoRepository.update(
+
+                    fechamentoAtual.copy(
+                        mes = mes,
+                        ano = ano,
+
+                        valorFundoReserva =
+                            MoneyFormatter.parse(
+                                _uiState.value.fundoReserva
+                            )?.toDouble()
+                                ?: 0.0,
+
+                        valorDecimoTerceiroFerias =
+                            MoneyFormatter.parse(
+                                _uiState.value.decimoTerceiroFerias
+                            )?.toDouble()
+                                ?: 0.0
+                    )
+                )
+
+                _uiState.value =
+                    _uiState.value.copy(
+                        mes = "",
+                        ano = "",
+                        fundoReserva = "",
+                        decimoTerceiroFerias = "",
+
+                        modoEdicao = false,
+                        fechamentoSelecionadoId = 0,
+                        fechamentoSelecionadoFinalizado = false,
+                        mensagem = UiMessage.Success(
+                            "Fechamento atualizado com sucesso."
+                        )
+                    )
+
+                return@launch
+            }
+
             val fechamentoExistente = consultarFechamentoPorMesAnoUseCase(
                     mes,
                     ano
@@ -230,9 +294,71 @@ class NovoFechamentoViewModel @Inject constructor(
                     ano = "",
                     fundoReserva = "",
                     decimoTerceiroFerias = "",
+
+                    modoEdicao = false,
+                    fechamentoSelecionadoId = 0,
+                    fechamentoSelecionadoFinalizado = false,
+
                     mensagem = UiMessage.Success(
                         "Fechamento criado com sucesso"
                     )
+                )
+        }
+    }
+
+    fun cancelarEdicao() {
+
+        _uiState.value =
+            _uiState.value.copy(
+                mes = "",
+                ano = "",
+                fundoReserva = "",
+                decimoTerceiroFerias = "",
+
+                modoEdicao = false,
+                fechamentoSelecionadoId = 0,
+                fechamentoSelecionadoFinalizado = false,
+
+                mensagem = null
+            )
+    }
+
+    fun editarFechamento(
+        fechamentoId: Long
+    ) {
+        viewModelScope.launch {
+
+            val fechamento =
+                fechamentoRepository.findById(
+                    fechamentoId
+                )
+                    ?: return@launch
+
+            _uiState.value =
+                _uiState.value.copy(
+                    mes = fechamento.mes
+                            .toString()
+                            .padStart(2, '0'),
+                    ano = fechamento.ano.toString(),
+
+                    fundoReserva =
+                        MoneyFormatter.format(
+                            (fechamento.valorFundoReserva * 100)
+                                .toLong()
+                                .toString()
+                        ),
+
+                    decimoTerceiroFerias =
+                        MoneyFormatter.format(
+                            (fechamento.valorDecimoTerceiroFerias * 100)
+                                .toLong()
+                                .toString()
+                        ),
+
+                    modoEdicao = true,
+                    fechamentoSelecionadoId = fechamento.id,
+                    fechamentoSelecionadoFinalizado = fechamento.finalizado,
+                    mensagem = null
                 )
         }
     }
