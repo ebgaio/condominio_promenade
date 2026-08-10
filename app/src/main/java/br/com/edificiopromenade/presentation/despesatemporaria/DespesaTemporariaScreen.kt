@@ -22,8 +22,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -42,144 +44,105 @@ fun DespesaTemporariaScreen(
 
     val state by viewModel.uiState.collectAsState()
 
+    LaunchedEffect(fechamentoId) {
+        viewModel.carregar(fechamentoId)
+    }
+
     Scaffold {
-
         padding ->
-
         Column(
-
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
                 .padding(16.dp),
 
-            verticalArrangement =
-                Arrangement.spacedBy(12.dp)
-
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
 
-            Text(
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Nova Despesa Temporária",
+                    style = MaterialTheme.typography.headlineSmall
+                )
 
-                "Nova Despesa Temporária",
-
-                style =
-                    MaterialTheme.typography.headlineSmall
-            )
+                if (state.competencia.isNotBlank()) {
+                    Text(
+                        text = "• ${state.competencia}",
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                }
+            }
 
             state.mensagem?.let {
-
                 InlineMessageBanner(
-
                     message = when(it){
-
-                        is UiMessage.Success ->
-                            it.text
-
-                        is UiMessage.Error ->
-                            it.text
+                        is UiMessage.Success -> it.text
+                        is UiMessage.Error -> it.text
                     },
-
-                    onDismiss = {
-
-                        viewModel.limparMensagem()
-
-                    }
+                    onDismiss = {viewModel.limparMensagem()}
                 )
             }
 
             OutlinedTextField(
-
                 value = state.descricao,
-
-                onValueChange =
-                    viewModel::onDescricaoChanged,
-
+                onValueChange = viewModel::onDescricaoChanged,
                 label = {
-
                     Text("Descrição")
-
                 },
-
-                modifier =
-                    Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth()
             )
 
             OutlinedTextField(
-
                 value = state.quantidadeParcelas,
-
-                onValueChange =
-                    viewModel::onQuantidadeParcelasChanged,
-
+                onValueChange = viewModel::onQuantidadeParcelasChanged,
                 keyboardOptions = KeyboardOptions(
-
-                    keyboardType =
-                        KeyboardType.Number
-
+                    keyboardType = KeyboardType.Number
                 ),
-
                 label = {
-
                     Text("Quantidade de Parcelas")
-
                 }
-
             )
 
             ExposedDropdownMenuBox(
-
                 expanded = state.expandirMeses,
-
-                onExpandedChange = {
-                    viewModel.alterarExpandirMeses(it)
-                }
+                onExpandedChange = {viewModel.alterarExpandirMeses(it)}
             ) {
 
                 OutlinedTextField(
-
                     value = state.mesInicial,
-
                     onValueChange = {},
-
                     readOnly = true,
-
                     label = {
                         Text("Mês inicial")
                     },
-
                     trailingIcon = {
                         ExposedDropdownMenuDefaults.TrailingIcon(
                             expanded = state.expandirMeses
                         )
                     },
-
                     modifier = Modifier
                         .menuAnchor(
                             ExposedDropdownMenuAnchorType.PrimaryNotEditable,
                             enabled = !state.carregando
                         )
                         .fillMaxWidth(),
-
                     enabled = !state.carregando
                 )
 
                 ExposedDropdownMenu(
-
                     expanded = state.expandirMeses,
-
                     onDismissRequest = {
                         viewModel.alterarExpandirMeses(false)
                     }
                 ) {
-
                     state.meses.forEach { mes ->
-
                         DropdownMenuItem(
-
                             text = {
                                 Text(mes)
                             },
-
                             onClick = {
                                 viewModel.selecionarMesInicial(mes)
                             }
@@ -189,62 +152,42 @@ fun DespesaTemporariaScreen(
             }
 
             OutlinedTextField(
-
                 value = state.anoInicial,
-
-                onValueChange =
-                    viewModel::onAnoInicialChanged,
-
+                onValueChange = viewModel::onAnoInicialChanged,
                 label = {
                     Text("Ano inicial")
                 },
-
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number
                 ),
-
                 modifier = Modifier.fillMaxWidth(),
-
                 enabled = !state.carregando,
-
                 singleLine = true
             )
 
             HorizontalDivider()
 
             Text(
-
                 "Parcelas",
-
-                style =
-                    MaterialTheme.typography.titleMedium
-
+                style = MaterialTheme.typography.titleMedium
             )
 
             LazyColumn(
-
-                modifier =
-                    Modifier.weight(1f)
-
+                modifier = Modifier.weight(1f)
             ) {
-
                 itemsIndexed(
                     state.parcelas
                 ) {
-
                     indice,
                     valor ->
-
                     MoneyOutlinedTextField(
                         value = valor,
-
                         onValueChange = {
                             viewModel.onValorParcelaChanged(
                                 indice,
                                 it
                             )
                         },
-
                         label = "Parcela ${indice + 1}",
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -262,12 +205,9 @@ fun DespesaTemporariaScreen(
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-
                 Button(
-
                     modifier = Modifier.weight(1f),
                     enabled = !state.carregando,
-
                     onClick = {
                         viewModel.salvar(
                             fechamentoId = fechamentoId,
@@ -285,7 +225,6 @@ fun DespesaTemporariaScreen(
                 }
 
                 Button(
-
                     modifier = Modifier.weight(1f),
                     onClick =
                         onVoltar

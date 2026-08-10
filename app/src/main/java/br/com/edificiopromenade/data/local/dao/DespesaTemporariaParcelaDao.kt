@@ -94,4 +94,24 @@ interface DespesaTemporariaParcelaDao {
         fechamentoId: Long,
         despesaId: Long
     ): Int
+
+    @Query("""
+        UPDATE despesas_temporarias_parcelas
+           SET valor = :valor
+         WHERE despesaId = :despesaId
+    """)
+    suspend fun atualizarValorPorDespesaId(
+        despesaId: Long,
+        valor: Double
+    ): Int
+
+    @Query("""
+        SELECT *
+        FROM despesas_temporarias_parcelas
+        WHERE despesaId = :despesaId
+        LIMIT 1
+    """)
+    suspend fun findByDespesaId(
+        despesaId: Long
+    ): DespesaTemporariaParcelaEntity?
 }

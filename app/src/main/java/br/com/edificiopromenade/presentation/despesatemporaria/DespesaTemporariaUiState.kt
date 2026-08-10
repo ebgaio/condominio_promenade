@@ -9,6 +9,14 @@ data class DespesaTemporariaUiState(
     val parcelas: List<String> = listOf(""),
 
     /*
+     * Competência do fechamento atualmente aberto.
+     *
+     * Exemplo:
+     * 08/2026
+     */
+    val competencia: String = "",
+
+    /*
      * Primeira competência das parcelas.
      */
     val mesInicial: String = "",

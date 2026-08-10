@@ -61,4 +61,21 @@ class DespesaTemporariaParcelaRepositoryImpl @Inject constructor(
             despesaId = despesaId
         ) > 0
     }
+
+    override suspend fun atualizarValorPorDespesaId(
+        despesaId: Long,
+        valor: Double
+    ) {
+        dao.atualizarValorPorDespesaId(
+            despesaId = despesaId,
+            valor = valor
+        )
+    }
+
+    override suspend fun findByDespesaId(
+        despesaId: Long
+    ) =
+        dao.findByDespesaId(
+            despesaId
+        )
 }

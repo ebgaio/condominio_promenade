@@ -2,6 +2,7 @@ package br.com.edificiopromenade.presentation.despesatemporaria
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.compose.runtime.LaunchedEffect
 import br.com.edificiopromenade.data.local.entity.DespesaTemporariaParcelaEntity
 import br.com.edificiopromenade.domain.usecase.despesatemporaria.AssociarParcelasAoFechamentoUseCase
 import br.com.edificiopromenade.domain.usecase.despesatemporaria.CadastrarDespesaTemporariaParcelaUseCase
@@ -137,6 +138,45 @@ class DespesaTemporariaViewModel @Inject constructor(
             _uiState.value =
                 _uiState.value.copy(
                     anoInicial = valor
+                )
+        }
+    }
+
+    fun carregar(
+        fechamentoId: Long
+    ) {
+
+        viewModelScope.launch {
+            val fechamento =
+                consultarFechamentoPorIdUseCase(
+                    fechamentoId
+                )
+                    ?: return@launch
+
+            _uiState.value =
+                _uiState.value.copy(
+                    competencia = "${fechamento.mes
+                            .toString()
+                            .padStart(2, '0')}/${fechamento.ano}",
+                    mesInicial =
+                        if (
+                            _uiState.value.mesInicial.isBlank()
+                        ) {
+                            fechamento.mes
+                                .toString()
+                                .padStart(2, '0')
+                        } else {
+                            _uiState.value.mesInicial
+                        },
+
+                    anoInicial =
+                        if (
+                            _uiState.value.anoInicial.isBlank()
+                        ) {
+                            fechamento.ano.toString()
+                        } else {
+                            _uiState.value.anoInicial
+                        }
                 )
         }
     }

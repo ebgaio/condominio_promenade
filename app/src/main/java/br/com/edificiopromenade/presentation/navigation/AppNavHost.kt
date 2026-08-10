@@ -442,23 +442,30 @@ fun AppNavHost(
                 },
                 onAbrirDemonstrativos = { id ->
                     navController.navigate(
-                        AppDestinations
-                            .demonstrativosRoute(id)
+                        AppDestinations.demonstrativosRoute(id)
                     )
                 },
                 onAbrirItensDespesa = { despesaId ->
                     navController.navigate(
-                        AppDestinations.despesaItemRoute(
-                            despesaId
-                        )
+                        AppDestinations.despesaItemRoute(despesaId)
                     )
                 },
                 onAdicionarDespesaAvulsa = { id ->
                     navController.navigate(
-                        AppDestinations.despesaTemporariaRoute(
-                            id
-                        )
+                        AppDestinations.despesaTemporariaRoute(id)
                     )
+                },
+                onAbrirFechamento = { id ->
+                    navController.navigate(
+                        AppDestinations.despesasRoute(id)
+                    ) {
+                        popUpTo(
+                            AppDestinations.DESPESAS
+                        ) {
+                            inclusive = true
+                        }
+                        launchSingleTop = true
+                    }
                 }
             )
         }

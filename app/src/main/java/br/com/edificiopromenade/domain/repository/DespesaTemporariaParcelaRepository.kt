@@ -38,4 +38,13 @@ interface DespesaTemporariaParcelaRepository {
         fechamentoId: Long,
         despesaId: Long
     ): Boolean
+
+    suspend fun atualizarValorPorDespesaId(
+        despesaId: Long,
+        valor: Double
+    )
+
+    suspend fun findByDespesaId(
+        despesaId: Long
+    ): DespesaTemporariaParcelaEntity?
 }
