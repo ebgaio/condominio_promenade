@@ -2,7 +2,6 @@ package br.com.edificiopromenade.domain.usecase.tipodespesa
 
 import br.com.edificiopromenade.data.local.entity.TipoDespesaEntity
 import br.com.edificiopromenade.domain.repository.TipoDespesaRepository
-import kotlinx.coroutines.flow.first
 import jakarta.inject.Inject
 
 class PopularTiposDespesaUseCase @Inject constructor(
