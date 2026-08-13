@@ -310,6 +310,10 @@ fun DespesaScreen(
                             style = MaterialTheme.typography.titleMedium
                         )
 
+                        /*
+                         * Nome editável somente para
+                         * despesa avulsa.
+                         */
                         if (despesa.avulsa) {
 
                             OutlinedTextField(

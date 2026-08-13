@@ -2,12 +2,11 @@ package br.com.edificiopromenade.presentation.despesatemporaria
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.compose.runtime.LaunchedEffect
-import br.com.edificiopromenade.data.local.entity.DespesaTemporariaParcelaEntity
 import br.com.edificiopromenade.domain.usecase.despesatemporaria.AssociarParcelasAoFechamentoUseCase
 import br.com.edificiopromenade.domain.usecase.despesatemporaria.CadastrarDespesaTemporariaParcelaUseCase
 import br.com.edificiopromenade.domain.usecase.despesatemporaria.CadastrarDespesaTemporariaUseCase
 import br.com.edificiopromenade.domain.usecase.fechamento.ConsultarFechamentoPorIdUseCase
+import br.com.edificiopromenade.domain.usecase.tipodespesa.VerificarNomeReservadoTipoDespesaUseCase
 import br.com.edificiopromenade.presentation.common.message.UiMessage
 import br.com.edificiopromenade.presentation.despesatemporaria.mapper.toEntity
 import br.com.edificiopromenade.presentation.despesatemporaria.model.DespesaTemporariaParcelaUi
@@ -24,7 +23,8 @@ class DespesaTemporariaViewModel @Inject constructor(
     private val cadastrarDespesaTemporariaUseCase: CadastrarDespesaTemporariaUseCase,
     private val cadastrarParcelaUseCase: CadastrarDespesaTemporariaParcelaUseCase,
     private val consultarFechamentoPorIdUseCase: ConsultarFechamentoPorIdUseCase,
-    private val associarParcelasAoFechamentoUseCase: AssociarParcelasAoFechamentoUseCase
+    private val associarParcelasAoFechamentoUseCase: AssociarParcelasAoFechamentoUseCase,
+    private val verificarNomeReservadoTipoDespesaUseCase: VerificarNomeReservadoTipoDespesaUseCase
 ) : ViewModel() {
 
     private val _uiState =
@@ -155,9 +155,11 @@ class DespesaTemporariaViewModel @Inject constructor(
 
             _uiState.value =
                 _uiState.value.copy(
-                    competencia = "${fechamento.mes
+                    competencia = "${
+                        fechamento.mes
                             .toString()
-                            .padStart(2, '0')}/${fechamento.ano}",
+                            .padStart(2, '0')
+                    }/${fechamento.ano}",
                     mesInicial =
                         if (
                             _uiState.value.mesInicial.isBlank()
@@ -181,130 +183,184 @@ class DespesaTemporariaViewModel @Inject constructor(
         }
     }
 
-    fun salvar(fechamentoId: Long, onSucesso: () -> Unit) {
+    fun salvar(
+        fechamentoId: Long,
+        onSucesso: () -> Unit
+    ) {
 
+        /*
+         * Evita duplo clique enquanto
+         * uma gravação já estiver ocorrendo.
+         */
         if (_uiState.value.carregando) {
-            return
-        }
-
-        val estado = _uiState.value
-
-        val descricao = _uiState.value.descricao.trim()
-
-        if (descricao.isBlank()) {
-            _uiState.value =
-                _uiState.value.copy(
-                    mensagem =
-                        UiMessage.Error(
-                            "Informe a descrição."
-                        )
-                )
-
-            return
-        }
-
-        val mesInicial =
-            estado.mesInicial.toIntOrNull()
-
-        val anoInicial =
-            estado.anoInicial.toIntOrNull()
-
-        if (
-            mesInicial == null ||
-            mesInicial !in 1..12 ||
-            anoInicial == null ||
-            estado.anoInicial.length != 4
-        ) {
-
-            _uiState.value =
-                estado.copy(
-                    mensagem = UiMessage.Error(
-                        "Informe uma competência inicial válida."
-                    )
-                )
-
-            return
-        }
-
-        val competenciaInicial =
-            YearMonth.of(
-                anoInicial,
-                mesInicial
-            )
-
-        val competenciaAtual = YearMonth.now()
-
-        val competenciaLimite = competenciaAtual.plusMonths(12)
-
-        if (
-            competenciaInicial.isBefore(
-                competenciaAtual
-            )
-        ) {
-            _uiState.value =
-                _uiState.value.copy(
-                    mensagem = UiMessage.Error(
-                        "Não é permitido criar fechamento de competência anterior ao mês atual."
-                    )
-                )
-
-            return
-        }
-
-        if (
-            competenciaInicial.isAfter(
-                competenciaLimite
-            )
-        ) {
-
-            _uiState.value =
-                _uiState.value.copy(
-                    mensagem = UiMessage.Error(
-                        "O fechamento pode ser criado no máximo até 12 meses após a competência atual."
-                    )
-                )
-
-            return
-        }
-
-        if (estado.parcelas.isEmpty()) {
-
-            _uiState.value =
-                estado.copy(
-                    mensagem = UiMessage.Error(
-                        "Informe pelo menos uma parcela."
-                    )
-                )
-
-            return
-        }
-
-        val valoresParcelas =
-            estado.parcelas.map { valorTexto ->
-
-                MoneyFormatter.parse(
-                    valorTexto
-                )?.toDouble()
-            }
-
-        if (
-            valoresParcelas.any {
-                it == null || it <= 0.0
-            }
-        ) {
-
-            _uiState.value =
-                estado.copy(
-                    mensagem = UiMessage.Error(
-                        "Informe um valor válido para todas as parcelas."
-                    )
-                )
-
             return
         }
 
         viewModelScope.launch {
 
+            val estado = _uiState.value
+
+            val descricao = _uiState.value.descricao.trim()
+
+            /*
+             * =====================================================
+             * DESCRIÇÃO OBRIGATÓRIA
+             * =====================================================
+             */
+            if (descricao.isBlank()) {
+                _uiState.value =
+                    _uiState.value.copy(
+                        mensagem =
+                            UiMessage.Error(
+                                "Informe a descrição."
+                            )
+                    )
+                return@launch
+            }
+
+            /*
+             * =====================================================
+             * NOME RESERVADO PARA DESPESA FIXA
+             * =====================================================
+             *
+             * Como este UseCase é suspend, ele precisa
+             * estar dentro do viewModelScope.launch.
+             */
+            if (
+                verificarNomeReservadoTipoDespesaUseCase(
+                    descricao
+                )
+            ) {
+
+                _uiState.value =
+                    _uiState.value.copy(
+                        mensagem = UiMessage.Error(
+                            "O nome '$descricao' pertence a uma despesa fixa e não pode ser usado em uma despesa avulsa."
+                        )
+                    )
+
+                return@launch
+            }
+
+            /*
+             * =====================================================
+             * COMPETÊNCIA INICIAL
+             * =====================================================
+             */
+            val mesInicial = estado.mesInicial.toIntOrNull()
+
+            val anoInicial = estado.anoInicial.toIntOrNull()
+
+            if (
+                mesInicial == null ||
+                mesInicial !in 1..12 ||
+                anoInicial == null ||
+                estado.anoInicial.length != 4
+            ) {
+
+                _uiState.value =
+                    _uiState.value.copy(
+                        mensagem = UiMessage.Error(
+                            "Informe uma competência inicial válida."
+                        )
+                    )
+
+                return@launch
+            }
+
+            val competenciaInicial =
+                YearMonth.of(
+                    anoInicial,
+                    mesInicial
+                )
+
+            val competenciaAtual = YearMonth.now()
+
+            val competenciaLimite = competenciaAtual.plusMonths(12)
+
+            /*
+             * Não permite competência anterior
+             * ao mês atual.
+             */
+            if (
+                competenciaInicial.isBefore(
+                    competenciaAtual
+                )
+            ) {
+                _uiState.value =
+                    _uiState.value.copy(
+                        mensagem = UiMessage.Error(
+                            "Não é permitido criar fechamento de competência anterior ao mês atual."
+                        )
+                    )
+
+                return@launch
+            }
+
+            /*
+             * Limite máximo de 12 meses.
+             */
+            if (
+                competenciaInicial.isAfter(
+                    competenciaLimite
+                )
+            ) {
+                _uiState.value =
+                    _uiState.value.copy(
+                        mensagem = UiMessage.Error(
+                            "O fechamento pode ser criado no máximo até 12 meses após a competência atual."
+                        )
+                    )
+
+                return@launch
+            }
+
+            /*
+             * =====================================================
+             * PARCELAS
+             * =====================================================
+             */
+            if (estado.parcelas.isEmpty()) {
+
+                _uiState.value =
+                    _uiState.value.copy(
+                        mensagem = UiMessage.Error(
+                            "Informe pelo menos uma parcela."
+                        )
+                    )
+
+                return@launch
+            }
+
+            val valoresParcelas =
+                estado.parcelas.map { valorTexto ->
+
+                    MoneyFormatter.parse(
+                        valorTexto
+                    )?.toDouble()
+                }
+
+            if (
+                valoresParcelas.any {
+                    it == null || it <= 0.0
+                }
+            ) {
+
+                _uiState.value =
+                    _uiState.value.copy(
+                        mensagem = UiMessage.Error(
+                            "Informe um valor válido para todas as parcelas."
+                        )
+                    )
+
+                return@launch
+            }
+
+            /*
+             * =====================================================
+             * GRAVAÇÃO
+             * =====================================================
+             */
             _uiState.value =
                 _uiState.value.copy(
                     carregando = true,
@@ -328,11 +384,9 @@ class DespesaTemporariaViewModel @Inject constructor(
                             indice.toLong()
                         )
 
-                    val competencia =
-                        competenciaParcela.year * 100 + competenciaParcela.monthValue
+                    val competencia = competenciaParcela.year * 100 + competenciaParcela.monthValue
 
                     cadastrarParcelaUseCase(
-
                         DespesaTemporariaParcelaUi(
                             despesaTemporariaId = despesaId,
                             competencia = competencia,
@@ -345,9 +399,9 @@ class DespesaTemporariaViewModel @Inject constructor(
                 /*
                  * O fechamento já existe.
                  *
-                 * Após cadastrar todas as parcelas,
-                 * procura qualquer parcela que pertença
-                 * à competência do fechamento atual.
+                 * Depois da criação das parcelas,
+                 * associa a parcela correspondente
+                 * à competência deste fechamento.
                  */
                 val fechamento =
                     consultarFechamentoPorIdUseCase(
@@ -373,8 +427,9 @@ class DespesaTemporariaViewModel @Inject constructor(
 
                 onSucesso()
 
-            } catch (exception: IllegalArgumentException) {
-
+            } catch (
+                exception: IllegalArgumentException
+            ) {
                 _uiState.value =
                     _uiState.value.copy(
                         carregando = false,
@@ -384,8 +439,9 @@ class DespesaTemporariaViewModel @Inject constructor(
                         )
                     )
 
-            } catch (exception: Exception) {
-
+            } catch (
+                exception: Exception
+            ) {
                 _uiState.value =
                     _uiState.value.copy(
                         carregando = false,

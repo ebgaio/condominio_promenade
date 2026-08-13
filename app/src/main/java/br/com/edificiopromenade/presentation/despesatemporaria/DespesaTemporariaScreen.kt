@@ -76,11 +76,11 @@ fun DespesaTemporariaScreen(
                 }
             }
 
-            state.mensagem?.let {
+            state.mensagem?.let { mensagem ->
                 InlineMessageBanner(
-                    message = when(it){
-                        is UiMessage.Success -> it.text
-                        is UiMessage.Error -> it.text
+                    message = when(mensagem){
+                        is UiMessage.Success -> mensagem.text
+                        is UiMessage.Error -> mensagem.text
                     },
                     onDismiss = {viewModel.limparMensagem()}
                 )
