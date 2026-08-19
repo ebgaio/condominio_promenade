@@ -45,4 +45,12 @@ interface DespesaTemporariaDao {
     suspend fun encerrarDespesaTemporaria(
         id: Long
     )
+
+    @Query("""
+        DELETE FROM despesas_temporarias
+        WHERE id = :id
+    """)
+    suspend fun deleteById(
+        id: Long
+    ): Int
 }

@@ -7,6 +7,7 @@ import br.com.edificiopromenade.data.repository.impl.DespesaItemRepositoryImpl
 import br.com.edificiopromenade.data.repository.impl.DespesaRepositoryImpl
 import br.com.edificiopromenade.data.repository.impl.DespesaTemporariaParcelaRepositoryImpl
 import br.com.edificiopromenade.data.repository.impl.DespesaTemporariaRepositoryImpl
+import br.com.edificiopromenade.data.repository.impl.ExclusaoDespesaRepositoryImpl
 import br.com.edificiopromenade.data.repository.impl.FechamentoRepositoryImpl
 import br.com.edificiopromenade.data.repository.impl.MoradorRepositoryImpl
 import br.com.edificiopromenade.data.repository.impl.TipoDespesaRepositoryImpl
@@ -17,6 +18,7 @@ import br.com.edificiopromenade.domain.repository.DespesaItemRepository
 import br.com.edificiopromenade.domain.repository.DespesaRepository
 import br.com.edificiopromenade.domain.repository.DespesaTemporariaParcelaRepository
 import br.com.edificiopromenade.domain.repository.DespesaTemporariaRepository
+import br.com.edificiopromenade.domain.repository.ExclusaoDespesaRepository
 import br.com.edificiopromenade.domain.repository.FechamentoRepository
 import br.com.edificiopromenade.domain.repository.MoradorRepository
 import br.com.edificiopromenade.domain.repository.TipoDespesaRepository
@@ -89,4 +91,9 @@ abstract class RepositoryModule {
     abstract fun bindDespesaTemporariaParcelaRepository(
         impl: DespesaTemporariaParcelaRepositoryImpl
     ): DespesaTemporariaParcelaRepository
+
+    @Binds
+    abstract fun bindExclusaoDespesaRepository(
+        impl: ExclusaoDespesaRepositoryImpl
+    ): ExclusaoDespesaRepository
 }

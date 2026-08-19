@@ -1,17 +1,19 @@
 package br.com.edificiopromenade.domain.usecase.despesa
 
 import br.com.edificiopromenade.domain.model.ExcluirDespesaCommand
-import br.com.edificiopromenade.domain.repository.DespesaRepository
+import br.com.edificiopromenade.domain.repository.ExclusaoDespesaRepository
 import jakarta.inject.Inject
 
 class ExcluirDespesaUseCase @Inject constructor(
-    private val repository: DespesaRepository
+    private val repository: ExclusaoDespesaRepository
 ) {
 
     suspend operator fun invoke(
         command: ExcluirDespesaCommand
     ) {
 
-        repository.deleteById(command.despesaId)
+        repository.excluirRascunho(
+            command.despesaId
+        )
     }
 }

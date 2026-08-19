@@ -69,6 +69,16 @@ interface DespesaTemporariaParcelaDao {
     ): List<DespesaTemporariaParcelaEntity>
 
     @Query("""
+        SELECT *
+        FROM despesas_temporarias_parcelas
+        WHERE despesaTemporariaId = :despesaTemporariaId
+        ORDER BY numeroParcela
+    """)
+    suspend fun findByDespesaTemporariaId(
+        despesaTemporariaId: Long
+    ): List<DespesaTemporariaParcelaEntity>
+
+    @Query("""
         SELECT EXISTS(
             SELECT 1
             FROM despesas_temporarias_parcelas
@@ -114,4 +124,12 @@ interface DespesaTemporariaParcelaDao {
     suspend fun findByDespesaId(
         despesaId: Long
     ): DespesaTemporariaParcelaEntity?
+
+    @Query("""
+        DELETE FROM despesas_temporarias_parcelas
+        WHERE id = :id
+    """)
+    suspend fun deleteById(
+        id: Long
+    ): Int
 }
