@@ -65,8 +65,6 @@ fun NovoFechamentoScreen(
                 style = MaterialTheme.typography.headlineSmall
             )
 
-//            if (state.modoEdicao) {
-
                 Text(
                     text =
                         if (state.fechamentoSelecionadoFinalizado)
@@ -75,7 +73,6 @@ fun NovoFechamentoScreen(
                             "Editando fechamento",
                     style = MaterialTheme.typography.titleMedium
                 )
-//            }
 
             if (state.modoEdicao) {
 

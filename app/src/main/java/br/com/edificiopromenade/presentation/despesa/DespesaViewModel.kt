@@ -11,6 +11,7 @@ import br.com.edificiopromenade.domain.repository.FechamentoRepository
 import br.com.edificiopromenade.domain.usecase.despesa.CadastrarDespesaUseCase
 import br.com.edificiopromenade.domain.usecase.despesa.ConsultarDespesasPorFechamentoUseCase
 import br.com.edificiopromenade.domain.usecase.despesa.ExcluirDespesaUseCase
+import br.com.edificiopromenade.domain.usecase.despesa.ExcluirParcelaDespesaAvulsaUseCase
 import br.com.edificiopromenade.domain.usecase.despesa.VerificarDespesaExistenteUseCase
 import br.com.edificiopromenade.domain.usecase.fechamento.FinalizarFechamentoUseCase
 import br.com.edificiopromenade.domain.usecase.tipodespesa.ConsultarTiposDespesaUiUseCase
@@ -31,6 +32,7 @@ class DespesaViewModel @Inject constructor(
     private val cadastrarDespesaUseCase: CadastrarDespesaUseCase,
     private val consultarDespesasPorFechamentoUseCase: ConsultarDespesasPorFechamentoUseCase,
     private val excluirDespesaUseCase: ExcluirDespesaUseCase,
+    private val excluirParcelaDespesaAvulsaUseCase: ExcluirParcelaDespesaAvulsaUseCase,
     private val consultarTiposDespesaUiUseCase: ConsultarTiposDespesaUiUseCase,
     private val finalizarFechamentoUseCase: FinalizarFechamentoUseCase,
     private val verificarDespesaExistenteUseCase: VerificarDespesaExistenteUseCase,
@@ -694,24 +696,149 @@ class DespesaViewModel @Inject constructor(
             )
     }
 
-    fun confirmarExclusao() {
-        val despesa = _uiState.value.despesaSelecionadaParaExclusao
+    /*
+     * ============================================================
+     * EXCLUI DESPESA COMPLETA
+     * ============================================================
+     *
+     * FIXA:
+     * remove somente aquela DespesaEntity.
+     *
+     * AVULSA:
+     * remove toda a estrutura aberta/futura da
+     * despesa avulsa.
+     */
+    fun confirmarExclusaoDespesa() {
+
+        val despesa =
+            _uiState.value
+                .despesaSelecionadaParaExclusao
                 ?: return
 
         viewModelScope.launch {
-            excluirDespesaUseCase(
-                ExcluirDespesaCommand(
-                    despesa.id
+
+            try {
+                excluirDespesaUseCase(
+                    ExcluirDespesaCommand(
+                        despesa.id
+                    )
                 )
-            )
+
+                _uiState.value =
+                    _uiState.value.copy(
+                        despesaSelecionadaParaExclusao = null,
+                        despesaEmEdicao = null,
+                        valor = "",
+                        descricaoLivre = "",
+                        mensagem = UiMessage.Success(
+                                if (despesa.avulsa) {
+                                    "Despesa avulsa excluída com sucesso."
+                                } else {
+                                    "Despesa excluída com sucesso."
+                                }
+                            )
+                    )
+            } catch (
+                exception: IllegalStateException
+            ) {
+
+                _uiState.value =
+                    _uiState.value.copy(
+                        despesaSelecionadaParaExclusao = null,
+                        mensagem = UiMessage.Error(
+                                exception.message
+                                    ?: "Não foi possível excluir a despesa."
+                            )
+                    )
+            } catch (
+                exception: Exception
+            ) {
+
+                _uiState.value =
+                    _uiState.value.copy(
+                        despesaSelecionadaParaExclusao = null,
+                        mensagem = UiMessage.Error(
+                                "Não foi possível excluir a despesa."
+                            )
+                    )
+            }
+        }
+    }
+
+    /*
+     * ============================================================
+     * EXCLUI SOMENTE UMA PARCELA DA DESPESA AVULSA
+     * ============================================================
+     */
+    fun confirmarExclusaoParcelaAvulsa() {
+
+        val despesa =
+            _uiState.value
+                .despesaSelecionadaParaExclusao
+                ?: return
+
+        /*
+         * Proteção adicional da camada de apresentação.
+         *
+         * O Repository também protege a operação,
+         * mas não devemos chamar este fluxo para
+         * uma despesa fixa.
+         */
+        if (!despesa.avulsa) {
 
             _uiState.value =
                 _uiState.value.copy(
                     despesaSelecionadaParaExclusao = null,
-                    mensagem = UiMessage.Success(
-                     "Despesa excluída com sucesso."
-                    )
+                    mensagem = UiMessage.Error(
+                            "Esta operação é permitida somente para despesas avulsas."
+                        )
                 )
+            return
+        }
+
+        viewModelScope.launch {
+
+            try {
+                excluirParcelaDespesaAvulsaUseCase(
+                    despesa.id
+                )
+
+                _uiState.value =
+                    _uiState.value.copy(
+                        despesaSelecionadaParaExclusao = null,
+                        despesaEmEdicao = null,
+                        valor = "",
+                        descricaoLivre = "",
+                        mensagem = UiMessage.Success(
+                                "Parcela excluída com sucesso."
+                            )
+                    )
+
+            } catch (
+                exception: IllegalStateException
+            ) {
+
+                _uiState.value =
+                    _uiState.value.copy(
+                        despesaSelecionadaParaExclusao = null,
+                        mensagem = UiMessage.Error(
+                                exception.message
+                                    ?: "Não foi possível excluir a parcela."
+                            )
+                    )
+
+            } catch (
+                exception: Exception
+            ) {
+
+                _uiState.value =
+                    _uiState.value.copy(
+                        despesaSelecionadaParaExclusao = null,
+                        mensagem = UiMessage.Error(
+                                "Não foi possível excluir a parcela."
+                            )
+                    )
+            }
         }
     }
 

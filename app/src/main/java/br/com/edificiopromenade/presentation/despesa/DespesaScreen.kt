@@ -118,41 +118,150 @@ fun DespesaScreen(
 
     state.despesaSelecionadaParaExclusao
         ?.let { despesa ->
-            AlertDialog(
-                onDismissRequest = {
-                    viewModel.cancelarExclusao()
-                },
 
-                title = {
-                    Text("Excluir despesa")
-                },
+            /*
+             * =====================================================
+             * DESPESA FIXA
+             * =====================================================
+             */
+            if (!despesa.avulsa) {
 
-                text = {
-                    Text("Deseja realmente excluir a despesa '${despesa.descricao}'?")
-                },
+                AlertDialog(
 
-                confirmButton = {
+                    onDismissRequest = {
+                        viewModel.cancelarExclusao()
+                    },
 
-                    Button(
-                        onClick = {
-                            viewModel.confirmarExclusao()
+                    title = {
+                        Text(
+                            "Excluir despesa"
+                        )
+                    },
+
+                    text = {
+                        Text(
+                            "Deseja realmente excluir a despesa " +
+                                    "'${despesa.descricao}'?"
+                        )
+                    },
+
+                    confirmButton = {
+
+                        Button(
+                            onClick = {
+                                viewModel.confirmarExclusaoDespesa()
+                            }
+                        ) {
+                            Text(
+                                "Excluir"
+                            )
                         }
-                    ) {
-                        Text("Sim")
-                    }
-                },
+                    },
 
-                dismissButton = {
+                    dismissButton = {
 
-                    Button(
-                        onClick = {
-                            viewModel.cancelarExclusao()
+                        Button(
+                            onClick = {
+                                viewModel.cancelarExclusao()
+                            }
+                        ) {
+                            Text(
+                                "Cancelar"
+                            )
                         }
-                    ) {
-                        Text("Não")
                     }
-                }
-            )
+                )
+
+            } else {
+
+                /*
+                 * =================================================
+                 * DESPESA AVULSA
+                 * =================================================
+                 *
+                 * Aqui existem duas operações diferentes:
+                 *
+                 * 1. excluir somente esta parcela;
+                 * 2. excluir toda a despesa avulsa.
+                 */
+                AlertDialog(
+
+                    onDismissRequest = {
+                        viewModel.cancelarExclusao()
+                    },
+
+                    title = {
+                        Text(
+                            "Excluir despesa avulsa"
+                        )
+                    },
+
+                    text = {
+
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+
+                            Text(
+                                "Despesa selecionada:"
+                            )
+
+                            Text(
+                                text = despesa.descricao,
+                                style = MaterialTheme.typography.titleMedium
+                            )
+
+                            Text(
+                                "Escolha o que deseja excluir."
+                            )
+                        }
+                    },
+
+                    confirmButton = {
+
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+
+                            Button(
+                                modifier = Modifier.fillMaxWidth(),
+                                onClick = {
+                                    viewModel.confirmarExclusaoParcelaAvulsa()
+                                }
+                            ) {
+
+                                Text(
+                                    "Somente esta parcela"
+                                )
+                            }
+
+                            Button(
+                                modifier = Modifier.fillMaxWidth(),
+                                onClick = {
+                                    viewModel.confirmarExclusaoDespesa()
+                                }
+                            ) {
+
+                                Text(
+                                    "Toda a despesa avulsa"
+                                )
+                            }
+
+                            Button(
+                                modifier = Modifier.fillMaxWidth(),
+                                onClick = {
+                                    viewModel.cancelarExclusao()
+                                }
+                            ) {
+                                Text(
+                                    "Cancelar"
+                                )
+                            }
+                        }
+                    }
+                )
+            }
         }
 
     LaunchedEffect(fechamentoId) {

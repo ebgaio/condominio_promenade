@@ -2,7 +2,7 @@ package br.com.edificiopromenade.presentation.despesatemporaria
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import br.com.edificiopromenade.domain.usecase.despesatemporaria.AssociarParcelasAoFechamentoUseCase
+import br.com.edificiopromenade.domain.usecase.despesatemporaria.AssociarParcelasAFechamentosExistentesUseCase
 import br.com.edificiopromenade.domain.usecase.despesatemporaria.CadastrarDespesaTemporariaParcelaUseCase
 import br.com.edificiopromenade.domain.usecase.despesatemporaria.CadastrarDespesaTemporariaUseCase
 import br.com.edificiopromenade.domain.usecase.fechamento.ConsultarFechamentoPorIdUseCase
@@ -23,8 +23,8 @@ class DespesaTemporariaViewModel @Inject constructor(
     private val cadastrarDespesaTemporariaUseCase: CadastrarDespesaTemporariaUseCase,
     private val cadastrarParcelaUseCase: CadastrarDespesaTemporariaParcelaUseCase,
     private val consultarFechamentoPorIdUseCase: ConsultarFechamentoPorIdUseCase,
-    private val associarParcelasAoFechamentoUseCase: AssociarParcelasAoFechamentoUseCase,
-    private val verificarNomeReservadoTipoDespesaUseCase: VerificarNomeReservadoTipoDespesaUseCase
+    private val verificarNomeReservadoTipoDespesaUseCase: VerificarNomeReservadoTipoDespesaUseCase,
+    private val associarParcelasAFechamentosExistentesUseCase: AssociarParcelasAFechamentosExistentesUseCase
 ) : ViewModel() {
 
     private val _uiState =
@@ -372,9 +372,14 @@ class DespesaTemporariaViewModel @Inject constructor(
                 val despesaId =
                     cadastrarDespesaTemporariaUseCase(
                         descricao = descricao,
-                        quantidadeParcelas =
-                            valoresParcelas.size
+                        quantidadeParcelas = valoresParcelas.size
                     )
+
+                /*
+                 * Guarda todas as competências pertencentes
+                 * à despesa que acabou de ser criada.
+                 */
+                val competenciasCriadas = mutableListOf<Int>()
 
                 valoresParcelas.forEachIndexed { indice,
                                                  valor ->
@@ -385,6 +390,15 @@ class DespesaTemporariaViewModel @Inject constructor(
                         )
 
                     val competencia = competenciaParcela.year * 100 + competenciaParcela.monthValue
+
+                    /*
+                     * Guarda a competência para que, depois
+                     * da criação de todas as parcelas, possamos
+                     * verificar se já existe fechamento para ela.
+                     */
+                    competenciasCriadas.add(
+                        competencia
+                    )
 
                     cadastrarParcelaUseCase(
                         DespesaTemporariaParcelaUi(
@@ -397,26 +411,19 @@ class DespesaTemporariaViewModel @Inject constructor(
                 }
 
                 /*
-                 * O fechamento já existe.
+                 * Depois que TODAS as parcelas foram criadas,
+                 * verifica cada competência.
                  *
-                 * Depois da criação das parcelas,
-                 * associa a parcela correspondente
-                 * à competência deste fechamento.
+                 * Se já existir um fechamento aberto para ela,
+                 * a parcela será imediatamente materializada
+                 * em DespesaEntity.
+                 *
+                 * Se o fechamento ainda não existir,
+                 * a parcela permanece pendente normalmente.
                  */
-                val fechamento =
-                    consultarFechamentoPorIdUseCase(
-                        fechamentoId
-                    )
-
-                if (fechamento != null) {
-
-                    val competenciaFechamento = fechamento.ano * 100 + fechamento.mes
-
-                    associarParcelasAoFechamentoUseCase(
-                        competencia = competenciaFechamento,
-                        fechamentoId = fechamentoId
-                    )
-                }
+                associarParcelasAFechamentosExistentesUseCase(
+                    competencias = competenciasCriadas
+                )
 
                 _uiState.value =
                     DespesaTemporariaUiState(
