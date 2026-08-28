@@ -37,6 +37,13 @@ class DespesaTemporariaParcelaRepositoryImpl @Inject constructor(
     ): Flow<List<DespesaTemporariaParcelaEntity>> =
         dao.findByFechamento(fechamentoId)
 
+    override suspend fun buscarListaPorFechamento(
+        fechamentoId: Long
+    ): List<DespesaTemporariaParcelaEntity> =
+        dao.findListByFechamento(
+            fechamentoId
+        )
+
     override suspend fun marcarComoPagas(
         fechamentoId: Long
     ) =
@@ -49,6 +56,13 @@ class DespesaTemporariaParcelaRepositoryImpl @Inject constructor(
             despesaTemporariaId
         )
     }
+
+    override suspend fun existeParcelaNaoPaga(
+        despesaTemporariaId: Long
+    ): Boolean =
+        dao.existeParcelaNaoPaga(
+            despesaTemporariaId
+        )
 
     override suspend fun associarAoFechamentoEDespesa(
         parcelaId: Long,

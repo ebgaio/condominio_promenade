@@ -91,6 +91,46 @@ interface DespesaTemporariaParcelaDao {
         despesaTemporariaId: Long
     ): Boolean
 
+    /*
+     * Retorna as parcelas avulsas que pertencem
+     * diretamente ao fechamento informado.
+     *
+     * Diferente do método Flow já existente,
+     * este é usado em operações transacionais
+     * pontuais, como a finalização.
+     */
+    @Query("""
+        SELECT *
+        FROM despesas_temporarias_parcelas
+        WHERE fechamentoId = :fechamentoId
+        ORDER BY numeroParcela
+    """)
+    suspend fun findListByFechamento(
+        fechamentoId: Long
+    ): List<DespesaTemporariaParcelaEntity>
+
+
+    /*
+     * Verifica se a despesa avulsa ainda possui
+     * qualquer parcela não consolidada.
+     *
+     * Aqui NÃO verificamos fechamentoId.
+     *
+     * Uma parcela futura pode já estar associada
+     * a um fechamento aberto e continuar paga = 0.
+     */
+    @Query("""
+        SELECT EXISTS(
+            SELECT 1
+            FROM despesas_temporarias_parcelas
+            WHERE despesaTemporariaId = :despesaTemporariaId
+              AND paga = 0
+        )
+    """)
+    suspend fun existeParcelaNaoPaga(
+        despesaTemporariaId: Long
+    ): Boolean
+
     @Query("""
         UPDATE despesas_temporarias_parcelas
            SET fechamentoId = :fechamentoId,

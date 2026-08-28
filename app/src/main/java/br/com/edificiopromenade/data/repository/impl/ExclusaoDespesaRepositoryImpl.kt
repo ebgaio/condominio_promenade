@@ -168,8 +168,7 @@ class ExclusaoDespesaRepositoryImpl @Inject constructor(
                  * Assim não dependemos do SET_NULL
                  * para executar a nossa regra de negócio.
                  */
-                val despesaParcelaId =
-                    parcela.despesaId
+                val despesaParcelaId = parcela.despesaId
 
                 despesaTemporariaParcelaDao
                     .deleteById(
@@ -292,9 +291,7 @@ class ExclusaoDespesaRepositoryImpl @Inject constructor(
                                 "a uma despesa avulsa."
                     )
 
-            val despesaTemporariaId =
-                parcelaSelecionada
-                    .despesaTemporariaId
+            val despesaTemporariaId = parcelaSelecionada.despesaTemporariaId
 
             /*
              * =====================================================
@@ -452,13 +449,11 @@ class ExclusaoDespesaRepositoryImpl @Inject constructor(
                         indice,
                         parcela ->
 
-                    val novoNumero =
-                        indice + 1
+                    val novoNumero = indice + 1
 
                     val parcelaAtualizada =
                         parcela.copy(
-                            numeroParcela =
-                                novoNumero
+                            numeroParcela = novoNumero
                         )
 
                     despesaTemporariaParcelaDao
@@ -471,8 +466,7 @@ class ExclusaoDespesaRepositoryImpl @Inject constructor(
                      * em algum fechamento aberto, também temos
                      * de corrigir descricaoLivre.
                      */
-                    val despesaParcelaId =
-                        parcela.despesaId
+                    val despesaParcelaId = parcela.despesaId
 
                     if (despesaParcelaId != null) {
 

@@ -11,8 +11,7 @@ class VerificarNomeReservadoTipoDespesaUseCase @Inject constructor(
         nome: String
     ): Boolean {
 
-        val nomeNormalizado =
-            nome.trim()
+        val nomeNormalizado = nome.trim()
 
         if (nomeNormalizado.isBlank()) {
             return false

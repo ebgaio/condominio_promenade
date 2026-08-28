@@ -11,6 +11,7 @@ import br.com.edificiopromenade.data.repository.impl.ExclusaoDespesaRepositoryIm
 import br.com.edificiopromenade.data.repository.impl.FechamentoRepositoryImpl
 import br.com.edificiopromenade.data.repository.impl.MoradorRepositoryImpl
 import br.com.edificiopromenade.data.repository.impl.TipoDespesaRepositoryImpl
+import br.com.edificiopromenade.data.repository.impl.TransacaoRepositoryImpl
 import br.com.edificiopromenade.domain.repository.ApartamentoRepository
 import br.com.edificiopromenade.domain.repository.CondominioRepository
 import br.com.edificiopromenade.domain.repository.DemonstrativoRepository
@@ -22,6 +23,7 @@ import br.com.edificiopromenade.domain.repository.ExclusaoDespesaRepository
 import br.com.edificiopromenade.domain.repository.FechamentoRepository
 import br.com.edificiopromenade.domain.repository.MoradorRepository
 import br.com.edificiopromenade.domain.repository.TipoDespesaRepository
+import br.com.edificiopromenade.domain.repository.TransacaoRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -96,4 +98,10 @@ abstract class RepositoryModule {
     abstract fun bindExclusaoDespesaRepository(
         impl: ExclusaoDespesaRepositoryImpl
     ): ExclusaoDespesaRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindTransacaoRepository(
+        impl: TransacaoRepositoryImpl
+    ): TransacaoRepository
 }

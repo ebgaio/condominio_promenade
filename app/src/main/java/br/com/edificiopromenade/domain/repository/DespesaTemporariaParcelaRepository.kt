@@ -33,6 +33,19 @@ interface DespesaTemporariaParcelaRepository {
         despesaTemporariaId: Long
     ): Boolean
 
+    suspend fun buscarListaPorFechamento(
+        fechamentoId: Long
+    ): List<DespesaTemporariaParcelaEntity>
+
+    /*
+     * NOVO:
+     * considera qualquer parcela paga = false,
+     * esteja ela associada ou não a um fechamento.
+     */
+    suspend fun existeParcelaNaoPaga(
+        despesaTemporariaId: Long
+    ): Boolean
+
     suspend fun associarAoFechamentoEDespesa(
         parcelaId: Long,
         fechamentoId: Long,

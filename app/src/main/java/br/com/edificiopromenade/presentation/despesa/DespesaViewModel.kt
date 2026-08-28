@@ -356,8 +356,7 @@ class DespesaViewModel @Inject constructor(
                         if (
                             existeNomeDespesaNoFechamento(
                                 novoNome = novoNome,
-                                despesaIdIgnorar =
-                                    despesaEmEdicao.id
+                                despesaIdIgnorar = despesaEmEdicao.id
                             )
                         ) {
 
@@ -483,9 +482,7 @@ class DespesaViewModel @Inject constructor(
                      */
                     despesaRepository.update(
                         entidade.copy(
-                            descricaoLivre =
-                                novaDescricaoLivre,
-
+                            descricaoLivre = novaDescricaoLivre,
                             valor = valorDespesa
                         )
                     )
@@ -498,9 +495,7 @@ class DespesaViewModel @Inject constructor(
 
                         despesaTemporariaParcelaRepository
                             .atualizarValorPorDespesaId(
-                                despesaId =
-                                    entidade.id,
-
+                                despesaId = entidade.id,
                                 valor = valorDespesa
                             )
                     }
@@ -600,8 +595,8 @@ class DespesaViewModel @Inject constructor(
          * para o fechamento atual.
          */
         for (
-        outraDespesa in
-        _uiState.value.despesas
+            outraDespesa in
+            _uiState.value.despesas
         ) {
 
             /*
@@ -878,7 +873,15 @@ class DespesaViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
 
+            /*
+             * Validação rápida da apresentação.
+             *
+             * O UseCase também valida isso.
+             * Mantemos aqui para dar retorno imediato
+             * ao usuário.
+             */
             if (_uiState.value.despesas.isEmpty()) {
+
                 _uiState.value =
                     _uiState.value.copy(
                         mensagem = UiMessage.Error(
@@ -888,10 +891,55 @@ class DespesaViewModel @Inject constructor(
                 return@launch
             }
 
-            finalizarFechamentoUseCase(
-                fechamentoId
-            )
-            onSucesso()
+            try {
+
+                /*
+                 * A partir daqui toda a operação é atômica:
+                 *
+                 * - valida fechamento;
+                 * - calcula rateio;
+                 * - exclui demonstrativos anteriores;
+                 * - grava novos demonstrativos;
+                 * - marca fechamento como finalizado.
+                 *
+                 * Se qualquer etapa falhar, ocorre ROLLBACK.
+                 */
+                finalizarFechamentoUseCase(
+                    fechamentoId
+                )
+
+                /*
+                 * Só navegamos para os demonstrativos
+                 * depois que o UseCase terminou sem erro.
+                 *
+                 * Portanto a transação já foi concluída.
+                 */
+                onSucesso()
+
+            } catch (
+                exception: IllegalStateException
+            ) {
+
+                _uiState.value =
+                    _uiState.value.copy(
+                        mensagem = UiMessage.Error(
+                            exception.message
+                                ?: "Não foi possível finalizar o fechamento."
+                        )
+                    )
+
+            } catch (
+                exception: Exception
+            ) {
+
+                _uiState.value =
+                    _uiState.value.copy(
+                        mensagem = UiMessage.Error(
+                            "Não foi possível finalizar o fechamento."
+                        )
+                    )
+            }
         }
     }
+
 }
