@@ -25,6 +25,10 @@ interface DespesaItemRepository {
         despesaId: Long
     ): List<DespesaItemEntity>
 
+    suspend fun findById(
+        id: Long
+    ): DespesaItemEntity?
+
     suspend fun calcularTotalItens(
         despesaId: Long
     ): Double

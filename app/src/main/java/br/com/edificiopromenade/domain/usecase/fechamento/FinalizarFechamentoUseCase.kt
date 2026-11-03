@@ -43,8 +43,10 @@ class FinalizarFechamentoUseCase @Inject constructor(
              * 2. FECHAMENTO JÁ FINALIZADO
              * =====================================================
              *
-             * Finalizar novamente não deve gerar
-             * demonstrativos nem alterar histórico.
+             * Um fechamento finalizado é imutável.
+             *
+             * Portanto não refazemos snapshot,
+             * demonstrativos nem qualquer outra consolidação.
              */
             if (fechamento.finalizado) {
                 return@executar
@@ -79,16 +81,26 @@ class FinalizarFechamentoUseCase @Inject constructor(
             }
 
             /*
-             * =====================================================
-             * 4. CONFIRMA QUE EXISTEM DESPESAS
-             * =====================================================
-             */
-            val despesas = despesaRepository
-                .findListByFechamento(
-                    fechamentoId
-                )
+            * =====================================================
+            * 4. CARREGA AS DESPESAS COM SEUS TIPOS
+            * =====================================================
+            *
+            * Não usamos mais apenas findListByFechamento()
+            * neste ponto.
+            *
+            * Precisamos também do TipoDespesaEntity atual
+            * para congelar:
+            *
+            * - descrição utilizada;
+            * - regra usaFracaoIdeal utilizada.
+            */
+            val despesasComTipo =
+                despesaRepository
+                    .findComTipoByFechamento(
+                        fechamentoId
+                    )
 
-            if (despesas.isEmpty()) {
+            if (despesasComTipo.isEmpty()) {
 
                 throw IllegalStateException(
                     "Não existem despesas cadastradas."
@@ -97,17 +109,79 @@ class FinalizarFechamentoUseCase @Inject constructor(
 
             /*
              * =====================================================
-             * 5. GERA OS DEMONSTRATIVOS
+             * 5. GRAVA O SNAPSHOT HISTÓRICO DAS DESPESAS
              * =====================================================
              *
-             * GerarDemonstrativosUseCase atualmente:
+             * A partir deste instante, os dados relevantes
+             * vindos de TipoDespesa deixam de depender do
+             * catálogo atual.
              *
-             * - calcula os demonstrativos;
-             * - exclui os antigos;
-             * - insere os novos.
+             * O snapshot ainda está dentro da transação.
              *
-             * Tudo isso agora ocorre dentro da mesma
-             * transação aberta acima.
+             * Se qualquer etapa posterior falhar,
+             * estes UPDATEs também serão revertidos.
+             */
+            despesasComTipo.forEach {
+                    despesaComTipo ->
+
+                val despesa = despesaComTipo.despesa
+
+                val tipo = despesaComTipo.tipo
+
+                /*
+                 * A Despesa Avulsa utiliza sua própria
+                 * descricaoLivre.
+                 *
+                 * Exemplo:
+                 *
+                 * Pintura - Parcela 2/3
+                 *
+                 * As despesas fixas utilizam o nome
+                 * existente no TipoDespesa no momento
+                 * da finalização.
+                 */
+                val avulsa =
+                    tipo.descricao.equals(
+                        "Despesa Avulsa",
+                        ignoreCase = true
+                    )
+
+                val descricaoHistorica =
+                    if (avulsa) {
+
+                        despesa.descricaoLivre
+                            .ifBlank {
+                                tipo.descricao
+                            }
+
+                    } else {
+                        tipo.descricao
+                    }
+
+                despesaRepository.update(
+                    despesa.copy(
+
+                        descricaoHistorica = descricaoHistorica,
+                        usaFracaoIdealHistorica = tipo.usaFracaoIdeal
+                    )
+                )
+            }
+
+            /*
+             * =====================================================
+             * 6. GERA OS DEMONSTRATIVOS
+             * =====================================================
+             *
+             * Neste momento os snapshots já estão gravados
+             * dentro da transação.
+             *
+             * Como o mapper de domínio agora prioriza:
+             *
+             * descricaoHistorica
+             * usaFracaoIdealHistorica
+             *
+             * o cálculo definitivo usa exatamente os dados
+             * que ficarão congelados no fechamento.
              */
             val demonstrativos = gerarDemonstrativosUseCase(
                     fechamentoId = fechamentoId
@@ -127,7 +201,7 @@ class FinalizarFechamentoUseCase @Inject constructor(
 
             /*
              * =====================================================
-             * 6. LOCALIZA AS PARCELAS AVULSAS DESTE FECHAMENTO
+             * 7. LOCALIZA AS PARCELAS AVULSAS DESTE FECHAMENTO
              * =====================================================
              *
              * Fazemos isso ANTES de marcá-las como pagas,
@@ -155,13 +229,12 @@ class FinalizarFechamentoUseCase @Inject constructor(
 
             /*
              * =====================================================
-             * 7. CONSOLIDA AS PARCELAS DO FECHAMENTO
+             * 8. MARCA AS PARCELAS COMO PAGAS
              * =====================================================
              *
              * paga = true é um estado operacional.
              *
              * A autoridade histórica continua sendo:
-             *
              * fechamento.finalizado
              */
             if (parcelasAvulsas.isNotEmpty()) {
@@ -173,7 +246,7 @@ class FinalizarFechamentoUseCase @Inject constructor(
 
             /*
              * =====================================================
-             * 8. ENCERRA DESPESAS AVULSAS CONCLUÍDAS
+             * 9. ENCERRA DESPESAS AVULSAS CONCLUÍDAS
              * =====================================================
              *
              * Somente encerramos o pai quando NÃO existir
@@ -203,8 +276,16 @@ class FinalizarFechamentoUseCase @Inject constructor(
 
             /*
              * =====================================================
-             * 9. SOMENTE AGORA FINALIZA O FECHAMENTO
+             * 10. FINALIZA O FECHAMENTO
              * =====================================================
+             *
+             * Só chegamos aqui quando:
+             *
+             * - validações passaram;
+             * - snapshots foram gravados;
+             * - demonstrativos foram gerados;
+             * - parcelas avulsas foram consolidadas;
+             * - avulsas concluídas foram encerradas.
              */
             fechamentoRepository.update(
                 fechamento.copy(

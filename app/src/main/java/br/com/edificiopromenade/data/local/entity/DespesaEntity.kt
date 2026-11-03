@@ -42,5 +42,23 @@ data class DespesaEntity(
     val descricaoLivre: String,
 
     // Total calculado automaticamente pela soma dos itens
-    val valor: Double = 0.0
+    val valor: Double = 0.0,
+
+    /*
+     * Preenchido somente quando o fechamento
+     * se torna definitivo.
+     *
+     * Enquanto o fechamento estiver aberto,
+     * permanece null e a aplicação continua
+     * utilizando os dados atuais do TipoDespesa.
+     */
+    val descricaoHistorica: String? = null,
+
+    /*
+     * Regra de rateio utilizada no instante
+     * da finalização.
+     *
+     * null = fechamento ainda não consolidado.
+     */
+    val usaFracaoIdealHistorica: Boolean? = null
 )

@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import br.com.edificiopromenade.domain.repository.DespesaRepository
 import br.com.edificiopromenade.domain.repository.FechamentoRepository
 import br.com.edificiopromenade.domain.repository.TipoDespesaRepository
-import br.com.edificiopromenade.domain.usecase.despesa.AtualizarTotalDespesaUseCase
 import br.com.edificiopromenade.domain.usecase.despesaitem.AtualizarDespesaItemUseCase
 import br.com.edificiopromenade.domain.usecase.despesaitem.CadastrarDespesaItemUseCase
 import br.com.edificiopromenade.domain.usecase.despesaitem.ConsultarItensDespesaUiUseCase
@@ -24,7 +23,6 @@ import kotlinx.coroutines.launch
 class DespesaItemViewModel @Inject constructor(
     private val consultarItensDespesaUiUseCase: ConsultarItensDespesaUiUseCase,
     private val cadastrarDespesaItemUseCase: CadastrarDespesaItemUseCase,
-    private val atualizarTotalDespesaUseCase: AtualizarTotalDespesaUseCase,
     private val excluirItemDespesaUseCase: ExcluirItemDespesaUseCase,
     private val atualizarDespesaItemUseCase: AtualizarDespesaItemUseCase,
     private val despesaRepository: DespesaRepository,
@@ -63,42 +61,80 @@ class DespesaItemViewModel @Inject constructor(
                     ?: return@launch
 
             val fechamento =
-                    fechamentoRepository.findById(
-                        despesa.fechamentoId
-                    )
-                        ?: return@launch
+                fechamentoRepository.findById(
+                    despesa.fechamentoId
+                )
+                    ?: return@launch
 
             val tipoDespesa =
                 tipoDespesaRepository.findById(
                     despesa.tipoDespesaId
                 )
 
+
+            /*
+             * A tela de itens também deve respeitar
+             * o snapshot histórico.
+             */
+            val avulsa =
+                tipoDespesa
+                    ?.descricao
+                    ?.equals(
+                        "Despesa Avulsa",
+                        ignoreCase = true
+                    ) == true
+
+            val nomeAtual =
+                if (avulsa) {
+
+                    despesa.descricaoLivre
+                        .ifBlank {
+                            tipoDespesa?.descricao
+                                ?: "Despesa"
+                        }
+
+                } else {
+
+                    tipoDespesa?.descricao
+                        ?: despesa.descricaoLivre
+                            .ifBlank {
+                                "Despesa"
+                            }
+                }
+
             val nomeDespesa =
-                despesa.descricaoLivre
-                    .takeIf {
-                        it.isNotBlank()
-                    }
-                    ?: tipoDespesa?.descricao
-                    ?: "Despesa"
+                despesa.descricaoHistorica
+                    ?: nomeAtual
 
             _uiState.value =
                 _uiState.value.copy(
-                    fechamentoFinalizado = fechamento.finalizado,
-                    competencia = "${fechamento.mes
+
+                    fechamentoFinalizado =
+                        fechamento.finalizado,
+
+                    competencia =
+                        "${
+                            fechamento.mes
                                 .toString()
-                                .padStart(2, '0')}/${fechamento.ano}",
-                    nomeDespesa = nomeDespesa
+                                .padStart(2, '0')
+                        }/${fechamento.ano}",
+
+                    nomeDespesa =
+                        nomeDespesa
                 )
         }
 
         /*
-         * Continua carregando normalmente
-         * os itens da despesa.
+         * =====================================================
+         * CARREGA OS ITENS
+         * =====================================================
          */
         viewModelScope.launch {
+
             consultarItensDespesaUiUseCase(
                 despesaId
             ).collect { lista ->
+
                 _uiState.value =
                     _uiState.value.copy(
                         itens = lista
@@ -109,69 +145,132 @@ class DespesaItemViewModel @Inject constructor(
 
     fun salvar() {
 
+        /*
+         * Primeira barreira:
+         * proteção da própria ViewModel.
+         */
         if (_uiState.value.fechamentoFinalizado) {
-            _uiState.value =
-                _uiState.value.copy(
-                    mensagem = UiMessage.Error(
-                        "Este fechamento já foi finalizado e não pode ser alterado."
-                    )
-                )
+
+            informarFechamentoFinalizado()
 
             return
         }
 
         viewModelScope.launch {
 
-            val valorItem = stateToDouble()
+            val valorItem =
+                stateToDouble()
 
-            if (valorItem == null || valorItem <= 0.0) {
+            if (
+                valorItem == null ||
+                valorItem <= 0.0
+            ) {
+
                 _uiState.value =
                     _uiState.value.copy(
-                        mensagem = UiMessage.Error(
-                            "Informe um valor válido."
+                        mensagem =
+                            UiMessage.Error(
+                                "Informe um valor válido."
                             )
                     )
+
                 return@launch
             }
 
-            val itemEdicao = uiState.value.itemEmEdicao
+            val itemEdicao =
+                _uiState.value.itemEmEdicao
 
-            if (itemEdicao == null) {
-                cadastrarDespesaItemUseCase(
-                    DespesaItemUi(
-                        id = 0,
-                        despesaId = despesaId,
-                        descricao = uiState.value.descricao,
-                        valor = valorItem
-                    ).toEntity()
-                )
-            } else {
-                atualizarDespesaItemUseCase(
-                    itemEdicao.copy(
-                        descricao = uiState.value.descricao,
-                        valor = valorItem
-                    ).toEntity()
-                )
+            try {
+
+                /*
+                 * =================================================
+                 * NOVO ITEM
+                 * =================================================
+                 */
+                if (itemEdicao == null) {
+
+                    cadastrarDespesaItemUseCase(
+                        DespesaItemUi(
+                            id = 0,
+                            despesaId = despesaId,
+                            descricao =
+                                _uiState.value.descricao,
+                            valor = valorItem
+                        ).toEntity()
+                    )
+
+                } else {
+
+                    /*
+                     * =============================================
+                     * ALTERAÇÃO
+                     * =============================================
+                     */
+                    atualizarDespesaItemUseCase(
+                        itemEdicao.copy(
+                            descricao =
+                                _uiState.value.descricao,
+                            valor = valorItem
+                        ).toEntity()
+                    )
+                }
+
+                /*
+                 * NÃO recalculamos o total aqui.
+                 *
+                 * Os próprios use cases já executam:
+                 *
+                 * AtualizarTotalDespesaUseCase
+                 */
+
+                _uiState.value =
+                    _uiState.value.copy(
+
+                        descricao = "",
+
+                        valor = "",
+
+                        itemEmEdicao = null,
+
+                        mensagem =
+                            UiMessage.Success(
+                                if (itemEdicao == null) {
+
+                                    "Item cadastrado com sucesso."
+
+                                } else {
+
+                                    "Item atualizado com sucesso."
+                                }
+                            )
+                    )
+
+            } catch (
+                exception: IllegalStateException
+            ) {
+
+                /*
+                 * Segunda barreira:
+                 *
+                 * O UseCase pode detectar que o fechamento
+                 * foi finalizado depois que a tela foi
+                 * carregada.
+                 */
+                _uiState.value =
+                    _uiState.value.copy(
+                        mensagem =
+                            UiMessage.Error(
+                                exception.message
+                                    ?: "Não foi possível alterar o item."
+                            )
+                    )
             }
-
-            atualizarTotalDespesa()
-
-            _uiState.value =
-                _uiState.value.copy(
-                    descricao = "",
-                    valor = "",
-                    itemEmEdicao = null,
-                    mensagem = UiMessage.Success(
-                        if (itemEdicao == null)
-                            "Item cadastrado com sucesso."
-                        else
-                            "Item atualizado com sucesso."
-                        )
-                )
         }
     }
 
-    private fun stateToDouble(): Double? {
+    private fun stateToDouble():
+            Double? {
+
         return _uiState.value.valor
             .replace(".", "")
             .replace(",", ".")
@@ -181,78 +280,143 @@ class DespesaItemViewModel @Inject constructor(
     fun solicitarExclusao(
         item: DespesaItemUi
     ) {
+
+        if (_uiState.value.fechamentoFinalizado) {
+
+            informarFechamentoFinalizado()
+
+            return
+        }
+
         _uiState.value =
             _uiState.value.copy(
-                itemSelecionadoParaExclusao = item
+                itemSelecionadoParaExclusao =
+                    item
             )
     }
 
     fun excluir() {
 
         if (_uiState.value.fechamentoFinalizado) {
+
+            informarFechamentoFinalizado()
+
             return
         }
 
-        val item = _uiState.value.itemSelecionadoParaExclusao
+        val item =
+            _uiState.value
+                .itemSelecionadoParaExclusao
                 ?: return
 
         viewModelScope.launch {
-            excluirItemDespesaUseCase(
-                item.toEntity()
-            )
 
-            atualizarTotalDespesa()
+            try {
 
-            _uiState.value =
-                _uiState.value.copy(
-                    itemSelecionadoParaExclusao = null,
-                    mensagem = UiMessage.Success(
-                            "Item excluído com sucesso."
-                        )
+                excluirItemDespesaUseCase(
+                    item.toEntity()
                 )
+
+                /*
+                 * O próprio use case já atualiza
+                 * o total da despesa.
+                 */
+
+                _uiState.value =
+                    _uiState.value.copy(
+
+                        itemSelecionadoParaExclusao =
+                            null,
+
+                        mensagem =
+                            UiMessage.Success(
+                                "Item excluído com sucesso."
+                            )
+                    )
+
+            } catch (
+                exception: IllegalStateException
+            ) {
+
+                _uiState.value =
+                    _uiState.value.copy(
+
+                        itemSelecionadoParaExclusao =
+                            null,
+
+                        mensagem =
+                            UiMessage.Error(
+                                exception.message
+                                    ?: "Não foi possível excluir o item."
+                            )
+                    )
+            }
         }
     }
 
     fun editar(
         item: DespesaItemUi
     ) {
+
         if (_uiState.value.fechamentoFinalizado) {
+
+            informarFechamentoFinalizado()
+
             return
         }
 
         _uiState.value =
             _uiState.value.copy(
-                itemEmEdicao = item,
-                descricao = item.descricao,
-                valor = MoneyFormatter.format(
-                    (item.valor * 100).toLong().toString()
-                )
-            )
-    }
 
-    private suspend fun atualizarTotalDespesa() {
-        atualizarTotalDespesaUseCase(
-            despesaId
-        )
+                itemEmEdicao =
+                    item,
+
+                descricao =
+                    item.descricao,
+
+                valor =
+                    MoneyFormatter.format(
+                        (item.valor * 100)
+                            .toLong()
+                            .toString()
+                    )
+            )
     }
 
     fun onValorChanged(
         valor: String
     ) {
-        val cleanValor = valor.filter { it.isDigit() }
-        if (cleanValor.length > 12) return
+
+        if (_uiState.value.fechamentoFinalizado) {
+            return
+        }
+
+        val cleanValor =
+            valor.filter {
+                it.isDigit()
+            }
+
+        if (cleanValor.length > 12) {
+            return
+        }
 
         _uiState.value =
             _uiState.value.copy(
-                valor = MoneyFormatter.format(
-                    cleanValor
-                )
+                valor =
+                    MoneyFormatter.format(
+                        cleanValor
+                    )
             )
     }
 
     fun onDescricaoChanged(
         descricao: String
     ) {
+
+        if (_uiState.value.fechamentoFinalizado) {
+            return
+        }
+
         _uiState.value =
             _uiState.value.copy(
                 descricao = descricao
@@ -260,11 +424,29 @@ class DespesaItemViewModel @Inject constructor(
     }
 
     fun limparMensagem() {
+
         _uiState.value =
             _uiState.value.copy(
                 mensagem = null,
                 valor = "",
                 descricao = ""
+            )
+    }
+
+    /*
+     * =========================================================
+     * MENSAGEM ÚNICA PARA PROTEÇÃO DO HISTÓRICO
+     * =========================================================
+     */
+    private fun informarFechamentoFinalizado() {
+
+        _uiState.value =
+            _uiState.value.copy(
+                mensagem =
+                    UiMessage.Error(
+                        "Este fechamento já foi finalizado " +
+                                "e não pode ser alterado."
+                    )
             )
     }
 }

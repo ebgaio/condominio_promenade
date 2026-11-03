@@ -46,7 +46,7 @@ import br.com.edificiopromenade.data.local.entity.TipoDespesaEntity
         DespesaTemporariaEntity::class,
         DespesaTemporariaParcelaEntity::class,
                 ],
-    version = 11,
+    version = 12,
     exportSchema = true
 )
 @TypeConverters(

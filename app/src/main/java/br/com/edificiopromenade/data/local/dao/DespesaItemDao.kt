@@ -47,6 +47,16 @@ interface DespesaItemDao {
     ): List<DespesaItemEntity>
 
     @Query("""
+        SELECT *
+        FROM despesa_itens
+        WHERE id = :id
+        LIMIT 1
+    """)
+    suspend fun findById(
+        id: Long
+    ): DespesaItemEntity?
+
+    @Query("""
         SELECT COALESCE(SUM(valor),0)
         FROM despesa_itens
         WHERE despesaId = :despesaId

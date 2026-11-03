@@ -31,6 +31,11 @@ class DespesaItemRepositoryImpl @Inject constructor(
         despesaId: Long
     ) = dao.findListByDespesa(despesaId)
 
+    override suspend fun findById(
+        id: Long
+    ): DespesaItemEntity? =
+        dao.findById(id)
+
     override suspend fun calcularTotalItens(
         despesaId: Long
     ) = dao.calcularTotalItens(despesaId)
