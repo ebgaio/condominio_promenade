@@ -92,4 +92,11 @@ class DespesaTemporariaParcelaRepositoryImpl @Inject constructor(
         dao.findByDespesaId(
             despesaId
         )
+
+    override suspend fun buscarPorDespesaTemporariaId(
+        despesaTemporariaId: Long
+    ): List<DespesaTemporariaParcelaEntity> =
+        dao.findByDespesaTemporariaId(
+            despesaTemporariaId
+        )
 }

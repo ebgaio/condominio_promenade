@@ -506,19 +506,29 @@ class ExclusaoDespesaRepositoryImpl @Inject constructor(
              */
 
             /*
-             * Uma despesa permanece ativa enquanto ainda
-             * existir alguma parcela futura não associada.
+             * A despesa avulsa permanece ativa enquanto
+             * existir qualquer parcela ainda não consolidada.
+             *
+             * Não importa se a parcela:
+             *
+             * - ainda não foi associada a fechamento;
+             * - já foi materializada em fechamento aberto;
+             * - pertence a competência futura aberta.
+             *
+             * A autoridade operacional aqui é:
+             *
+             * paga = false
              */
-            val possuiParcelaPendente =
+            val possuiParcelaNaoPaga =
                 parcelasRestantes.any { parcela ->
 
-                    parcela.fechamentoId == null && !parcela.paga
+                    !parcela.paga
                 }
 
             despesaTemporariaDao.update(
                 despesaTemporaria.copy(
                     quantidadeParcelas = novaQuantidade,
-                    ativa = possuiParcelaPendente
+                    ativa = possuiParcelaNaoPaga
                 )
             )
 

@@ -1,26 +1,19 @@
 package br.com.edificiopromenade.domain.usecase.apartamento
 
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.input.OffsetMapping
-import androidx.compose.ui.text.input.TransformedText
-import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.foundation.text.input.OutputTransformation
+import androidx.compose.foundation.text.input.TextFieldBuffer
 import br.com.edificiopromenade.presentation.util.FracaoCopasaFormatter
 
 class FracaoCopasaVisualTransformation :
-    VisualTransformation {
+    OutputTransformation {
 
-    override fun filter(
-        text: AnnotatedString
-    ): TransformedText {
+    override fun TextFieldBuffer.transformOutput() {
 
         val formatted =
             FracaoCopasaFormatter.format(
-                text.text
+                toString()
             )
 
-        return TransformedText(
-            AnnotatedString(formatted),
-            OffsetMapping.Identity
-        )
+        replace(0, length, formatted)
     }
 }

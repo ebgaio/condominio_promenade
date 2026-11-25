@@ -130,14 +130,4 @@ interface DespesaDao {
     suspend fun findComItensListByFechamento(
         fechamentoId: Long
     ): List<DespesaComItensEntity>
-
-    @Query("""
-        UPDATE despesas
-           SET valor = :novoValor
-         WHERE id = :despesaId
-    """)
-    suspend fun atualizarValor(
-        despesaId: Long,
-        novoValor: Double
-    )
 }

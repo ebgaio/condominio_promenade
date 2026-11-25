@@ -1,5 +1,6 @@
 package br.com.edificiopromenade.presentation.condominio
 
+import br.com.edificiopromenade.domain.model.Cnpj
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.edificiopromenade.domain.usecase.condominio.CadastrarCondominioUseCase
@@ -51,10 +52,7 @@ class CondominioViewModel @Inject constructor(
             _uiState.value.copy(
                 condominio =
                     _uiState.value.condominio.copy(
-                        cnpj = cnpj.filter {
-                            it.isDigit()
-                        }
-                        .take(14)
+                        cnpj = Cnpj.normalizar(cnpj)
                     )
             )
     }
@@ -99,12 +97,7 @@ class CondominioViewModel @Inject constructor(
         onSucesso: () -> Unit
     ) {
         viewModelScope.launch {
-            val somenteNumeros =
-                _uiState.value.condominio.cnpj.filter {
-                    it.isDigit()
-                }
-
-            if (somenteNumeros.length != 14) {
+            if (!Cnpj.isValido(_uiState.value.condominio.cnpj)) {
                 _uiState.value =
                     _uiState.value.copy(
                         mensagem = UiMessage.Error(

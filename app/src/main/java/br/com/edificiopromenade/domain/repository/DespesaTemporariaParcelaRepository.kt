@@ -60,4 +60,8 @@ interface DespesaTemporariaParcelaRepository {
     suspend fun findByDespesaId(
         despesaId: Long
     ): DespesaTemporariaParcelaEntity?
+
+    suspend fun buscarPorDespesaTemporariaId(
+        despesaTemporariaId: Long
+    ): List<DespesaTemporariaParcelaEntity>
 }

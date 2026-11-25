@@ -1,18 +1,17 @@
 package br.com.edificiopromenade.presentation.util
 
+import br.com.edificiopromenade.domain.model.Cnpj
+
 object CnpjFormatter {
 
+    /** Formata como XX.XXX.XXX/XXXX-DV (aceita CNPJ alfanumérico). */
     fun format(input: String): String {
 
-        val digits =
-            input.replace(
-                Regex("[^0-9]"),
-                ""
-            ).take(14)
+        val caracteres = Cnpj.normalizar(input)
 
         val sb = StringBuilder()
 
-        digits.forEachIndexed { index, c ->
+        caracteres.forEachIndexed { index, c ->
             when (index) {
                 2 -> sb.append(".")
                 5 -> sb.append(".")

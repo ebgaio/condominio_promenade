@@ -2,12 +2,14 @@ package br.com.edificiopromenade.presentation.despesa
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import br.com.edificiopromenade.domain.model.AtualizarDespesaCommand
 import br.com.edificiopromenade.domain.model.CadastrarDespesaCommand
 import br.com.edificiopromenade.domain.model.ExcluirDespesaCommand
 import br.com.edificiopromenade.domain.repository.DespesaRepository
 import br.com.edificiopromenade.domain.repository.DespesaTemporariaParcelaRepository
 import br.com.edificiopromenade.domain.repository.DespesaTemporariaRepository
 import br.com.edificiopromenade.domain.repository.FechamentoRepository
+import br.com.edificiopromenade.domain.usecase.despesa.AtualizarDespesaUseCase
 import br.com.edificiopromenade.domain.usecase.despesa.CadastrarDespesaUseCase
 import br.com.edificiopromenade.domain.usecase.despesa.ConsultarDespesasPorFechamentoUseCase
 import br.com.edificiopromenade.domain.usecase.despesa.ExcluirDespesaUseCase
@@ -40,7 +42,8 @@ class DespesaViewModel @Inject constructor(
     private val despesaRepository: DespesaRepository,
     private val despesaTemporariaParcelaRepository: DespesaTemporariaParcelaRepository,
     private val despesaTemporariaRepository: DespesaTemporariaRepository,
-    private val verificarNomeReservadoTipoDespesaUseCase: VerificarNomeReservadoTipoDespesaUseCase
+    private val verificarNomeReservadoTipoDespesaUseCase: VerificarNomeReservadoTipoDespesaUseCase,
+    private val atualizarDespesaUseCase: AtualizarDespesaUseCase
 ) : ViewModel() {
 
     private val _uiState =
@@ -277,9 +280,9 @@ class DespesaViewModel @Inject constructor(
                 return@launch
             }
 
-            val despesaEmEdicao = _uiState.value.despesaEmEdicao
-
-            if (despesaEmEdicao != null) {
+//            val despesaEmEdicao = _uiState.value.despesaEmEdicao
+//
+//            if (despesaEmEdicao != null) {
 
                 val despesaEmEdicao = _uiState.value.despesaEmEdicao
 
@@ -340,7 +343,8 @@ class DespesaViewModel @Inject constructor(
                             _uiState.value =
                                 _uiState.value.copy(
                                     mensagem = UiMessage.Error(
-                                        "O nome '$novoNome' pertence a uma despesa fixa e não pode ser usado em uma despesa avulsa."
+                                        "O nome '$novoNome' pertence a uma despesa fixa " +
+                                                "e não pode ser usado em uma despesa avulsa."
                                     )
                                 )
 
@@ -372,146 +376,75 @@ class DespesaViewModel @Inject constructor(
                         }
                     }
 
-                    val entidade =
-                        despesaRepository.findById(
-                            despesaEmEdicao.id
-                        )
-                            ?: return@launch
+                    try {
 
-                    /*
-                     * Para despesa fixa deixamos vazio.
-                     *
-                     * O nome da despesa fixa deve vir SEMPRE
-                     * de TipoDespesaEntity.
-                     *
-                     * Isso também corrige despesas fixas que
-                     * eventualmente tenham recebido um
-                     * descricaoLivre indevidamente.
-                     */
-                    var novaDescricaoLivre =
-                        if (despesaEmEdicao.avulsa) {
-                            entidade.descricaoLivre
-                        } else {
-                            ""
-                        }
+                        atualizarDespesaUseCase(
+                            AtualizarDespesaCommand(
 
-                    /*
-                     * =====================================================
-                     * SOMENTE DESPESA AVULSA
-                     * =====================================================
-                     */
-                    if (despesaEmEdicao.avulsa) {
+                                despesaId =
+                                    despesaEmEdicao.id,
 
-                        val parcela =
-                            despesaTemporariaParcelaRepository
-                                .findByDespesaId(
-                                    entidade.id
-                                )
+                                descricao =
+                                    if (
+                                        despesaEmEdicao.avulsa
+                                    ) {
 
-                        if (parcela == null) {
+                                        _uiState.value
+                                            .descricaoLivre
+                                            .trim()
 
-                            _uiState.value =
-                                _uiState.value.copy(
-                                    mensagem = UiMessage.Error(
-                                        "Não foi possível localizar a parcela da despesa avulsa."
-                                    )
-                                )
+                                    } else {
 
-                            return@launch
-                        }
+                                        ""
+                                    },
 
-                        val despesaTemporaria =
-                            despesaTemporariaRepository.findById(
-                                parcela.despesaTemporariaId
-                            )
-
-                        if (despesaTemporaria == null) {
-
-                            _uiState.value =
-                                _uiState.value.copy(
-                                    mensagem = UiMessage.Error(
-                                        "Não foi possível localizar a despesa avulsa original."
-                                    )
-                                )
-
-                            return@launch
-                        }
-
-                        val novoNome =
-                            _uiState.value
-                                .descricaoLivre
-                                .trim()
-
-                        /*
-                         * Atualiza o nome original da
-                         * despesa temporária.
-                         */
-                        despesaTemporariaRepository.update(
-                            despesaTemporaria.copy(
-                                descricao = novoNome
+                                valor =
+                                    valorDespesa
                             )
                         )
 
-                        /*
-                         * Calcula o nome da parcela que aparece
-                         * na lista de despesas.
-                         */
-                        novaDescricaoLivre =
-                            if (
-                                despesaTemporaria.quantidadeParcelas > 1
-                            ) {
+                        _uiState.value =
+                            _uiState.value.copy(
 
-                                "$novoNome - Parcela " +
-                                        "${parcela.numeroParcela}/" +
-                                        "${despesaTemporaria.quantidadeParcelas}"
+                                despesaEmEdicao = null,
 
-                            } else {
+                                valor = "",
 
-                                novoNome
-                            }
-                    }
+                                descricaoLivre = "",
 
-                    /*
-                     * Atualiza a DespesaEntity.
-                     *
-                     * FIXA:
-                     * descricaoLivre = ""
-                     *
-                     * AVULSA:
-                     * descricaoLivre = novo nome
-                     */
-                    despesaRepository.update(
-                        entidade.copy(
-                            descricaoLivre = novaDescricaoLivre,
-                            valor = valorDespesa
-                        )
-                    )
+                                mensagem =
+                                    UiMessage.Success(
+                                        "Despesa atualizada com sucesso."
+                                    )
+                            )
 
-                    /*
-                     * Somente despesas avulsas possuem registro
-                     * em despesas_temporarias_parcelas.
-                     */
-                    if (despesaEmEdicao.avulsa) {
+                    } catch (
+                        exception: IllegalStateException
+                    ) {
 
-                        despesaTemporariaParcelaRepository
-                            .atualizarValorPorDespesaId(
-                                despesaId = entidade.id,
-                                valor = valorDespesa
+                        _uiState.value =
+                            _uiState.value.copy(
+
+                                mensagem =
+                                    UiMessage.Error(
+                                        exception.message
+                                            ?: "Não foi possível atualizar a despesa."
+                                    )
+                            )
+
+                    } catch (
+                        exception: Exception
+                    ) {
+
+                        _uiState.value =
+                            _uiState.value.copy(
+
+                                mensagem =
+                                    UiMessage.Error(
+                                        "Não foi possível atualizar a despesa."
+                                    )
                             )
                     }
-
-                    /*
-                     * Sai do modo de edição.
-                     */
-                    _uiState.value =
-                        _uiState.value.copy(
-                            despesaEmEdicao = null,
-                            valor = "",
-                            descricaoLivre = "",
-                            mensagem = UiMessage.Success(
-                                "Despesa atualizada com sucesso."
-                            )
-                        )
 
                     /*
                      * FUNDAMENTAL:
@@ -520,8 +453,157 @@ class DespesaViewModel @Inject constructor(
                      * o bloco de cadastro de nova despesa.
                      */
                     return@launch
+
+////                    val entidade =
+////                        despesaRepository.findById(
+////                            despesaEmEdicao.id
+////                        )
+////                            ?: return@launch
+//
+//                    /*
+//                     * Para despesa fixa deixamos vazio.
+//                     *
+//                     * O nome da despesa fixa deve vir SEMPRE
+//                     * de TipoDespesaEntity.
+//                     *
+//                     * Isso também corrige despesas fixas que
+//                     * eventualmente tenham recebido um
+//                     * descricaoLivre indevidamente.
+//                     */
+//                    var novaDescricaoLivre =
+//                        if (despesaEmEdicao.avulsa) {
+//                            entidade.descricaoLivre
+//                        } else {
+//                            ""
+//                        }
+//
+//                    /*
+//                     * =====================================================
+//                     * SOMENTE DESPESA AVULSA
+//                     * =====================================================
+//                     */
+//                    if (despesaEmEdicao.avulsa) {
+//
+//                        val parcela =
+//                            despesaTemporariaParcelaRepository
+//                                .findByDespesaId(
+//                                    entidade.id
+//                                )
+//
+//                        if (parcela == null) {
+//
+//                            _uiState.value =
+//                                _uiState.value.copy(
+//                                    mensagem = UiMessage.Error(
+//                                        "Não foi possível localizar a parcela da despesa avulsa."
+//                                    )
+//                                )
+//
+//                            return@launch
+//                        }
+//
+//                        val despesaTemporaria =
+//                            despesaTemporariaRepository.findById(
+//                                parcela.despesaTemporariaId
+//                            )
+//
+//                        if (despesaTemporaria == null) {
+//
+//                            _uiState.value =
+//                                _uiState.value.copy(
+//                                    mensagem = UiMessage.Error(
+//                                        "Não foi possível localizar a despesa avulsa original."
+//                                    )
+//                                )
+//
+//                            return@launch
+//                        }
+//
+//                        val novoNome =
+//                            _uiState.value
+//                                .descricaoLivre
+//                                .trim()
+//
+//                        /*
+//                         * Atualiza o nome original da
+//                         * despesa temporária.
+//                         */
+//                        despesaTemporariaRepository.update(
+//                            despesaTemporaria.copy(
+//                                descricao = novoNome
+//                            )
+//                        )
+//
+//                        /*
+//                         * Calcula o nome da parcela que aparece
+//                         * na lista de despesas.
+//                         */
+//                        novaDescricaoLivre =
+//                            if (
+//                                despesaTemporaria.quantidadeParcelas > 1
+//                            ) {
+//
+//                                "$novoNome - Parcela " +
+//                                        "${parcela.numeroParcela}/" +
+//                                        "${despesaTemporaria.quantidadeParcelas}"
+//
+//                            } else {
+//
+//                                novoNome
+//                            }
+//                    }
+//
+//                    /*
+//                     * Atualiza a DespesaEntity.
+//                     *
+//                     * FIXA:
+//                     * descricaoLivre = ""
+//                     *
+//                     * AVULSA:
+//                     * descricaoLivre = novo nome
+//                     */
+//                    despesaRepository.update(
+//                        entidade.copy(
+//                            descricaoLivre = novaDescricaoLivre,
+//                            valor = valorDespesa
+//                        )
+//                    )
+//
+//                    /*
+//                     * Somente despesas avulsas possuem registro
+//                     * em despesas_temporarias_parcelas.
+//                     */
+//                    if (despesaEmEdicao.avulsa) {
+//
+//                        despesaTemporariaParcelaRepository
+//                            .atualizarValorPorDespesaId(
+//                                despesaId = entidade.id,
+//                                valor = valorDespesa
+//                            )
+//                    }
+//
+//                    /*
+//                     * Sai do modo de edição.
+//                     */
+//                    _uiState.value =
+//                        _uiState.value.copy(
+//                            despesaEmEdicao = null,
+//                            valor = "",
+//                            descricaoLivre = "",
+//                            mensagem = UiMessage.Success(
+//                                "Despesa atualizada com sucesso."
+//                            )
+//                        )
+
+//                    /*
+//                     * FUNDAMENTAL:
+//                     *
+//                     * impede que o fluxo continue para
+//                     * o bloco de cadastro de nova despesa.
+//                     */
+//                    return@launch
                 }
-            }
+//            }
 
             val tipoSelecionado = _uiState.value.tipoSelecionado
 

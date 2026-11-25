@@ -1,70 +1,34 @@
 package br.com.edificiopromenade.presentation.util
 
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.input.OffsetMapping
-import androidx.compose.ui.text.input.TransformedText
-import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.foundation.text.input.OutputTransformation
+import androidx.compose.foundation.text.input.TextFieldBuffer
+import androidx.compose.foundation.text.input.insert
 
-class CnpjVisualTransformation : VisualTransformation {
+/**
+ * Formata visualmente os dígitos do CNPJ como 00.000.000/0000-00.
+ *
+ * O texto armazenado continua contendo apenas dígitos; o mapeamento
+ * de cursor/seleção é feito automaticamente pelo TextFieldBuffer.
+ */
+class CnpjVisualTransformation : OutputTransformation {
 
-    override fun filter(
-        text: AnnotatedString
-    ): TransformedText {
+    override fun TextFieldBuffer.transformOutput() {
 
-        val digits =
-            text.text.take(14)
-
-        val formatted =
-            buildString {
-
-                digits.forEachIndexed { index, c ->
-
-                    when (index) {
-                        2 -> append(".")
-                        5 -> append(".")
-                        8 -> append("/")
-                        12 -> append("-")
-                    }
-
-                    append(c)
-                }
+        // Insere do maior índice para o menor para não deslocar
+        // as posições ainda não processadas.
+        SEPARADORES.forEach { (indice, simbolo) ->
+            if (length > indice) {
+                insert(indice, simbolo)
             }
+        }
+    }
 
-        return TransformedText(
-            AnnotatedString(formatted),
-            object : OffsetMapping {
-
-                override fun originalToTransformed(
-                    offset: Int
-                ): Int {
-
-                    val symbolsAdded = when {
-                        offset <= 2 -> 0
-                        offset <= 5 -> 1
-                        offset <= 8 -> 2
-                        offset <= 12 -> 3
-                        else -> 4
-                    }
-                    
-                    val result = offset + symbolsAdded
-                    return result.coerceAtMost(formatted.length)
-                }
-
-                override fun transformedToOriginal(
-                    offset: Int
-                ): Int {
-
-                    val symbolsRemoved = when {
-                        offset <= 2 -> 0
-                        offset <= 6 -> 1
-                        offset <= 10 -> 2
-                        offset <= 15 -> 3
-                        else -> 4
-                    }
-                    
-                    return (offset - symbolsRemoved).coerceAtMost(text.text.length)
-                }
-            }
+    private companion object {
+        val SEPARADORES = listOf(
+            12 to "-",
+            8 to "/",
+            5 to ".",
+            2 to "."
         )
     }
 }

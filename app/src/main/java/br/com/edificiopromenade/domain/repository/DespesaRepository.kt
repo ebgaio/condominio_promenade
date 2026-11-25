@@ -55,9 +55,4 @@ interface DespesaRepository {
     suspend fun findComItensListByFechamento(
         fechamentoId: Long
     ): List<DespesaComItensEntity>
-
-    suspend fun atualizarValor(
-        despesaId: Long,
-        novoValor: Double
-    )
 }

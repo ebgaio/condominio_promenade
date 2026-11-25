@@ -89,8 +89,7 @@ class DespesaItemViewModel @Inject constructor(
 
                     despesa.descricaoLivre
                         .ifBlank {
-                            tipoDespesa?.descricao
-                                ?: "Despesa"
+                            tipoDespesa.descricao
                         }
 
                 } else {
