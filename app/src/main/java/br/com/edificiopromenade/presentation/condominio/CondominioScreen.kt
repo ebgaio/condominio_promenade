@@ -41,7 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import br.com.edificiopromenade.presentation.common.message.InlineMessageBanner
 import br.com.edificiopromenade.presentation.common.message.UiMessage
-import br.com.edificiopromenade.presentation.util.CnpjVisualTransformation
+import br.com.edificiopromenade.presentation.util.CnpjOutputTransformation
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -155,7 +155,7 @@ fun CondominioScreen(
                 inputTransformation = CnpjAlfanumericoInput.then(
                     InputTransformation.maxLengthTrim(Cnpj.TAMANHO)
                 ),
-                outputTransformation = CnpjVisualTransformation(),
+                outputTransformation = CnpjOutputTransformation(),
                 lineLimits = TextFieldLineLimits.SingleLine,
                 modifier = Modifier.fillMaxWidth()
             )

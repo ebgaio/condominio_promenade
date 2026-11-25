@@ -10,7 +10,7 @@ import androidx.compose.foundation.text.input.insert
  * O texto armazenado continua contendo apenas dígitos; o mapeamento
  * de cursor/seleção é feito automaticamente pelo TextFieldBuffer.
  */
-class CnpjVisualTransformation : OutputTransformation {
+class CnpjOutputTransformation : OutputTransformation {
 
     override fun TextFieldBuffer.transformOutput() {
 
